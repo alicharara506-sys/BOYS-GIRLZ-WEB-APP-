@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root { font-family: 'DM Sans', sans-serif; color: #3D3D3D; background: #fffdfa; font-synthesis: none; }
+body { margin: 0; }
