@@ -4,13 +4,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      output: {
-        manualChunks: {
-          "three-core": ["three"],
-          "three-react": ["@react-three/fiber", "@react-three/drei"],
-          motion: ["framer-motion", "gsap"],
-        },
-      },
+      output: { manualChunks: { motion: ["framer-motion", "gsap"] } },
     },
     chunkSizeWarningLimit: 1100,
   },

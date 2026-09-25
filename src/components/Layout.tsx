@@ -12,7 +12,6 @@ import {
   Truck,
   LockKeyhole,
   ArrowRight,
-  Star,
 } from "lucide-react";
 import { useStore } from "../state/Store";
 import { products, money } from "../data/products";
@@ -21,11 +20,18 @@ import Newsletter from "./Newsletter";
 export function Logo() {
   return (
     <Link to="/" className="logo" aria-label="Boys and Girlz home">
-      <span>BOYS</span>
-      <b>&</b>
-      <span>
-        GIRLZ
-        <Star size={11} fill="currentColor" />
+      <svg className="logo-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M12 28v7c0 13 8 21 20 21s20-8 20-21v-7H41v7c0 7-3 11-9 11s-9-4-9-11v-7Z" />
+        <circle cx="19" cy="17" r="6" />
+        <path
+          className="logo-spark"
+          d="m45 8 2.7 5.3L53 16l-5.3 2.7L45 24l-2.7-5.3L37 16l5.3-2.7Z"
+        />
+      </svg>
+      <span className="logo-type">
+        <span>BOYS</span>
+        <b>&</b>
+        <span>GIRLZ</span>
       </span>
     </Link>
   );
@@ -103,6 +109,7 @@ export function Header() {
         Home
       </NavLink>
       <NavLink to="/shop">Shop</NavLink>
+      <NavLink to="/category/outlet">Outlet</NavLink>
       <Link to="/shop?sort=newest">New arrivals</Link>
       <Link to="/#categories">Collections</Link>
       <NavLink to="/about">About us</NavLink>
@@ -272,12 +279,13 @@ export function Footer() {
           <Link to="/shop">All the little things</Link>
           <Link to="/category/maternity">For mama</Link>
           <Link to="/category/toys">Playtime favorites</Link>
+          <Link to="/category/outlet">Outlet · Like New</Link>
           <Link to="/about">Our story</Link>
         </div>
         <div>
           <h3>Here to help</h3>
           <Link to="/contact">Contact us</Link>
-          <Link to="/help/shipping">Shipping & delivery</Link>
+          <Link to="/help/shipping">Lebanon shipping</Link>
           <Link to="/help/returns">Returns & exchanges</Link>
           <Link to="/help/sizing">Size guide</Link>
         </div>
@@ -292,7 +300,7 @@ export function Footer() {
           <Mail size={17} /> support@boysandgirlz.com
         </a>
         <span>
-          <Truck size={18} /> Shipping worldwide
+          <Truck size={18} /> Shipping within Lebanon only
         </span>
         <span>
           <LockKeyhole size={16} /> Secure payments

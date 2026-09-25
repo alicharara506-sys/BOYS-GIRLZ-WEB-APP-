@@ -1,5 +1,11 @@
 export type Category =
-  "Boys" | "Girls" | "Unisex" | "Accessories" | "Maternity" | "Toys";
+  | "Boys"
+  | "Girls"
+  | "Unisex"
+  | "Accessories"
+  | "Maternity"
+  | "Toys"
+  | "Outlet";
 export type ModelKind =
   "romper" | "cardigan" | "set" | "boots" | "bunny" | "dress" | "duck";
 export interface Product {
@@ -12,7 +18,6 @@ export interface Product {
   sizes: string[];
   colors: string[];
   model: ModelKind;
-  modelUrl?: string;
   isNew: boolean;
   rating: number;
   reviews: number;
@@ -25,6 +30,7 @@ export const categories: Category[] = [
   "Accessories",
   "Maternity",
   "Toys",
+  "Outlet",
 ];
 export const colorHex: Record<string, string> = {
   Blue: "#9bbbd7",
@@ -33,7 +39,20 @@ export const colorHex: Record<string, string> = {
   Sage: "#b6c8b4",
   Gold: "#e7c777",
 };
-const baby = ["0–3M", "3–6M", "6–12M", "12–18M", "18–24M"];
+export const sizeOptions = [
+  "New Born",
+  "0–3 Months",
+  "3–6 Months",
+  "6–9 Months",
+  "9–12 Months",
+  "12–18 Months",
+  "18–24 Months",
+  "2–3 Years",
+  "3–4 Years",
+  "4–5 Years",
+  "5–6 Years",
+] as const;
+const baby = [...sizeOptions];
 const rows: [string, number, Category, number, ModelKind, string[], number?][] =
   [
     ["Fleece Bear Overall", 34.9, "Boys", 0, "romper", ["Blue", "Cream"]],
@@ -124,6 +143,9 @@ const rows: [string, number, Category, number, ModelKind, string[], number?][] =
     ["Peach Blossom Cardigan", 34.9, "Girls", 2, "cardigan", ["Pink", "Cream"]],
     ["Oatmeal Teddy Set", 31.9, "Unisex", 3, "set", ["Cream"]],
     ["Hug Me Bunny Gift", 32.9, "Toys", 6, "bunny", ["Cream"], 39.9],
+    ["Like New Bear Playsuit", 18.9, "Outlet", 0, "romper", ["Blue"]],
+    ["Like New Blush Cardigan", 21.9, "Outlet", 2, "cardigan", ["Pink"]],
+    ["Like New Cozy Gift Set", 16.9, "Outlet", 3, "set", ["Cream"]],
   ];
 export const products: Product[] = rows.map((r, i) => ({
   id: r[0]
@@ -137,15 +159,7 @@ export const products: Product[] = rows.map((r, i) => ({
   model: r[4],
   colors: r[5],
   originalPrice: r[6],
-  sizes:
-    r[2] === "Maternity"
-      ? ["S", "M", "L", "XL"]
-      : r[2] === "Toys"
-        ? ["One size"]
-        : r[2] === "Accessories"
-          ? ["0–6M", "6–12M", "12–18M"]
-          : baby,
-  modelUrl: r[4] === "duck" ? "/models/duck.glb" : undefined,
+  sizes: baby,
   isNew: i < 8,
   rating: 4.8 + (i % 3) / 10,
   reviews: 12 + i * 3,

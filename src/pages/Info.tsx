@@ -26,14 +26,16 @@ export function About() {
             themselves.
           </p>
           <p>
-            Boys & Girlz is a collection of lovely little things for those
-            everyday moments — soft outfits, thoughtful accessories, comforting
-            toys, and a little care for mama, too.
+            Boys & Girlz is a children's merchandising shop in Lebanon offering
+            kids clothes, toys, accessories, maternity pieces, and Like New
+            outlet finds for growing families.
           </p>
           <p>
-            Our world is simple: comfort comes first, little details matter, and
-            growing up should feel like a lovely adventure.
+            <strong>What is Boys & Girlz?</strong> We are an online baby shop
+            in Lebanon and a family-friendly retail destination where comfort,
+            practical value, and cheerful design come first.
           </p>
+          <p><strong>Where do you ship?</strong> We ship within Lebanon only. Every order is prepared locally with care.</p>
           <Link to="/shop" className="btn btn-blue">
             Meet your next favorite <ArrowRight size={16} />
           </Link>
@@ -159,11 +161,11 @@ const help: Record<
 > = {
   shipping: {
     title: "A little love, delivered.",
-    intro: "Sample shipping information for the Boys & Girlz demo.",
+    intro: "Shipping information for the Boys & Girlz merchandising shop in Lebanon.",
     sections: [
       [
-        "Shipping worldwide",
-        "Our demo offers worldwide delivery at a flat $5.95. Shipping is complimentary when the merchandise subtotal reaches $75, before promo discounts.",
+        "Shipping within Lebanon",
+        "Our demo offers delivery within Lebanon only. Shipping is complimentary when the merchandise subtotal reaches $75, before promo discounts.",
       ],
       [
         "A little patience",
@@ -199,7 +201,7 @@ const help: Record<
     sections: [
       [
         "Baby clothing",
-        "0–3M: 56–62 cm · 3–6M: 62–68 cm · 6–12M: 68–80 cm · 12–18M: 80–86 cm · 18–24M: 86–92 cm.",
+        "New Born through 5–6 Years. Check each product listing for the exact fit and measurements.",
       ],
       [
         "For mama",

@@ -12,19 +12,3 @@ export function useReducedMotion() {
   }, []);
   return value;
 }
-export function use3D() {
-  const reduce = useReducedMotion();
-  const [enabled, setEnabled] = useState(() => {
-    const nav = navigator as Navigator & {
-      deviceMemory?: number;
-      connection?: { saveData?: boolean };
-    };
-    return (
-      !reduced() &&
-      !(nav.hardwareConcurrency && nav.hardwareConcurrency <= 4) &&
-      !(nav.deviceMemory && nav.deviceMemory <= 4) &&
-      !nav.connection?.saveData
-    );
-  });
-  return { enabled: enabled && !reduce, setEnabled, reduce };
-}

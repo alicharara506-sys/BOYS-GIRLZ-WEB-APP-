@@ -14,7 +14,6 @@ import {
 import { products } from "../data/products";
 import ProductCard, { ProductImage, Tilt } from "../components/ProductCard";
 import Newsletter from "../components/Newsletter";
-import HeroExperience from "../components/HeroExperience";
 const cards = [
   { name: "Boys", sub: "For every little adventure", cls: "boys", image: 0 },
   { name: "Girls", sub: "A little lovely, every day", cls: "girls", image: 2 },
@@ -30,6 +29,7 @@ const cards = [
     cls: "accessories",
     image: 5,
   },
+  { name: "Outlet", sub: "Like New little finds", cls: "outlet", image: 0 },
 ];
 export default function Home() {
   const carousel = useRef<HTMLDivElement>(null);
@@ -41,7 +41,6 @@ export default function Home() {
           role="img"
           aria-label="Two happy babies wearing a blue bear romper and a pink knit outfit"
         />
-        <HeroExperience />
         <div className="hero-content">
           <span className="eyebrow">
             <Heart size={14} /> Made for little moments

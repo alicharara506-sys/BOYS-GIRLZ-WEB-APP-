@@ -7,6 +7,8 @@
   align-items: center;
   margin-bottom: 34px;
 }
+.gender-mark { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; color: var(--blue-deep); font-size: 13px; font-weight: 700; }
+.outlet-note { max-width: 520px; margin-top: 14px; padding: 13px 16px; border-radius: 16px; background: #fff3dc; color: #6a5140; font-size: 12px; line-height: 1.55; }
 .shop-heading h1 {
   font-size: 40px;
   font-weight: 700;
@@ -813,103 +815,53 @@
   gap: 55px;
   margin-top: 26px;
 }
-.viewer-stage {
-  background: #f5f1eb;
+.photo-viewer {
   position: relative;
+  overflow: hidden;
   border-radius: 24px;
-  overflow: hidden;
   aspect-ratio: 1;
-  min-height: 350px;
+  background: #f5f1eb;
 }
-.viewer-stage > div:not(.viewer-tabs):not(.viewer-controls) {
-  width: 100%;
+.photo-viewer .product-photo {
   height: 100%;
+  transition: transform 0.45s ease;
 }
-.viewer-tabs {
+.photo-viewer.detail .product-photo {
+  transform: scale(1.75);
+}
+.photo-badge {
   position: absolute;
-  top: 17px;
-  left: 17px;
+  z-index: 2;
+  top: 18px;
+  left: 18px;
   display: flex;
-  gap: 3px;
-  z-index: 3;
-  border-radius: 99px;
-  background: #ffffffaf;
-  padding: 4px;
-}
-.viewer-tabs button {
-  display: flex;
+  align-items: center;
   gap: 6px;
-  align-items: center;
+  padding: 8px 12px;
   border-radius: 99px;
-  padding: 8px 13px;
-  background: none;
-  font-size: 11px;
-  color: #8c8379;
-}
-.viewer-tabs button.active {
-  background: white;
-  box-shadow: 0 2px 8px #665f5110;
-  color: var(--blue);
-}
-.viewer-caption {
-  position: absolute;
-  bottom: 70px;
-  left: 50%;
-  transform: translateX(-50%);
+  background: #fffdfacc;
+  color: #8a7b6f;
   font-size: 10px;
-  color: #9c9083;
-  white-space: nowrap;
-  pointer-events: none;
+  backdrop-filter: blur(8px);
 }
-.viewer-controls {
+.photo-expand {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  z-index: 2;
+  right: 18px;
+  bottom: 18px;
   display: flex;
   align-items: center;
-  background: #ffffffeb;
-  padding: 5px 9px;
+  gap: 7px;
+  padding: 10px 14px;
   border-radius: 99px;
-  box-shadow: 0 4px 15px #40322108;
-  z-index: 3;
+  background: #fffdfae8;
+  color: #607f92;
+  font-size: 10px;
+  box-shadow: 0 5px 18px #5d493416;
 }
-.viewer-controls button {
-  background: none;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 32px;
-  border-radius: 50%;
-  color: #6e8190;
-}
-.viewer-controls button:hover {
-  background: #ecf2f5;
-}
-.viewer-controls > span {
-  width: 1px;
-  height: 19px;
-  background: #e9e1d8;
-  margin: 0 5px;
-}
-.viewer-loading {
-  display: flex;
+.gallery-thumbs > p > span {
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 15px;
-  color: #8ba5b3;
-  font-size: 12px;
-}
-.photo-stage {
-  overflow: hidden;
-}
-.photo-stage .product-photo {
-  height: 100%;
-  transition: transform 0.4s;
-}
-.photo-stage.detail .product-photo {
-  transform: scale(1.9);
+  gap: 5px;
 }
 .gallery-thumbs {
   display: flex;
@@ -1217,33 +1169,6 @@
   font-weight: 500;
   background: #f7f0e7;
 }
-.hero-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-.scene-toggle {
-  position: absolute;
-  bottom: 14px;
-  right: 17px;
-  background: #ffffffb8;
-  backdrop-filter: blur(10px);
-  border: 1px solid #fff9;
-  border-radius: 99px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 11px;
-  font-size: 9px;
-  color: #7b8075;
-  z-index: 4;
-}
-.scene-toggle:hover {
-  background: white;
-}
-.calm-label {
-  pointer-events: none;
-}
 .ambient-blob {
   width: 350px;
   height: 350px;
@@ -1532,9 +1457,6 @@
   }
   .product-gallery {
     min-width: 0;
-  }
-  .viewer-stage {
-    min-height: 320px;
   }
   .gallery-thumbs {
     flex-wrap: wrap;
@@ -1864,10 +1786,6 @@
     gap: 30px;
     margin-top: 18px;
   }
-  .viewer-stage {
-    min-height: 0;
-    aspect-ratio: 1;
-  }
   .viewer-tabs {
     top: 13px;
     left: 13px;
@@ -1981,12 +1899,6 @@
   .related-grid {
     grid-template-columns: 1fr 1fr;
     gap: 23px 13px;
-  }
-  .scene-toggle {
-    font-size: 8px;
-    bottom: 10px;
-    right: 11px;
-    padding: 6px 9px;
   }
   .story-layout {
     grid-template-columns: 1fr;

@@ -21,7 +21,7 @@ import {
 } from "../data/products";
 import { useStore } from "../state/Store";
 import ProductCard, { WishButton } from "../components/ProductCard";
-import ProductViewer from "../components/ProductViewer";
+import ProductGallery from "../components/ProductGallery";
 import { Modal } from "../components/Layout";
 import { Quantity } from "./Cart";
 import { NotFound } from "./Shop";
@@ -53,7 +53,7 @@ function ProductContent({ product: p }: { product: Product }) {
         <span>{p.name}</span>
       </div>
       <div className="product-detail-layout">
-        <ProductViewer product={p} color={color} />
+        <ProductGallery product={p} />
         <div className="product-details">
           <span className="eyebrow">
             {p.isNew
@@ -131,7 +131,7 @@ function ProductContent({ product: p }: { product: Product }) {
           </div>
           <div className="product-reassurance">
             <span>
-              <Truck size={17} /> Free shipping $75+
+              <Truck size={17} /> Lebanon delivery · Free over $75
             </span>
             <span>
               <ShieldCheck size={17} /> 30-day demo returns
@@ -171,8 +171,8 @@ function ProductContent({ product: p }: { product: Product }) {
                 <Minus size={15} />
               </summary>
               <p>
-                Our sample shipping is $5.95, or complimentary on orders of
-                $75+. Browse our <Link to="/help/shipping">shipping guide</Link>{" "}
+                We ship within Lebanon only. Delivery is $5.95, or complimentary
+                on orders of $75+. Browse our <Link to="/help/shipping">shipping guide</Link>{" "}
                 and <Link to="/help/returns">returns guide</Link> for this
                 demo’s policy details.
               </p>
@@ -249,29 +249,7 @@ function ProductContent({ product: p }: { product: Product }) {
             </tr>
           </thead>
           <tbody>
-            {(p.category === "Maternity"
-              ? [
-                  ["S", "8–10"],
-                  ["M", "12–14"],
-                  ["L", "16–18"],
-                  ["XL", "20–22"],
-                ]
-              : p.category === "Toys"
-                ? [["One size", "See product details"]]
-                : p.category === "Accessories"
-                  ? [
-                      ["0–6M", "Up to 6 months"],
-                      ["6–12M", "6 to 12 months"],
-                      ["12–18M", "12 to 18 months"],
-                    ]
-                  : [
-                      ["0–3M", "56–62 cm"],
-                      ["3–6M", "62–68 cm"],
-                      ["6–12M", "68–80 cm"],
-                      ["12–18M", "80–86 cm"],
-                      ["18–24M", "86–92 cm"],
-                    ]
-            ).map(([s, h]) => (
+            {p.sizes.map((s) => [s, "See product details"]).map(([s, h]) => (
               <tr key={s}>
                 <td>{s}</td>
                 <td>{h}</td>

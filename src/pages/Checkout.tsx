@@ -142,17 +142,7 @@ export default function Checkout() {
                       setShipping((s) => ({ ...s, country: e.target.value }))
                     }
                   >
-                    {[
-                      "Lebanon",
-                      "United States",
-                      "United Kingdom",
-                      "France",
-                      "United Arab Emirates",
-                      "Saudi Arabia",
-                      "Canada",
-                      "Australia",
-                      "Other",
-                    ].map((c) => (
+                    {["Lebanon"].map((c) => (
                       <option key={c}>{c}</option>
                     ))}
                   </select>
@@ -162,7 +152,7 @@ export default function Checkout() {
                 <Truck size={22} />
                 <div>
                   <strong>Standard delivery</strong>
-                  <p>Estimated 5–10 business days · Demo estimate</p>
+                  <p>Lebanon delivery · Estimated 5–10 business days · Demo estimate</p>
                 </div>
                 <span>{totals.shipping ? money(totals.shipping) : "Free"}</span>
               </div>

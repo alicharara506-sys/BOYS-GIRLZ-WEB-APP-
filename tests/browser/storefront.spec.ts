@@ -196,7 +196,7 @@ test("mobile layout, navigation, filters, and dialog keyboard dismissal", async 
     page.getByRole("dialog", { name: "Find a little favorite" }),
   ).not.toBeVisible();
 });
-test("3D canvas, orbit controls, calm mode and scroll frame timings", async ({
+test("photo hero, product close-up and scroll frame timings", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -206,14 +206,8 @@ test("3D canvas, orbit controls, calm mode and scroll frame timings", async ({
   });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  const enable = page.getByRole("button", { name: "Enable 3D hero animation" });
-  if (await enable.isVisible()) await enable.click();
-  await expect(page.locator(".hero-canvas canvas")).toBeVisible();
-  await page.waitForFunction(
-    () => document.querySelector("canvas")?.width! > 0,
-  );
-  await page.waitForTimeout(1800);
-  await page.screenshot({ path: "test-results/home-3d.png", fullPage: false });
+  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator(".hero-photo")).toBeVisible();
   const performance = await page.evaluate(async () => {
     const samples: number[] = [];
     let last = 0;
@@ -240,19 +234,10 @@ test("3D canvas, orbit controls, calm mode and scroll frame timings", async ({
     );
   });
   console.log("Scroll frame timing (headless):", JSON.stringify(performance));
-  await page.getByRole("button", { name: "Pause 3D hero animation" }).click();
-  await expect(page.locator(".hero-canvas canvas")).toHaveCount(0);
   await page.goto("/product/fleece-bear-overall");
-  await page.getByRole("button", { name: "3D view", exact: true }).click();
-  await expect(page.locator(".viewer-stage canvas")).toBeVisible();
-  await page.waitForTimeout(1200);
-  await page
-    .getByRole("button", { name: "Rotate product left", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Zoom in", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Reset product view", exact: true })
-    .click();
+  await expect(page.locator("canvas")).toHaveCount(0);
+  await page.getByRole("button", { name: "Show product close-up" }).click();
+  await expect(page.locator(".photo-viewer")).toHaveClass(/detail/);
   await page.screenshot({
     path: "test-results/product-desktop.png",
     fullPage: true,

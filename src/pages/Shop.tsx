@@ -24,6 +24,7 @@ const copy: Record<Category, string> = {
   Accessories: "The thoughtful little things that make it all complete.",
   Maternity: "A little comfort for your beautiful, growing story.",
   Toys: "Little companions. Big imaginations. Endless play.",
+  Outlet: "Like New finds: excellent pre-owned pieces, carefully selected and priced a little lighter.",
 };
 export default function Shop() {
   const { category } = useParams();
@@ -188,11 +189,13 @@ export default function Shop() {
           <span className="eyebrow">Made for little moments</span>
           <h1>
             {routeCategory
-              ? `${routeCategory === "Maternity" ? "For mama" : routeCategory === "Toys" ? "A little playtime" : `Little ${routeCategory.toLowerCase()}`}.`
+              ? `${routeCategory === "Maternity" ? "For mama" : routeCategory === "Toys" ? "A little playtime" : routeCategory === "Outlet" ? "Like New little finds" : `Little ${routeCategory.toLowerCase()}`}.`
               : sale
                 ? "Lovely little offers."
                 : "All the little things."}
           </h1>
+          {routeCategory === "Boys" && <span className="gender-mark" aria-label="Male symbol">♂ <span>Little Boys</span></span>}
+          {routeCategory === "Girls" && <span className="gender-mark" aria-label="Female symbol">♀ <span>Little Girls</span></span>}
           <p>
             {routeCategory
               ? copy[routeCategory]
@@ -200,6 +203,9 @@ export default function Shop() {
                 ? "A little treat for them. A lovely price for you."
                 : "Soft essentials, sweet details, and new favorites to fall for."}
           </p>
+          {routeCategory === "Outlet" && (
+            <div className="outlet-note" role="note"><strong>Outlet means Like New.</strong> These are pre-owned, second-hand items in excellent condition, offered at reduced prices so more little favorites can find a home.</div>
+          )}
         </div>
         <span className="heading-heart">
           <Heart size={58} strokeWidth={1} />

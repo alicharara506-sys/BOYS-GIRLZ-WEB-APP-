@@ -133,32 +133,42 @@ input[type="checkbox"] {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   white-space: nowrap;
   font-family: Quicksand, sans-serif;
   font-weight: 700;
-  font-size: 31px;
-  letter-spacing: -1.4px;
   line-height: 1;
 }
-.logo > span:first-child {
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  color: #4f87ae;
+  overflow: visible;
+}
+.logo-mark .logo-spark {
+  color: #e59aaa;
+}
+.logo-mark path,
+.logo-mark circle {
+  fill: currentColor;
+}
+.logo-type {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 27px;
+  letter-spacing: -1.2px;
+}
+.logo-type > span:first-child {
   color: #487b9b;
 }
-.logo > span:last-child {
-  position: relative;
+.logo-type > span:last-child {
   color: var(--pink);
 }
-.logo b {
+.logo-type b {
   font-size: 18px;
   color: #52504c;
   letter-spacing: 0;
-}
-.logo svg {
-  position: absolute;
-  top: -9px;
-  left: 27px;
-  color: var(--gold);
-  transform: rotate(12deg);
 }
 .desktop-nav {
   display: flex;
@@ -1412,16 +1422,18 @@ input[type="checkbox"] {
     gap: 10px;
   }
   .logo {
-    font-size: 25px;
     gap: 5px;
   }
-  .logo b {
+  .logo-type {
+    font-size: 21px;
+    gap: 4px;
+  }
+  .logo-type b {
     font-size: 15px;
   }
-  .logo svg {
-    width: 9px;
-    top: -7px;
-    left: 24px;
+  .logo-mark {
+    width: 29px;
+    height: 29px;
   }
   .nav-icons {
     gap: 1px;
