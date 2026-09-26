@@ -1430,13 +1430,12 @@ input[type="checkbox"] {
   }
   .announcement {
     min-height: 30px;
-    font-size: 9px;
+    font-size: 8.5px;
     gap: 8px;
     padding: 4px 10px;
+    flex-wrap: wrap;
   }
-  .announcement-main > span {
-    display: none;
-  }
+  .announcement-main > span { display: inline; }
   .announcement-divider { display: none; }
   .nav-inner {
     height: 66px;
