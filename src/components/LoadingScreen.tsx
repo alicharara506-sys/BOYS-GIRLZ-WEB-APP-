@@ -6,7 +6,7 @@ export default function LoadingScreen() {
     if (!visible) return;
     const timer = window.setTimeout(() => {
       setVisible(false);
-    }, 5000);
+    }, 8000);
     return () => window.clearTimeout(timer);
   }, [visible]);
   if (!visible) return null;
