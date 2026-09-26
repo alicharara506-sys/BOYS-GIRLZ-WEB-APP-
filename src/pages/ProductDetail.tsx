@@ -131,7 +131,7 @@ function ProductContent({ product: p }: { product: Product }) {
           </div>
           <div className="product-reassurance">
             <span>
-              <Truck size={17} /> Lebanon delivery · Free over $75
+              <Truck size={17} /> Lebanon delivery · Free over $99
             </span>
             <span>
               <ShieldCheck size={17} /> 30-day demo returns
@@ -172,7 +172,7 @@ function ProductContent({ product: p }: { product: Product }) {
               </summary>
               <p>
                 We ship within Lebanon only. Delivery is $5.95, or complimentary
-                on orders of $75+. Browse our <Link to="/help/shipping">shipping guide</Link>{" "}
+                on orders over $99. Browse our <Link to="/help/shipping">shipping guide</Link>{" "}
                 and <Link to="/help/returns">returns guide</Link> for this
                 demo’s policy details.
               </p>

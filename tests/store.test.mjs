@@ -80,10 +80,10 @@ test("shipping threshold and promo math use rounded currency values", () => {
   assert.deepEqual(
     calculateTotals(
       [{ ...item, quantity: 2 }],
-      new Map([["romper", 37.85]]),
+      new Map([["romper", 49.85]]),
       "LITTLELOVE10",
     ),
-    { subtotal: 75.7, discount: 7.57, shipping: 0, total: 68.13 },
+    { subtotal: 99.7, discount: 9.97, shipping: 0, total: 89.73 },
   );
   assert.deepEqual(calculateTotals([], new Map(), ""), {
     subtotal: 0,

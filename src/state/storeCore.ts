@@ -133,7 +133,7 @@ export function calculateTotals(
     ) / 100;
   const discount =
     promo === "LITTLELOVE10" ? Math.round(subtotal * 10) / 100 : 0;
-  const shipping = subtotal === 0 || subtotal >= 75 ? 0 : 5.95;
+  const shipping = subtotal === 0 || subtotal >= 99 ? 0 : 5.95;
   return {
     subtotal,
     discount,

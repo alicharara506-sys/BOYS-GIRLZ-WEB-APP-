@@ -189,13 +189,13 @@ export function CartDrawer() {
           <div className="shipping-progress">
             <Truck size={18} />
             <p>
-              {totals.subtotal >= 75
+              {totals.subtotal >= 99
                 ? "Lovely! Your shipping is on us."
-                : `You’re ${money(75 - totals.subtotal)} away from free shipping.`}
+                : `You’re ${money(99 - totals.subtotal)} away from free shipping.`}
             </p>
             <progress
-              value={Math.min(totals.subtotal, 75)}
-              max="75"
+              value={Math.min(totals.subtotal, 99)}
+              max="99"
               aria-label="Progress toward free shipping"
             />
           </div>
@@ -267,9 +267,9 @@ export default function Cart() {
           <section>
             <div className="cart-shipping">
               <Truck size={20} />
-              {totals.subtotal >= 75
-                ? "Your order qualifies for complimentary shipping."
-                : `Add ${money(75 - totals.subtotal)} more for complimentary shipping.`}
+              {totals.subtotal >= 99
+                ? "Your order qualifies for FREE delivery all over Lebanon."
+                : `Add ${money(99 - totals.subtotal)} more for FREE delivery.`}
             </div>
             {cart.map((i) => (
               <CartLine key={itemKey(i)} item={i} />

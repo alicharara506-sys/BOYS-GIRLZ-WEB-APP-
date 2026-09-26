@@ -119,8 +119,7 @@ export function Header() {
   return (
     <>
       <div className="announcement">
-        <span>A little love, delivered.</span> Complimentary shipping on orders
-        $75+ <Heart size={11} />
+        🚚 FREE delivery all over Lebanon on orders over $99 · Cash on Delivery available <Heart size={11} />
       </div>
       <header className="site-header">
         <div className="nav-inner page-width">

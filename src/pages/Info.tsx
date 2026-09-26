@@ -165,7 +165,7 @@ const help: Record<
     sections: [
       [
         "Shipping within Lebanon",
-        "Our demo offers delivery within Lebanon only. Shipping is complimentary when the merchandise subtotal reaches $75, before promo discounts.",
+        "Our demo offers delivery within Lebanon only. Delivery is free all over Lebanon on orders over $99, before promo discounts.",
       ],
       [
         "A little patience",
