@@ -9,6 +9,7 @@ import Checkout from "./pages/Checkout";
 import { About, Contact, Help } from "./pages/Info";
 import { FlyToBag, RouteEffects } from "./components/MotionEffects";
 import WebMCP from "./components/WebMCP";
+import LoadingScreen from "./components/LoadingScreen";
 function Storefront() {
   const { notice } = useStore();
   return (
@@ -50,6 +51,7 @@ function Storefront() {
 export default function App() {
   return (
     <StoreProvider>
+      <LoadingScreen />
       <Storefront />
     </StoreProvider>
   );

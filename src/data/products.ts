@@ -53,6 +53,7 @@ export const sizeOptions = [
   "5–6 Years",
 ] as const;
 const baby = [...sizeOptions];
+const maternitySizes = ["S", "M", "L", "XL", "XXL"];
 const rows: [string, number, Category, number, ModelKind, string[], number?][] =
   [
     ["Fleece Bear Overall", 34.9, "Boys", 0, "romper", ["Blue", "Cream"]],
@@ -159,7 +160,7 @@ export const products: Product[] = rows.map((r, i) => ({
   model: r[4],
   colors: r[5],
   originalPrice: r[6],
-  sizes: baby,
+  sizes: r[2] === "Maternity" ? maternitySizes : baby,
   isNew: i < 8,
   rating: 4.8 + (i % 3) / 10,
   reviews: 12 + i * 3,

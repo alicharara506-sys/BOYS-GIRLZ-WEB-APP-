@@ -30,6 +30,7 @@ const cards = [
     image: 5,
   },
   { name: "Outlet", sub: "Like New little finds", cls: "outlet", image: 0 },
+  { name: "Maternity", sub: "For the glow before the giggle", cls: "maternity", image: 2 },
 ];
 export default function Home() {
   const carousel = useRef<HTMLDivElement>(null);
@@ -46,13 +47,13 @@ export default function Home() {
             <Heart size={14} /> Made for little moments
           </span>
           <h1 id="hero-heading">
-            Cute outfits,
+            Little clothes,
             <br />
-            <span>happy moments.</span>
+            <span>for <b>big</b> <em>smiles.</em></span>
           </h1>
           <p>
-            Soft fabrics, adorable designs.
-            <br />A little love in every stitch.
+            Thoughtfully made clothing for newborns to six-year-olds —
+            <br />soft fabrics, honest prices, delivered to every home in Lebanon.
           </p>
           <div className="hero-actions">
             <Link className="btn btn-blue" to="/category/boys">
