@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
 export default function LoadingScreen() {
-  const [visible, setVisible] = useState(() => !sessionStorage.getItem("bg-intro-seen"));
+  const [visible, setVisible] = useState(true);
   useEffect(() => {
     if (!visible) return;
     const timer = window.setTimeout(() => {
-      sessionStorage.setItem("bg-intro-seen", "true");
       setVisible(false);
     }, 5000);
     return () => window.clearTimeout(timer);
