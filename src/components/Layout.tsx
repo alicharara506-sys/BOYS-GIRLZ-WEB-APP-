@@ -119,7 +119,9 @@ export function Header() {
   return (
     <>
       <div className="announcement">
-        🚚 FREE delivery all over Lebanon on orders over $99 · Cash on Delivery available <Heart size={11} />
+        <span className="announcement-main"><Truck size={14} aria-hidden="true" /><strong>FREE delivery</strong><span>all over Lebanon on orders over $99</span></span>
+        <span className="announcement-divider" aria-hidden="true" />
+        <span className="announcement-cod"><Heart size={12} aria-hidden="true" /> Cash on Delivery available</span>
       </div>
       <header className="site-header">
         <div className="nav-inner page-width">
