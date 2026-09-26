@@ -7,7 +7,7 @@ export default function LoadingScreen() {
     const timer = window.setTimeout(() => {
       sessionStorage.setItem("bg-intro-seen", "true");
       setVisible(false);
-    }, 2400);
+    }, 5000);
     return () => window.clearTimeout(timer);
   }, [visible]);
   if (!visible) return null;

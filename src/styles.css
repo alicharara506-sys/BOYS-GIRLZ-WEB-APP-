@@ -178,7 +178,7 @@ input[type="checkbox"] {
   color: #52504c;
   letter-spacing: 0;
 }
-.loading-screen { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #faf8f6; overflow: hidden; animation: loaderFade 350ms 2.08s forwards; }
+.loading-screen { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #faf8f6; overflow: hidden; animation: loaderFade 400ms 4.55s forwards; }
 .loading-stage { position: relative; z-index: 2; display: grid; justify-items: center; gap: 18px; animation: loaderScale 600ms ease-out both; }
 .loading-logo-mark { width: 132px; height: 132px; color: #487b9b; filter: drop-shadow(9px 11px 0 #dbe8ed) drop-shadow(0 18px 24px #5b8fa844); transform: perspective(500px) rotateX(7deg) rotateY(-8deg); animation: mascotFloat 2.4s ease-in-out infinite alternate; }
 .loading-logo-mark path, .loading-logo-mark circle { fill: currentColor; }
@@ -187,8 +187,8 @@ input[type="checkbox"] {
 .loading-eye { position: absolute; top: 35px; width: 11px; height: 11px; background: #fff; border-radius: 50%; animation: blink 1.2s 350ms both; }.loading-eye-left { left: 31px; }.loading-eye-right { right: 31px; }
 .loading-smile { position: absolute; left: 26px; right: 26px; bottom: 24px; height: 32px; border-bottom: 9px solid #fff; border-radius: 0 0 40px 40px; }.loading-spark { position: absolute; right: -20px; top: -20px; color: #d98e9b; font-size: 31px; animation: sparkle 700ms 550ms both; }
 .loading-wordmark { font: 700 22px Quicksand,sans-serif; letter-spacing: .08em; }.loading-wordmark b { color: #5b8fa8; }.loading-wordmark span { color: #2f3a42; margin: 0 6px; }.loading-wordmark em { color: #d98e9b; font-style: normal; }
-.loading-progress { width: 220px; height: 3px; background: #eaded9; overflow: hidden; }.loading-progress span { display:block; height:100%; width:100%; transform-origin:left; background:linear-gradient(90deg,#5b8fa8,#d98e9b); animation: progress 2.15s ease-out both; }
-.loading-panel { position:absolute; top:0; bottom:0; width:50%; background:#faf8f6; z-index:3; animation: curtain 500ms 1.98s ease-in forwards; }.loading-panel-left { left:0; transform-origin:left; }.loading-panel-right { right:0; transform-origin:right; }
+.loading-progress { width: 220px; height: 3px; background: #eaded9; overflow: hidden; }.loading-progress span { display:block; height:100%; width:100%; transform-origin:left; background:linear-gradient(90deg,#5b8fa8,#d98e9b); animation: progress 4.7s ease-out both; }
+.loading-panel { position:absolute; top:0; bottom:0; width:50%; background:#faf8f6; z-index:3; animation: curtain 550ms 4.42s ease-in forwards; }.loading-panel-left { left:0; transform-origin:left; }.loading-panel-right { right:0; transform-origin:right; }
 @keyframes loaderScale { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } } @keyframes blink { 0%,35%,100%{transform:scaleY(1)} 40%,48%{transform:scaleY(.08)} } @keyframes sparkle { from{opacity:0;transform:scale(.5) rotate(-25deg)} to{opacity:1;transform:scale(1) rotate(0)} } @keyframes mascotFloat { to{transform:perspective(400px) rotateX(-4deg) rotateY(7deg) translateY(-4px)} } @keyframes progress { from{transform:scaleX(0)} to{transform:scaleX(1)} } @keyframes curtain { to{transform:scaleX(0)} } @keyframes loaderFade { to{opacity:0;visibility:hidden;pointer-events:none} }
 .hero-content h1 b { color: var(--blue); font-weight: inherit; }.hero-content h1 em { color: var(--pink); font-style: normal; font-weight: inherit; }
 .desktop-nav {
