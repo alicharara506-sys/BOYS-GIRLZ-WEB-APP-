@@ -20,19 +20,7 @@ import Newsletter from "./Newsletter";
 export function Logo() {
   return (
     <Link to="/" className="logo" aria-label="Boys and Girlz home">
-      <svg className="logo-mark" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M12 28v7c0 13 8 21 20 21s20-8 20-21v-7H41v7c0 7-3 11-9 11s-9-4-9-11v-7Z" />
-        <circle cx="19" cy="17" r="6" />
-        <path
-          className="logo-spark"
-          d="m45 8 2.7 5.3L53 16l-5.3 2.7L45 24l-2.7-5.3L37 16l5.3-2.7Z"
-        />
-      </svg>
-      <span className="logo-type">
-        <span>BOYS</span>
-        <b>&</b>
-        <span>GIRLZ</span>
-      </span>
+      <img className="brand-logo-image" src="/assets/boys-girlz-logo.jpg" alt="Boys & Girlz" />
     </Link>
   );
 }

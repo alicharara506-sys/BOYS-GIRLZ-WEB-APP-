@@ -211,6 +211,27 @@ export default function Home() {
         </Link>
         <Star className="sale-star" size={90} strokeWidth={0.8} />
       </section>
+      <section className="page-width editorial-section depth-section" aria-labelledby="editorial-heading">
+        <div className="editorial-heading">
+          <span className="eyebrow">Little moments, beautifully dressed</span>
+          <h2 id="editorial-heading">Made for their sweetest beginnings.</h2>
+          <p>Soft layers, happy colors, and thoughtful details for every first smile.</p>
+        </div>
+        <div className="editorial-grid">
+          <article className="editorial-card editorial-card-tall">
+            <img src="/assets/editorial-pink-baby.jpg" alt="Sleeping baby in a soft pink outfit with matching essentials" loading="lazy" />
+            <div><span>Newborn softness</span><h3>Dreamy first layers</h3></div>
+          </article>
+          <article className="editorial-card">
+            <img src="/assets/editorial-lilac-baby.jpg" alt="Smiling baby wearing a lilac bunny outfit" loading="lazy" />
+            <div><span>Playful days</span><h3>Colorful little joy</h3></div>
+          </article>
+          <article className="editorial-card">
+            <img src="/assets/editorial-boy-baby.jpg" alt="Happy toddler wearing a navy printed fleece romper" loading="lazy" />
+            <div><span>Everyday adventures</span><h3>Ready for cuddles</h3></div>
+          </article>
+        </div>
+      </section>
       <div className="page-width depth-section">
         <Newsletter />
       </div>
