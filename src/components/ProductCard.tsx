@@ -30,7 +30,11 @@ export function ProductImage({
       aria-label={product.name}
       className={`product-photo ${className}`}
       style={{
-        backgroundPosition: `${((product.image % 4) * 100) / 3}% ${Math.floor(product.image / 4) * 100}%`,
+        backgroundImage: product.image >= 8 ? 'url("/assets/featured-products.png")' : undefined,
+        backgroundSize: product.image >= 8 ? "200% 200%" : undefined,
+        backgroundPosition: product.image >= 8
+          ? `${((product.image - 8) % 2) * 100}% ${Math.floor((product.image - 8) / 2) * 100}%`
+          : `${((product.image % 4) * 100) / 3}% ${Math.floor(product.image / 4) * 100}%`,
         ...style,
       }}
     />
@@ -98,7 +102,7 @@ export function WishButton({ product }: { product: Product }) {
     </button>
   );
 }
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product, showRange = false }: { product: Product; showRange?: boolean }) {
   const [flipped, setFlipped] = useState(false);
   const [size, setSize] = useState(product.sizes[0]);
   const { add } = useStore();
@@ -162,6 +166,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </Tilt>
       <div className="product-info">
         <Link to={`/product/${product.id}`}>{product.name}</Link>
+        {showRange && <span className="product-range">New Born–6 Years</span>}
         <div className="product-meta">
           <span>
             {money(product.price)}{" "}

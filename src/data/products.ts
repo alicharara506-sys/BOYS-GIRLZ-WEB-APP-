@@ -56,6 +56,10 @@ const baby = [...sizeOptions];
 const maternitySizes = ["S", "M", "L", "XL", "XXL"];
 const rows: [string, number, Category, number, ModelKind, string[], number?][] =
   [
+    ["Everyday Overshirt", 28, "Boys", 8, "set", ["Blue", "Sage", "Cream"]],
+    ["Gingham Day Dress", 32, "Girls", 9, "dress", ["Pink", "Cream"]],
+    ["Happy Days Tee", 18, "Unisex", 10, "set", ["Cream", "Blue", "Sage"]],
+    ["Adventure Overalls", 36, "Unisex", 11, "romper", ["Blue", "Pink"]],
     ["Fleece Bear Overall", 34.9, "Boys", 0, "romper", ["Blue", "Cream"]],
     ["Little Safari Romper", 29.9, "Unisex", 1, "romper", ["Cream", "Blue"]],
     ["Knit Hooded Cardigan", 39.9, "Girls", 2, "cardigan", ["Pink", "Cream"]],
@@ -161,7 +165,7 @@ export const products: Product[] = rows.map((r, i) => ({
   colors: r[5],
   originalPrice: r[6],
   sizes: r[2] === "Maternity" ? maternitySizes : baby,
-  isNew: i < 8,
+  isNew: i === 0 || i === 2 || (i >= 4 && i < 8),
   rating: 4.8 + (i % 3) / 10,
   reviews: 12 + i * 3,
   description:
