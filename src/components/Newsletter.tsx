@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Check, Heart } from "lucide-react";
+import { ArrowRight, Check, Mail } from "lucide-react";
 import { useStore } from "../state/Store";
 export default function Newsletter({ compact = false }: { compact?: boolean }) {
   const [email, setEmail] = useState("");
@@ -13,13 +13,11 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <div className="newsletter-copy">
           <span className="newsletter-heart">
-            <Heart size={35} strokeWidth={1.2} />
+            <Mail size={33} strokeWidth={1.5} />
           </span>
           <div>
-            <h2>
-              Join our family <Heart size={17} fill="currentColor" />
-            </h2>
-            <p>Little updates, new arrivals & a little extra love.</p>
+            <h2>Join our little circle</h2>
+            <p>Be the first to know about new arrivals, special offers and more.</p>
           </div>
         </div>
       )}

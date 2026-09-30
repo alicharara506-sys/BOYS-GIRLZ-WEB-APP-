@@ -1,6 +1,6 @@
 # Boys & Girlz
 
-A mobile-first e-commerce frontend for kids' clothing, accessories, maternity wear, and toys. The visual system follows the supplied Boys & Girlz reference: warm cream surfaces, powder blue, blush pink, soft gold, rounded cards, generous spacing, and playful details.
+A mobile-first merchandising shop frontend for kids' clothing, accessories, maternity wear, toys, and Like New outlet finds. The visual system follows the approved Boys & Girlz homepage mockup: the illustrated B and G characters, sky blue and pink feature panels, warm cream surfaces, lighter product cards, and compact mobile navigation.
 
 This is a frontend demo. It uses mock catalog data, browser state, and `localStorage`; it has no backend, account service, payment processor, or order database.
 
@@ -23,12 +23,12 @@ npm run test:e2e
 
 ## Included experience
 
-- Responsive home, shop, six category pages, product detail, cart, checkout, wishlist, about, contact, shipping, returns, and size-guide routes
-- 28 realistic mock products with size, color, price, sale, review, and category data
+- Responsive home, shop, seven category pages, product detail, cart, checkout, wishlist, about, contact, shipping, returns, and size-guide routes
+- Mock products with size, color, price, sale, review, and category data, including four featured products styled after the approved mockup
 - Search suggestions, category/price/size/color/sale filters, and sorting
 - Persistent variant-aware cart and wishlist with validated `localStorage` recovery
 - Three-step shipping → payment → review demo checkout and clear demo-only disclosures
-- Photo-led hero and product galleries with close-up views
+- Illustrated logo-character hero, dedicated Boys/Girls panels, product galleries, and close-up views
 - Card tilt/flip, fly-to-cart motion, heart particles, route depth wipe, and GSAP scroll reveals
 - Reduced-motion fallbacks and responsive image presentation
 - Semantic controls, keyboard-accessible dialogs, focus styles, status announcements, and alt text
@@ -46,7 +46,7 @@ src/
   pages/            Route-level storefront screens
   state/            Cart/wishlist context and pure reducer logic
 public/
-  assets/            Local hero and product photography
+  assets/            Local logo artwork, featured product imagery, and catalog photography
 tests/
   browser/           End-to-end storefront journeys
   store.test.mjs     Cart persistence and pricing tests

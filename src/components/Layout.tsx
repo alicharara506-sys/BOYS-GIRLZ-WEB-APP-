@@ -2,7 +2,6 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Search,
-  UserRound,
   Heart,
   ShoppingBag,
   Menu,
@@ -10,13 +9,13 @@ import {
   Instagram,
   Mail,
   Truck,
-  LockKeyhole,
   ArrowRight,
+  Facebook,
+  Youtube,
 } from "lucide-react";
 import { useStore } from "../state/Store";
 import { products, money } from "../data/products";
 import { ProductImage } from "./ProductCard";
-import Newsletter from "./Newsletter";
 export function Logo() {
   return (
     <Link to="/" className="logo" aria-label="Boys and Girlz home">
@@ -77,7 +76,6 @@ export function Modal({
 export function Header() {
   const { count, wishlist, setCartOpen } = useStore();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [account, setAccount] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [query, setQuery] = useState("");
   const location = useLocation();
@@ -91,15 +89,17 @@ export function Header() {
       `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase()),
     )
     .slice(0, 4);
-  const nav = (
+  const mobileNav = (
     <>
-      <NavLink to="/" end>
-        Home
-      </NavLink>
-      <NavLink to="/shop">Shop</NavLink>
-      <NavLink to="/category/outlet">Outlet</NavLink>
-      <Link to="/shop?sort=newest">New arrivals</Link>
-      <Link to="/#categories">Collections</Link>
+      <NavLink to="/" end>Home</NavLink>
+      <Link to="/shop?sort=newest">New In</Link>
+      <NavLink to="/category/boys">Boys</NavLink>
+      <NavLink to="/category/girls">Girls</NavLink>
+      <NavLink to="/category/unisex">Baby & Unisex</NavLink>
+      <NavLink to="/category/accessories">Accessories</NavLink>
+      <NavLink to="/category/maternity">Maternity</NavLink>
+      <NavLink to="/category/toys">Toys</NavLink>
+      <NavLink to="/category/outlet">Outlet · Like New</NavLink>
       <NavLink to="/about">About us</NavLink>
       <NavLink to="/contact">Contact</NavLink>
     </>
@@ -107,7 +107,7 @@ export function Header() {
   return (
     <>
       <div className="announcement">
-        <span className="announcement-main"><Truck size={14} aria-hidden="true" /><strong>FREE delivery</strong><span>all over Lebanon on orders over $99</span></span>
+        <span className="announcement-main"><Truck size={14} aria-hidden="true" /><strong>FREE delivery</strong><span className="announcement-long">all over Lebanon on orders over $99</span><span className="announcement-short">in Lebanon on $99+ orders</span></span>
         <span className="announcement-divider" aria-hidden="true" />
         <span className="announcement-cod"><Heart size={12} aria-hidden="true" /> Cash on Delivery available</span>
       </div>
@@ -115,7 +115,17 @@ export function Header() {
         <div className="nav-inner page-width">
           <Logo />
           <nav className="desktop-nav" aria-label="Main navigation">
-            {nav}
+            <Link to="/shop?sort=newest">New In</Link>
+            <NavLink to="/category/boys">Boys</NavLink>
+            <NavLink to="/category/girls">Girls</NavLink>
+            <NavLink to="/category/unisex">Baby</NavLink>
+            <NavLink className="nav-sale" to="/category/outlet">Sale</NavLink>
+            <details className="nav-more"><summary>More</summary><div>
+              <Link to="/category/accessories">Accessories</Link>
+              <Link to="/category/maternity">Maternity</Link>
+              <Link to="/category/toys">Toys</Link>
+              <Link to="/shop">Shop all</Link>
+            </div></details>
           </nav>
           <div className="nav-icons">
             <button
@@ -124,13 +134,6 @@ export function Header() {
               aria-label="Search products"
             >
               <Search size={21} />
-            </button>
-            <button
-              className="icon-button account-icon"
-              aria-label="Your account"
-              onClick={() => setAccount(true)}
-            >
-              <UserRound size={21} />
             </button>
             <Link
               to="/wishlist"
@@ -168,7 +171,7 @@ export function Header() {
         drawer
       >
         <nav className="mobile-nav" aria-label="Mobile navigation">
-          {nav}
+          {mobileNav}
         </nav>
       </Modal>
       <Modal
@@ -216,30 +219,6 @@ export function Header() {
           {!results.length && <p>No little matches yet. Try another word.</p>}
         </div>
       </Modal>
-      <Modal
-        open={account}
-        onClose={() => setAccount(false)}
-        title="Your little corner"
-      >
-        <div className="account-content">
-          <UserRound size={38} strokeWidth={1.2} />
-          <h3>Welcome to the family.</h3>
-          <p>
-            Your favorites and shopping bag are saved on this device, ready
-            whenever you are.
-          </p>
-          <Link
-            className="btn btn-blue"
-            to="/wishlist"
-            onClick={() => setAccount(false)}
-          >
-            Your wishlist <Heart size={17} />
-          </Link>
-          <p className="small-muted">
-            You’re browsing our demo store. No account needed.
-          </p>
-        </div>
-      </Modal>
     </>
   );
 }
@@ -247,61 +226,23 @@ export function Footer() {
   return (
     <footer className="page-width site-footer">
       <div className="footer-main">
-        <div>
-          <Logo />
-          <p>
-            For their firsts.
-            <br />
-            And everything after.
-          </p>
-          <a
-            className="social-link"
-            href="https://www.instagram.com/boysandgirlz/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Instagram size={18} /> @boysandgirlz
-          </a>
+        <Logo />
+        <nav aria-label="Footer navigation">
+          <Link to="/about">About Us</Link>
+          <Link to="/help/sizing">Size Guide</Link>
+          <Link to="/help/shipping">Help & FAQs</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
+        <div className="footer-socials" aria-label="Social links">
+          <a href="https://www.instagram.com/boysandgirlz/" target="_blank" rel="noreferrer" aria-label="Boys & Girlz on Instagram"><Instagram size={20} /></a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook"><Facebook size={19} /></a>
+          <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer" aria-label="Pinterest"><span aria-hidden="true">p</span></a>
+          <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube"><Youtube size={21} /></a>
         </div>
-        <div>
-          <h3>Explore</h3>
-          <Link to="/shop">All the little things</Link>
-          <Link to="/category/maternity">For mama</Link>
-          <Link to="/category/toys">Playtime favorites</Link>
-          <Link to="/category/outlet">Outlet · Like New</Link>
-          <Link to="/about">Our story</Link>
-        </div>
-        <div>
-          <h3>Here to help</h3>
-          <Link to="/contact">Contact us</Link>
-          <Link to="/help/shipping">Lebanon shipping</Link>
-          <Link to="/help/returns">Returns & exchanges</Link>
-          <Link to="/help/sizing">Size guide</Link>
-        </div>
-        <div className="footer-news">
-          <h3>A little note from us</h3>
-          <p>Lovely things, straight to your inbox.</p>
-          <Newsletter compact />
-        </div>
-      </div>
-      <div className="footer-trust">
-        <a href="mailto:support@boysandgirlz.com">
-          <Mail size={17} /> support@boysandgirlz.com
-        </a>
-        <span>
-          <Truck size={18} /> Shipping within Lebanon only
-        </span>
-        <span>
-          <LockKeyhole size={16} /> Secure payments
-        </span>
       </div>
       <div className="footer-bottom">
-        <span>
-          © {new Date().getFullYear()} Boys & Girlz. Made with a little love.
-        </span>
-        <span>
-          Frontend demo · No real orders or payments <Heart size={12} />
-        </span>
+        <span>© {new Date().getFullYear()} Boys & Girlz · A children's merchandising shop in Lebanon</span>
+        <span><Truck size={14} /> Delivery within Lebanon only · <Mail size={14} /> support@boysandgirlz.com</span>
       </div>
     </footer>
   );
