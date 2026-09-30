@@ -37,20 +37,17 @@ export default function Home() {
   return (
     <>
       <section className="hero page-width" aria-labelledby="hero-heading">
-        <div
-          className="hero-photo"
-          role="img"
-          aria-label="Two happy babies wearing a blue bear romper and a pink knit outfit"
-        />
+        <div className="hero-photo" aria-hidden="true">
+          <div className="hero-blob hero-blob-blue" />
+          <div className="hero-blob hero-blob-pink" />
+          <div className="hero-character hero-character-boys" role="img" aria-label="Boys character from the Boys & Girlz logo" />
+          <div className="hero-character hero-character-girls" role="img" aria-label="Girls character from the Boys & Girlz logo" />
+        </div>
         <div className="hero-content">
           <span className="eyebrow">
             <Heart size={14} /> Made for little moments
           </span>
-          <h1 id="hero-heading">
-            Little clothes,
-            <br />
-            <span>for <b>big</b> <em>smiles.</em></span>
-          </h1>
+          <h1 id="hero-heading">Little clothes,<br /><span>for <b>big</b> <em>smiles.</em></span></h1>
           <p>
             Thoughtfully made clothing for newborns to six-year-olds —
             <br />soft fabrics, honest prices, delivered to every home in Lebanon.
@@ -67,8 +64,8 @@ export default function Home() {
             <span>✦</span> For their firsts. And everything after.
           </span>
         </div>
-        <Star className="hero-star" size={48} strokeWidth={1.1} />
-        <Heart className="hero-heart" size={39} strokeWidth={1.2} />
+        <Star className="hero-star" size={32} strokeWidth={1.1} aria-hidden="true" />
+        <Heart className="hero-heart" size={28} strokeWidth={1.2} aria-hidden="true" />
       </section>
       <div className="page-width trust-row depth-section">
         {[
