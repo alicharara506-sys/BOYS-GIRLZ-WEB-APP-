@@ -10,6 +10,7 @@ import "@fontsource/dm-sans/600.css";
 import "./styles.css";
 import "./shop.css";
 import "./redesign.css";
+import "./motion.css";
 import App from "./App";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

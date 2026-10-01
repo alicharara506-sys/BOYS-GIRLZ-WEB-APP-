@@ -17,6 +17,7 @@ import {
 import ProductCard from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import { useStore } from "../state/Store";
+import BrandRibbon from "../components/BrandRibbon";
 const copy: Record<Category, string> = {
   Boys: "For muddy knees, sleepy cuddles, and every little adventure.",
   Girls: "Lovely little layers for their own kind of adventure.",
@@ -211,6 +212,7 @@ export default function Shop() {
           <Heart size={58} strokeWidth={1} />
         </span>
       </div>
+      <BrandRibbon />
       <div className="shop-layout">
         <aside className="desktop-filters" aria-label="Product filters">
           {filters}
