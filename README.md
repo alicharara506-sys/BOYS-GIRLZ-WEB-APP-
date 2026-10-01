@@ -29,7 +29,8 @@ npm run test:e2e
 - Persistent variant-aware cart and wishlist with validated `localStorage` recovery
 - Three-step shipping → payment → review demo checkout and clear demo-only disclosures
 - Illustrated logo-character hero, dedicated Boys/Girls panels, product galleries, and close-up views
-- Card tilt/flip, fly-to-cart motion, heart particles, route depth wipe, and GSAP scroll reveals
+- Animated logo loading sequence, category parallax, card tilt/flip, product image reveals, fly-to-bag motion, animated outlet banner, button and newsletter interactions, branded route transitions, and GSAP scroll reveals
+- Continuous, pause-on-hover ribbon featuring the shop's carried brands
 - Reduced-motion fallbacks and responsive image presentation
 - Semantic controls, keyboard-accessible dialogs, focus styles, status announcements, and alt text
 - Browser WebMCP tools for product search, product navigation, cart additions, and wishlist updates when the experimental API is available

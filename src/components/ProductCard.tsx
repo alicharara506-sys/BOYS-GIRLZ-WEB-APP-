@@ -58,11 +58,11 @@ export function Tilt({
         const b = e.currentTarget.getBoundingClientRect();
         ref.current.style.setProperty(
           "--rx",
-          `${(-(e.clientY - b.top - b.height / 2) / b.height) * 9}deg`,
+          `${(-(e.clientY - b.top - b.height / 2) / b.height) * 6}deg`,
         );
         ref.current.style.setProperty(
           "--ry",
-          `${((e.clientX - b.left - b.width / 2) / b.width) * 12}deg`,
+          `${((e.clientX - b.left - b.width / 2) / b.width) * 8}deg`,
         );
       }}
       onPointerLeave={() => {

@@ -15,7 +15,10 @@ export default function LoadingScreen() {
       <div className="loading-panel loading-panel-left" />
       <div className="loading-panel loading-panel-right" />
       <div className="loading-stage">
-        <img className="loading-brand-image" src="/assets/boys-girlz-logo.jpg" alt="Boys & Girlz" />
+        <span className="loading-orbit loading-orbit-blue" aria-hidden="true" />
+        <span className="loading-orbit loading-orbit-pink" aria-hidden="true" />
+        <span className="loading-logo-scene"><img className="loading-brand-image" src="/assets/boys-girlz-logo.jpg" alt="Boys & Girlz" /></span>
+        <span className="loading-caption">Little styles. Big smiles.</span>
         <div className="loading-progress"><span /></div>
       </div>
     </div>

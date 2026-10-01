@@ -21,14 +21,24 @@ export function RouteEffects() {
   useEffect(() => {
     if (reduce) return;
     const context = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>(".depth-section").forEach((el) =>
+      gsap.utils.toArray<HTMLElement>(".depth-section, .home-feature-grid, .brand-ribbon, .home-favorites, .home-sale, .home-promise, .home-newsletter, .shop-heading, .product-detail-layout, .reviews-section, .related-section").forEach((el) =>
         gsap.from(el, {
-          y: 24,
-          scale: 0.975,
+          y: 25,
+          scale: 0.985,
           opacity: 0,
-          duration: 0.8,
+          duration: 0.7,
           ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 95%", once: true },
+          scrollTrigger: { trigger: el, start: "top 94%", once: true },
+        }),
+      );
+      gsap.utils.toArray<HTMLElement>(".product-card .product-photo").forEach((image) =>
+        gsap.from(image, {
+          clipPath: "inset(12% 0 0 0 round 12px)",
+          opacity: 0.4,
+          scale: 1.045,
+          duration: 0.85,
+          ease: "power2.out",
+          scrollTrigger: { trigger: image, start: "top 96%", once: true },
         }),
       );
       gsap.to(".ambient-blob", {
@@ -49,16 +59,17 @@ export function RouteEffects() {
   return (
     <>
       <div className="ambient-blob" aria-hidden="true" />
-      {!reduce && (
+      {!reduce && <AnimatePresence initial={false}>
         <motion.div
           key={location.pathname}
           className="depth-wipe"
-          initial={{ opacity: 0.65, scale: 1.05, rotateX: 7 }}
-          animate={{ opacity: 0, scale: 1, rotateX: 0 }}
-          transition={{ duration: 0.48, ease: "easeOut" }}
+          initial={{ opacity: 0.9, y: 0, clipPath: "inset(0 0 0 0)" }}
+          animate={{ opacity: 0, y: -25, clipPath: "inset(0 0 100% 0)" }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           aria-hidden="true"
-        />
-      )}
+        ><img src="/assets/boys-girlz-logo.jpg" alt="" /></motion.div>
+      </AnimatePresence>}
     </>
   );
 }
@@ -102,20 +113,29 @@ export function FlyToBag() {
           className="fly-item product-photo"
           aria-hidden="true"
           style={{
-            backgroundPosition: `${((f.image % 4) * 100) / 3}% ${Math.floor(f.image / 4) * 100}%`,
+            backgroundImage: f.image >= 8 ? 'url("/assets/featured-products.png")' : undefined,
+            backgroundSize: f.image >= 8 ? "200% 200%" : undefined,
+            backgroundPosition: f.image >= 8
+              ? `${((f.image - 8) % 2) * 100}% ${Math.floor((f.image - 8) / 2) * 100}%`
+              : `${((f.image % 4) * 100) / 3}% ${Math.floor(f.image / 4) * 100}%`,
           }}
           initial={{ left: f.x, top: f.y, scale: 1, rotateY: 0, opacity: 1 }}
           animate={{
             left: [f.x, (f.x + f.endX) / 2, f.endX],
             top: [f.y, Math.min(f.y, f.endY) - 110, f.endY],
             scale: [1, 0.75, 0.1],
-            rotateY: [0, 90, 180],
+            rotateZ: [0, -12, 16],
             opacity: [1, 1, 0],
           }}
           transition={{ duration: 0.8, times: [0, 0.45, 1], ease: "easeInOut" }}
-          onAnimationComplete={() =>
-            setFlights((v) => v.filter((i) => i.id !== f.id))
-          }
+          onAnimationComplete={() => {
+            setFlights((v) => v.filter((i) => i.id !== f.id));
+            const bag = document.getElementById("cart-icon");
+            bag?.classList.remove("bag-arrived");
+            void bag?.offsetWidth;
+            bag?.classList.add("bag-arrived");
+            window.setTimeout(() => bag?.classList.remove("bag-arrived"), 550);
+          }}
         />
       ))}
     </AnimatePresence>
