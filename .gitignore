@@ -1,5 +1,7 @@
 node_modules/
 dist/
+.react-router/
+build/
 .sites-runtime/
 .env
 .env.*

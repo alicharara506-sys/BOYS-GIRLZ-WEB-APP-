@@ -1,11 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { reactRouter } from "@react-router/dev/vite";
 export default defineConfig({
-  plugins: [react()],
-  build: {
-    rollupOptions: {
-      output: { manualChunks: { motion: ["framer-motion", "gsap"] } },
-    },
-    chunkSizeWarningLimit: 1100,
-  },
+  plugins: [reactRouter()],
 });

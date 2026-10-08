@@ -45,8 +45,8 @@ export default function Shop() {
     else next.delete(key);
     setParams(next, { replace: true });
   };
-  const activeCategories = routeCategory ? [routeCategory] : selected;
   const result = useMemo(() => {
+    const activeCategories = routeCategory ? [routeCategory] : selected;
     const filtered = products.filter(
       (p) =>
         (!activeCategories.length || activeCategories.includes(p.category)) &&

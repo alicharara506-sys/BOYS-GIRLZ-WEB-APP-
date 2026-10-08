@@ -34,22 +34,25 @@ interface Store extends StoreState {
 }
 const StoreContext = createContext<Store | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(storeReducer, initialState, () => {
-    try {
-      return restoreStore(localStorage.getItem("boys-girlz:v1"), products);
-    } catch {
-      return initialState;
-    }
-  });
+  const [state, dispatch] = useReducer(storeReducer, initialState);
+  const [hydrated, setHydrated] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [notice, notify] = useState("");
   useEffect(() => {
+    try {
+      dispatch({ type: "HYDRATE", state: restoreStore(localStorage.getItem("boys-girlz:v1"), products) });
+    } finally {
+      setHydrated(true);
+    }
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem("boys-girlz:v1", JSON.stringify(state));
     } catch {
       /* Local shopping still works without storage. */
     }
-  }, [state]);
+  }, [state, hydrated]);
   useEffect(() => {
     if (!notice) return;
     const id = window.setTimeout(() => notify(""), 3400);

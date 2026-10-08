@@ -4,6 +4,8 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "rootDirs": [".", "./.react-router/types"],
+    "types": ["vite/client"],
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
@@ -13,5 +15,5 @@
     "noEmit": true,
     "allowJs": true
   },
-  "include": ["src"]
+  "include": ["src", ".react-router/types/**/*"]
 }

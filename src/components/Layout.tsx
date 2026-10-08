@@ -7,11 +7,8 @@ import {
   Menu,
   X,
   Instagram,
-  Mail,
   Truck,
   ArrowRight,
-  Facebook,
-  Youtube,
 } from "lucide-react";
 import { useStore } from "../state/Store";
 import { products, money } from "../data/products";
@@ -230,19 +227,16 @@ export function Footer() {
         <nav aria-label="Footer navigation">
           <Link to="/about">About Us</Link>
           <Link to="/help/sizing">Size Guide</Link>
-          <Link to="/help/shipping">Help & FAQs</Link>
+          <Link to="/faq">Help & FAQs</Link>
           <Link to="/contact">Contact</Link>
         </nav>
         <div className="footer-socials" aria-label="Social links">
           <a href="https://www.instagram.com/boysandgirlz/" target="_blank" rel="noreferrer" aria-label="Boys & Girlz on Instagram"><Instagram size={20} /></a>
-          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook"><Facebook size={19} /></a>
-          <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer" aria-label="Pinterest"><span aria-hidden="true">p</span></a>
-          <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube"><Youtube size={21} /></a>
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} Boys & Girlz · A children's merchandising shop in Lebanon</span>
-        <span><Truck size={14} /> Delivery within Lebanon only · <Mail size={14} /> support@boysandgirlz.com</span>
+        <span>© {new Date().getFullYear()} Boys & Girlz · A children's shop in Lebanon</span>
+        <span><Truck size={14} /> Delivery within Lebanon only · <Link to="/contact">Contact us</Link></span>
       </div>
     </footer>
   );

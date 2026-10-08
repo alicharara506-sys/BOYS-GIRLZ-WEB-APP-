@@ -10,6 +10,7 @@ export interface StoreState {
   promo: string;
 }
 export type Action =
+  | { type: "HYDRATE"; state: StoreState }
   | { type: "ADD"; item: CartItem }
   | { type: "QUANTITY"; key: string; quantity: number }
   | { type: "REMOVE"; key: string }
@@ -23,6 +24,8 @@ const clamp = (n: number) =>
   Math.max(1, Math.min(10, Number.isFinite(n) ? Math.round(n) : 1));
 export function storeReducer(state: StoreState, action: Action): StoreState {
   switch (action.type) {
+    case "HYDRATE":
+      return action.state;
     case "ADD": {
       const key = itemKey(action.item);
       const exists = state.cart.some((i) => itemKey(i) === key);

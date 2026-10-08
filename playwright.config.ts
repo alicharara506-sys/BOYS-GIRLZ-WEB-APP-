@@ -7,9 +7,15 @@ export default defineConfig({
   timeout: 45000,
   expect: { timeout: 10000 },
   reporter: "list",
+  webServer: {
+    command: "npm run dev",
+    url: "http://127.0.0.1:5173/",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
   use: {
     baseURL: "http://127.0.0.1:5173",
-    channel: "chrome",
+    channel: process.env.CI ? undefined : "chrome",
     headless: true,
     viewport: { width: 1440, height: 1000 },
     launchOptions: { args: ["--enable-unsafe-swiftshader"] },
