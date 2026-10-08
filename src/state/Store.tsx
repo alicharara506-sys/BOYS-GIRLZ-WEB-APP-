@@ -60,12 +60,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [notice]);
   const add = (
     p: Product,
-    size = p.sizes[0],
+    size = p.sizes[0] || "",
     color = p.colors[0],
     quantity = 1,
     element?: HTMLElement,
   ) => {
-    if (!p.sizes.includes(size) || !p.colors.includes(color)) return;
+    if ((p.sizes.length > 0 && !p.sizes.includes(size)) || (p.sizes.length === 0 && size !== "") || !p.colors.includes(color)) return;
     dispatch({ type: "ADD", item: { productId: p.id, size, color, quantity } });
     notify(`${p.name} added to your bag`);
     if (element)

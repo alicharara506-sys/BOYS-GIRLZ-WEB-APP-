@@ -2,7 +2,7 @@
 
 A mobile-first merchandising shop frontend for kids' clothing, accessories, maternity wear, toys, and Like New outlet finds. The visual system follows the approved Boys & Girlz homepage mockup: the illustrated B and G characters, sky blue and pink feature panels, warm cream surfaces, lighter product cards, and compact mobile navigation.
 
-This is a frontend demo. It uses mock catalog data, browser state, and `localStorage`; it has no backend, account service, payment processor, or order database.
+The visible catalog still uses mock product data and local cart/wishlist state. This branch also includes an unconfigured Supabase order and contact draft; no live orders are accepted without approved credentials, inventory, delivery fees, and notifications. There is no real payment processing.
 
 ## Run locally
 
@@ -27,13 +27,12 @@ npm run test:e2e
 - Mock products with size, color, price, sale, review, and category data, including four featured products styled after the approved mockup
 - Search suggestions, category/price/size/color/sale filters, and sorting
 - Persistent variant-aware cart and wishlist with validated `localStorage` recovery
-- Three-step shipping → payment → review demo checkout and clear demo-only disclosures
-- Illustrated logo-character hero, dedicated Boys/Girls panels, product galleries, and close-up views
-- Animated logo loading sequence, category parallax, card tilt/flip, product image reveals, fly-to-bag motion, animated outlet banner, button and newsletter interactions, branded route transitions, and GSAP scroll reveals
+- Three-step shipping → payment → review Cash on Delivery interface with an explicit unconfigured state
+- Original illustrated B and G artwork in the hero; the corresponding original letter appears on each Boys/Girls category page
+- Logo entrance, product image reveals, fly-to-bag motion, animated outlet banner, button and newsletter interactions, branded route transitions, and GSAP scroll reveals
 - Continuous, pause-on-hover ribbon featuring the shop's carried brands
 - Reduced-motion fallbacks and responsive image presentation
 - Semantic controls, keyboard-accessible dialogs, focus styles, status announcements, and alt text
-- Browser WebMCP tools for product search, product navigation, cart additions, and wishlist updates when the experimental API is available
 
 The demo promo code is `LITTLELOVE10`.
 
@@ -41,7 +40,7 @@ The demo promo code is `LITTLELOVE10`.
 
 ```text
 src/
-  components/       Shared navigation, cards, drawers, viewers, motion, WebMCP
+  components/       Shared navigation, cards, drawers, logo-art scenes, and motion
   data/             Typed mock product catalog
   hooks/            Motion and device capability helpers
   pages/            Route-level storefront screens
@@ -55,4 +54,4 @@ tests/
 
 ## Production notes
 
-Product specifications, reviews, shipping policy, returns policy, toy age guidance, and checkout are explicitly marked as samples. Replace them with verified business data before launch. Connect the existing state actions to real services only after backend, identity, inventory, tax, shipping, and payment requirements are defined.
+Product specifications, stock, photos, shipping and returns terms, and toy age guidance must be verified before launch. See [SETUP.md](SETUP.md) and [CHANGES.md](CHANGES.md) for the unfinished backend and business inputs.

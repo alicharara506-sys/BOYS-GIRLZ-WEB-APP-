@@ -3,14 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
   ChevronRight,
-  Star,
   Truck,
   Heart,
-  ShieldCheck,
   Plus,
   Minus,
   Ruler,
-  Leaf,
 } from "lucide-react";
 import {
   colorHex,
@@ -25,6 +22,7 @@ import ProductGallery from "../components/ProductGallery";
 import { Modal } from "../components/Layout";
 import { Quantity } from "./Cart";
 import { NotFound } from "./Shop";
+import WhatsAppLink from "../components/WhatsAppLink";
 export default function ProductDetail() {
   const { id } = useParams();
   const product = productById(id || "");
@@ -35,7 +33,7 @@ export default function ProductDetail() {
   );
 }
 function ProductContent({ product: p }: { product: Product }) {
-  const [size, setSize] = useState(p.sizes[0]);
+  const [size, setSize] = useState(p.sizes[0] || "");
   const [color, setColor] = useState(p.colors[0]);
   const [quantity, setQuantity] = useState(1);
   const [sizeGuide, setSizeGuide] = useState(false);
@@ -61,15 +59,6 @@ function ProductContent({ product: p }: { product: Product }) {
               : `The ${p.category.toLowerCase()} collection`}
           </span>
           <h1>{p.name}</h1>
-          <a href="#reviews" className="rating-link">
-            <span>
-              {Array.from({ length: 5 }, (_, i) => (
-                <Star key={i} size={13} fill="currentColor" />
-              ))}
-            </span>
-            {p.rating.toFixed(1)}{" "}
-            <span className="review-count">({p.reviews} sample reviews)</span>
-          </a>
           <div className="detail-price">
             {money(p.price)}{" "}
             {p.originalPrice && (
@@ -97,7 +86,7 @@ function ProductContent({ product: p }: { product: Product }) {
               ))}
             </div>
           </fieldset>
-          <fieldset className="variant-section">
+          {p.sizes.length > 0 && <fieldset className="variant-section">
             <legend>
               Size{" "}
               <button className="size-guide" onClick={() => setSizeGuide(true)}>
@@ -116,25 +105,24 @@ function ProductContent({ product: p }: { product: Product }) {
                 </button>
               ))}
             </div>
-          </fieldset>
+          </fieldset>}
           <div className="purchase-row">
             <Quantity value={quantity} onChange={setQuantity} />
             <button
               className="btn btn-blue add-main"
+              disabled={p.productType === "shoes" && p.sizes.length === 0}
               onClick={(e) => add(p, size, color, quantity, e.currentTarget)}
             >
-              Add to bag — {money(p.price * quantity)} <Plus size={17} />
+              {p.productType === "shoes" && p.sizes.length === 0 ? "Sizes coming soon" : `Add to bag — ${money(p.price * quantity)}`} <Plus size={17} />
             </button>
             <div className="detail-wish">
               <WishButton product={p} />
             </div>
           </div>
+          <WhatsAppLink className="text-link product-whatsapp" message={`Hello Boys & Girlz, I would like to ask about ${p.name} (${[size, color].filter(Boolean).join(", ")}), quantity ${quantity}.`} />
           <div className="product-reassurance">
             <span>
               <Truck size={17} /> Lebanon delivery · Free over $99
-            </span>
-            <span>
-              <ShieldCheck size={17} /> 30-day demo returns
             </span>
             <span>
               <Heart size={16} /> Chosen with love
@@ -146,24 +134,14 @@ function ProductContent({ product: p }: { product: Product }) {
                 All the little details <Plus size={15} />
                 <Minus size={15} />
               </summary>
-              <p>
-                {p.category === "Toys"
-                  ? "A soft little playtime companion. Toy materials and age suitability shown here are illustrative; replace with supplier specifications before launch."
-                  : p.category === "Maternity"
-                    ? "A relaxed, easy-fitting silhouette, room to grow, and soft fabric for everyday comfort. Sample product specifications."
-                    : "A soft fabric feel, comfortable everyday fit, and easy dressing details. Fabric composition is illustrative until real product specifications are supplied."}
-              </p>
+              <p>For fabric composition, measurements and age guidance, please contact the shop before ordering.</p>
             </details>
             <details>
               <summary>
                 A little care goes a long way <Plus size={15} />
                 <Minus size={15} />
               </summary>
-              <p>
-                For this demo, wash clothing on a gentle cold cycle and lay flat
-                to dry. Follow the actual garment care label when real inventory
-                is added. Surface-clean plush toys.
-              </p>
+              <p>Follow the care label on the item. Contact us if you need care information before ordering.</p>
             </details>
             <details>
               <summary>
@@ -171,52 +149,13 @@ function ProductContent({ product: p }: { product: Product }) {
                 <Minus size={15} />
               </summary>
               <p>
-                We ship within Lebanon only. Delivery is $5.95, or complimentary
-                on orders over $99. Browse our <Link to="/help/shipping">shipping guide</Link>{" "}
-                and <Link to="/help/returns">returns guide</Link> for this
-                demo’s policy details.
+                We deliver within Lebanon only. Delivery is free on orders over $99. Read our <Link to="/help/shipping">shipping guide</Link>{" "}
+                and <Link to="/help/returns">returns guide</Link> before ordering.
               </p>
             </details>
           </div>
         </div>
       </div>
-      <section id="reviews" className="reviews-section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">Little notes, lots of love</span>
-            <h2>Loved by little families.</h2>
-          </div>
-          <span className="sample-label">Sample reviews</span>
-        </div>
-        <div className="review-grid">
-          {[
-            {
-              name: "Sarah M.",
-              text: "Even lovelier in person. Such a sweet little addition to our everyday favorites.",
-              title: "Our new favorite",
-            },
-            {
-              name: "Lina K.",
-              text: "The little details are beautiful. I picked this as a gift and it was such a lovely surprise.",
-              title: "The sweetest gift",
-            },
-            {
-              name: "Emma R.",
-              text: "Soft, thoughtful, and made for the little moments. We keep coming back to this one.",
-              title: "A little everyday joy",
-            },
-          ].map((r) => (
-            <article key={r.name}>
-              <span className="review-stars">★★★★★</span>
-              <h3>{r.title}</h3>
-              <p>{r.text}</p>
-              <span className="review-author">
-                {r.name} <Leaf size={11} /> Sample customer
-              </span>
-            </article>
-          ))}
-        </div>
-      </section>
       <section className="related-section">
         <div className="section-heading">
           <h2>A few more lovely things.</h2>
@@ -238,9 +177,7 @@ function ProductContent({ product: p }: { product: Product }) {
         onClose={() => setSizeGuide(false)}
         title="A little guide to the right fit"
       >
-        <p className="small-muted">
-          Sample sizing. Check real garment measurements before purchase.
-        </p>
+        <p className="small-muted">Ask the shop for verified measurements before choosing a size.</p>
         <table className="size-table">
           <thead>
             <tr>

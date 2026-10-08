@@ -3,7 +3,7 @@ import { StoreProvider, useStore } from "./state/Store";
 import { Footer, Header } from "./components/Layout";
 import { CartDrawer } from "./pages/Cart";
 import { FlyToBag, RouteEffects } from "./components/MotionEffects";
-import WebMCP from "./components/WebMCP";
+import WhatsAppLink from "./components/WhatsAppLink";
 import { business } from "./config/business";
 import "@fontsource/quicksand/500.css";
 import "@fontsource/quicksand/600.css";
@@ -15,6 +15,7 @@ import "./styles.css";
 import "./shop.css";
 import "./redesign.css";
 import "./motion.css";
+import "./toybox.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const organization = {
@@ -60,11 +61,11 @@ function Shell() {
     <>
       <a className="skip-link" href="#main">Skip to content</a>
       <Header />
-      <WebMCP />
       <RouteEffects />
       <main id="main"><Outlet /></main>
       <Footer />
       <CartDrawer />
+      <WhatsAppLink className="whatsapp-floating" message="Hello Boys & Girlz, I have a question about the shop." />
       <FlyToBag />
       <div className={`toast ${notice ? "visible" : ""}`} role="status" aria-live="polite">{notice}</div>
     </>

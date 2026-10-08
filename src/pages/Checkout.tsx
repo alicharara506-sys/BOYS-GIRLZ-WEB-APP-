@@ -106,7 +106,7 @@ export default function Checkout() {
         <div className="checkout-items">{cart.map((item) => {
           const product = productById(item.productId);
           if (!product) return null;
-          return <div key={itemKey(item)}><ProductImage product={product} /><div><strong>{product.name}</strong><span>{item.size} · {item.color} · Qty {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
+          return <div key={itemKey(item)}><ProductImage product={product} /><div><strong>{product.name}</strong><span>{item.size && `${item.size} · `}{item.color} · Qty {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
         })}</div>
         <div className="summary-line"><span>Estimated subtotal</span><span>{money(totals.subtotal)}</span></div>
         <p className="small-muted">Final shipping, discounts and total are calculated on the server. No payment is collected online.</p>

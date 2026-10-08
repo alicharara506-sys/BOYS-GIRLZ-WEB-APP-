@@ -23,8 +23,6 @@ export interface Product {
   colors: string[];
   model: ModelKind;
   isNew: boolean;
-  rating: number;
-  reviews: number;
   description: string;
 }
 export const categories: Category[] = [
@@ -176,10 +174,8 @@ export const products: Product[] = rows.map((r, i) => ({
   model: r[4],
   colors: r[5],
   originalPrice: r[6],
-  sizes: r[2] === "Maternity" ? maternitySizes : baby,
+  sizes: r[2] === "Maternity" ? maternitySizes : r[2] === "Toys" || r[4] === "boots" ? [] : baby,
   isNew: i === 0 || i === 2 || (i >= 4 && i < 8),
-  rating: 4.8 + (i % 3) / 10,
-  reviews: 12 + i * 3,
   description:
     r[2] === "Toys"
       ? "A little companion for big imaginations. Thoughtfully chosen for playtime, quiet moments, and the sweetest gifting."

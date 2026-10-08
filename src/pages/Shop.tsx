@@ -16,6 +16,7 @@ import {
 } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import { Modal } from "../components/Layout";
+import CategoryScene from "../components/CategoryScene";
 import { useStore } from "../state/Store";
 const matchesCategory = (product: (typeof products)[number], category: Category) =>
   category === "Sale" ? product.condition === "new" && Boolean(product.originalPrice)
@@ -214,9 +215,7 @@ export default function Shop() {
             <div className="outlet-note" role="note"><strong>Outlet means Like New.</strong> These are pre-owned, second-hand items in excellent condition, offered at reduced prices so more little favorites can find a home.</div>
           )}
         </div>
-        <span className="heading-heart">
-          <Heart size={58} strokeWidth={1} />
-        </span>
+        {routeCategory ? <CategoryScene category={routeCategory} /> : <span className="heading-heart"><Heart size={58} strokeWidth={1} /></span>}
       </div>
       <div className="shop-layout">
         <aside className="desktop-filters" aria-label="Product filters">

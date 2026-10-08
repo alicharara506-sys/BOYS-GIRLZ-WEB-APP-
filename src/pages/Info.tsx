@@ -2,7 +2,7 @@ import { Link, useFetcher, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Heart,
-  Mail,
+  Phone,
   Check,
   Leaf,
   Truck,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Newsletter from "../components/Newsletter";
 import { business } from "../config/business";
+import WhatsAppLink from "../components/WhatsAppLink";
 export function About() {
   return (
     <div className="page-width">
@@ -82,7 +83,8 @@ export function Contact() {
       <div className="contact-layout">
         <div>
           <h2>Let’s talk.</h2>
-          {business.phone && <a href={`tel:${business.phone}`}><Mail size={20} /> {business.phone}</a>}
+          {business.phone && <a href={`tel:${business.phone}`}><Phone size={20} /> {business.phone}</a>}
+          <WhatsAppLink message="Hello Boys & Girlz, I have a question about an item." />
           <a
             href="https://www.instagram.com/boysandgirlz/"
             target="_blank"
@@ -90,7 +92,7 @@ export function Contact() {
           >
             <Instagram size={20} /> @boysandgirlz
           </a>
-          {business.address && <p>Visit us: {business.address}</p>}
+          {business.address && <p>Visit us: {business.address} · <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} target="_blank" rel="noopener noreferrer">View map</a></p>}
           {business.hours && <p>Opening hours: {business.hours}</p>}
           <p>For sizing, delivery, or a little advice, send a note below.</p>
         </div>

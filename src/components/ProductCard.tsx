@@ -1,9 +1,8 @@
-import { useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Heart, Plus, RotateCcw, ShoppingBag } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import { colorHex, money, type Product } from "../data/products";
 import { useStore } from "../state/Store";
-import { useReducedMotion } from "../hooks/useExperience";
 export function ProductImage({
   product,
   className = "",
@@ -40,40 +39,6 @@ export function ProductImage({
     />
   );
 }
-export function Tilt({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  return (
-    <div
-      ref={ref}
-      className={`tilt ${className}`}
-      onPointerMove={(e) => {
-        if (reduce || e.pointerType !== "mouse" || !ref.current) return;
-        const b = e.currentTarget.getBoundingClientRect();
-        ref.current.style.setProperty(
-          "--rx",
-          `${(-(e.clientY - b.top - b.height / 2) / b.height) * 6}deg`,
-        );
-        ref.current.style.setProperty(
-          "--ry",
-          `${((e.clientX - b.left - b.width / 2) / b.width) * 8}deg`,
-        );
-      }}
-      onPointerLeave={() => {
-        ref.current?.style.setProperty("--rx", "0deg");
-        ref.current?.style.setProperty("--ry", "0deg");
-      }}
-    >
-      {children}
-    </div>
-  );
-}
 export function WishButton({ product }: { product: Product }) {
   const { wishlist, toggleWish } = useStore();
   const active = wishlist.includes(product.id);
@@ -103,70 +68,26 @@ export function WishButton({ product }: { product: Product }) {
   );
 }
 export default function ProductCard({ product, showRange = false }: { product: Product; showRange?: boolean }) {
-  const [flipped, setFlipped] = useState(false);
-  const [size, setSize] = useState(product.sizes[0]);
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [size, setSize] = useState(product.sizes[0] || "");
+  const [color, setColor] = useState(product.colors[0]);
   const { add } = useStore();
   return (
-    <article className="product-card">
-      <Tilt>
-        <div className={`product-flipper ${flipped ? "flipped" : ""}`}>
-          <div className="card-front" inert={flipped}>
-            <button
-              className="product-image-button"
-              aria-label={`Quick shop ${product.name}`}
-              onClick={() => setFlipped(true)}
-            >
-              <ProductImage product={product} />
-              <span className="quick-shop">
-                <Plus size={15} /> Quick shop
-              </span>
-            </button>
-            {(product.isNew || product.originalPrice) && (
-              <span
-                className={`product-tag ${product.originalPrice ? "sale-tag" : ""}`}
-              >
-                {product.originalPrice ? "SALE" : "NEW"}
-              </span>
-            )}
-            <WishButton product={product} />
-          </div>
-          <div className="card-back" inert={!flipped}>
-            <button
-              className="icon-button flip-close"
-              aria-label="Back to product photo"
-              onClick={() => setFlipped(false)}
-            >
-              <RotateCcw size={18} />
-            </button>
-            <ShoppingBag size={25} strokeWidth={1.4} />
-            <h3>{product.name}</h3>
-            <p>{money(product.price)}</p>
-            <label>
-              Size
-              <select value={size} onChange={(e) => setSize(e.target.value)}>
-                {product.sizes.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-            <button
-              className="btn btn-blue btn-small"
-              onClick={(e) => {
-                add(product, size, product.colors[0], 1, e.currentTarget);
-                setFlipped(false);
-              }}
-            >
-              Add to bag <Plus size={16} />
-            </button>
-            <Link to={`/product/${product.id}`} className="text-link">
-              All the little details <ArrowRight size={14} />
-            </Link>
-          </div>
-        </div>
-      </Tilt>
+    <article className="product-card product-card-simple">
+      <div className="card-front">
+        <Link className="product-image-link" to={`/product/${product.id}`} aria-label={`View ${product.name}`}>
+          <ProductImage product={product} />
+        </Link>
+        {(product.isNew || product.originalPrice || product.condition === "like-new") && (
+          <span className={`product-tag ${product.originalPrice ? "sale-tag" : ""}`}>
+            {product.condition === "like-new" ? "LIKE NEW" : product.originalPrice ? "SALE" : "NEW"}
+          </span>
+        )}
+        <WishButton product={product} />
+      </div>
       <div className="product-info">
         <Link to={`/product/${product.id}`}>{product.name}</Link>
-        {showRange && <span className="product-range">New Born–6 Years</span>}
+        {showRange && product.sizes.length > 0 && <span className="product-range">{product.sizes[0]}–{product.sizes.at(-1)}</span>}
         <div className="product-meta">
           <span>
             {money(product.price)}{" "}
@@ -181,6 +102,21 @@ export default function ProductCard({ product, showRange = false }: { product: P
             ))}
           </span>
         </div>
+        <button className="card-quick-button" type="button" aria-expanded={quickOpen} onClick={() => setQuickOpen((open) => !open)}>
+          {quickOpen ? "Close options" : "Quick add"} <Plus size={15} aria-hidden="true" />
+        </button>
+        {quickOpen && <div className="card-quick-options">
+          {product.sizes.length > 0 && <label>Size
+            <select value={size} onChange={(event) => setSize(event.target.value)}>{product.sizes.map((option) => <option key={option}>{option}</option>)}</select>
+          </label>}
+          {product.colors.length > 1 && <label>Color
+            <select value={color} onChange={(event) => setColor(event.target.value)}>{product.colors.map((option) => <option key={option}>{option}</option>)}</select>
+          </label>}
+          <button type="button" className="btn btn-blue btn-small" disabled={product.productType === "shoes" && product.sizes.length === 0} onClick={(event) => {
+            add(product, size, color, 1, event.currentTarget);
+            setQuickOpen(false);
+          }}>{product.productType === "shoes" && product.sizes.length === 0 ? "Sizes coming soon" : "Add to bag"} <Plus size={15} /></button>
+        </div>}
       </div>
     </article>
   );

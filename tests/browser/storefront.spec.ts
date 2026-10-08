@@ -37,7 +37,7 @@ test("invalid URLs return real HTTP 404 responses", async ({ request }) => {
 test("quick shop adds an item and keeps the bag after refresh", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Little clothes, for big smiles." })).toBeVisible();
-  await page.getByRole("button", { name: "Quick shop Everyday Overshirt" }).click();
+  await page.locator(".product-card").first().getByRole("button", { name: "Quick add" }).click();
   await page.locator(".product-card").first().getByRole("button", { name: "Add to bag" }).click();
   await expect(page.getByRole("button", { name: "Shopping bag, 1 items" })).toBeVisible();
   await page.reload();
@@ -48,14 +48,14 @@ test("reduced motion keeps shopping available without a blocking loader", async 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator(".loading-screen")).toHaveCount(0);
-  await page.getByRole("link", { name: "Shop boys", exact: true }).first().click();
+  await page.getByRole("link", { name: /Shop Boys/i }).first().click();
   await expect(page).toHaveURL(/\/category\/boys$/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
 test("checkout offers Cash on Delivery and never confirms an unconfigured order", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Quick shop Everyday Overshirt" }).click();
+  await page.locator(".product-card").first().getByRole("button", { name: "Quick add" }).click();
   await page.locator(".product-card").first().getByRole("button", { name: "Add to bag" }).click();
   await page.goto("/checkout");
   await expect(page.getByRole("heading", { name: "Checkout" })).toBeVisible();
@@ -70,4 +70,59 @@ test("checkout offers Cash on Delivery and never confirms an unconfigured order"
   await page.getByRole("button", { name: /Place Cash on Delivery order/ }).click();
   await expect(page.getByRole("alert")).toContainText("Ordering is not configured yet");
   await expect(page.getByRole("heading", { name: "Your order has been received." })).toHaveCount(0);
+});
+
+test("the home journey uses the original logo artwork without WebGL", async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (kind, ...options) {
+      if (kind === "webgl" || kind === "webgl2") return null;
+      return original.call(this, kind, ...options);
+    } as typeof original;
+  });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Little clothes, for big smiles." })).toBeVisible();
+  await expect(page.locator(".toybox-poster")).toBeVisible();
+  await expect(page.locator(".toybox-poster .home-mascot")).toHaveCount(2);
+  await expect(page.locator(".toybox-poster canvas")).toHaveCount(0);
+  await page.getByRole("link", { name: "Shop Boys" }).first().click();
+  await expect(page).toHaveURL(/\/category\/boys$/);
+  await expect(page.getByRole("img", { name: "Original Boys & Girlz blue B character" })).toBeVisible();
+  await expect(page.locator(".category-scene .home-mascot-boy")).toHaveCount(1);
+  await expect(page.locator(".category-scene .home-mascot-girl")).toHaveCount(0);
+});
+
+test("the desktop hero shows the exact B and G logo characters", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Little clothes, for big smiles." })).toBeVisible();
+  await expect(page.locator(".toybox-poster .home-mascot-boy")).toBeVisible();
+  await expect(page.locator(".toybox-poster .home-mascot-girl")).toBeVisible();
+  await expect(page.locator(".toybox-poster canvas")).toHaveCount(0);
+  const artwork = await page.locator(".toybox-poster .home-mascot-boy").evaluate((element) => getComputedStyle(element).backgroundImage);
+  expect(artwork).toContain("brand-characters.png");
+  await expect(page.locator(".toybox-copy h1 span")).toHaveCSS("color", "rgb(252, 83, 142)");
+  await page.screenshot({ path: "test-results/logo-hero-desktop.png", fullPage: false });
+  expect(errors).toEqual([]);
+});
+
+test("Girls category displays only the original pink G character", async ({ page }) => {
+  await page.goto("/category/girls");
+  await expect(page.getByRole("img", { name: "Original Boys & Girlz pink G character" })).toBeVisible();
+  await expect(page.locator(".category-scene .home-mascot-girl")).toHaveCount(1);
+  await expect(page.locator(".category-scene .home-mascot-boy")).toHaveCount(0);
+});
+
+test("product detail keeps the flat preview with reduced motion", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/product/fleece-bear-overall");
+  await expect(page.locator(".photo-viewer .product-photo")).toBeVisible();
+  await expect(page.locator(".product-stage canvas")).toHaveCount(0);
+  expect(errors).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator(".product-stage canvas")).toHaveCount(0);
+  await expect(page.locator(".photo-viewer .product-photo")).toBeVisible();
 });

@@ -81,7 +81,7 @@ export function restoreStore(
         const p = known.get(i?.productId);
         if (
           !p ||
-          !p.sizes.includes(i.size) ||
+          (p.sizes.length > 0 ? !p.sizes.includes(i.size) : i.size !== "") ||
           !p.colors.includes(i.color) ||
           !Number.isFinite(i.quantity) ||
           i.quantity < 1 ||

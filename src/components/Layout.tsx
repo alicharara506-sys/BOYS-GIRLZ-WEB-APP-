@@ -75,12 +75,28 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [query, setQuery] = useState("");
+  const moreRef = useRef<HTMLDetailsElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
     setMobile(false);
     setSearchOpen(false);
+    if (moreRef.current) moreRef.current.open = false;
   }, [location.pathname, location.search]);
+  useEffect(() => {
+    const onOutside = (event: PointerEvent) => {
+      if (moreRef.current && !moreRef.current.contains(event.target as Node)) moreRef.current.open = false;
+    };
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && moreRef.current) moreRef.current.open = false;
+    };
+    document.addEventListener("pointerdown", onOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("pointerdown", onOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, []);
   const results = products
     .filter((p) =>
       `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase()),
@@ -92,7 +108,7 @@ export function Header() {
       <Link to="/shop?sort=newest">New In</Link>
       <NavLink to="/category/boys">Boys</NavLink>
       <NavLink to="/category/girls">Girls</NavLink>
-      <NavLink to="/category/unisex">Baby & Unisex</NavLink>
+      <NavLink to="/category/unisex">Unisex</NavLink>
       <NavLink to="/category/accessories">Accessories</NavLink>
       <NavLink to="/category/maternity">Maternity</NavLink>
       <NavLink to="/category/toys">Toys</NavLink>
@@ -116,9 +132,9 @@ export function Header() {
             <Link to="/shop?sort=newest">New In</Link>
             <NavLink to="/category/boys">Boys</NavLink>
             <NavLink to="/category/girls">Girls</NavLink>
-            <NavLink to="/category/unisex">Baby</NavLink>
+            <NavLink to="/category/unisex">Unisex</NavLink>
             <NavLink className="nav-sale" to="/category/sale">Sale</NavLink>
-            <details className="nav-more"><summary>More</summary><div>
+            <details ref={moreRef} className="nav-more"><summary>More</summary><div>
               <Link to="/category/accessories">Accessories</Link>
               <Link to="/category/maternity">Maternity</Link>
               <Link to="/category/toys">Toys</Link>

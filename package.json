@@ -19,7 +19,6 @@
     "@react-router/node": "^7.18.3",
     "@react-router/serve": "^7.18.3",
     "@supabase/supabase-js": "^2.117.3",
-    "framer-motion": "^12.23.0",
     "gsap": "^3.13.0",
     "isbot": "^5",
     "lucide-react": "^0.468.0",

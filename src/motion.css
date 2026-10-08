@@ -71,7 +71,7 @@
 .wish-button svg { transition: transform .25s cubic-bezier(.2,.85,.2,1), color .2s ease; }
 .wish-button:hover svg, .wish-button:focus-visible svg { transform: scale(1.16); }
 
-.fly-item { border: 2px solid #fff; background-color: #fffaf5; box-shadow: 0 10px 28px #2b6e9633, 0 0 0 7px #e9f6fc7a; }
+.fly-item { margin: 0; border: 2px solid #fff; background-color: #fffaf5; box-shadow: 0 10px 28px #2b6e9633, 0 0 0 7px #e9f6fc7a; }
 .bag-arrived { animation: bagArrive .5s cubic-bezier(.16,.85,.29,1.15); }
 @keyframes bagArrive { 0%,100% { transform: scale(1); } 45% { transform: scale(1.25) rotate(-10deg); } 70% { transform: scale(.94) rotate(5deg); } }
 
@@ -98,8 +98,8 @@
 .newsletter:hover .newsletter-heart svg { transform: rotate(-9deg) translateY(-2px); }
 .newsletter form { transition: box-shadow .25s ease; }
 .newsletter form:focus-within { box-shadow: 0 0 0 3px #55b7e45c; }
-.depth-wipe { display: grid; place-items: center; top: 75px; background: linear-gradient(115deg,#e1f4fded,#fff9f4f2 49%,#ffe4edef); backdrop-filter: blur(3px); }
-.depth-wipe img { display: block; width: min(240px,44vw); height: auto; mix-blend-mode: multiply; filter: drop-shadow(0 12px 18px #233c6324); }
+.route-depth-reveal { position: fixed; inset: 84px 0 0; z-index: 34; pointer-events: none; background: linear-gradient(115deg,#e1f4fdc9,#fff9f4d8 49%,#ffe4edc9); animation: routeReveal .42s ease-out both; }
+@keyframes routeReveal { from { opacity: .6; transform: translate3d(0,0,0); } to { opacity: 0; transform: translate3d(0,-22px,0); visibility: hidden; } }
 
 @media (max-width: 680px) {
   .brand-ribbon { min-height: 55px; display: block; margin-top: 10px; padding: 7px 10px; }

@@ -12,8 +12,9 @@ import {
 import { useStore } from "../state/Store";
 import { itemKey, type CartItem } from "../state/storeCore";
 import { money, productById } from "../data/products";
-import { ProductImage, Tilt } from "../components/ProductCard";
+import { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
+import WhatsAppLink from "../components/WhatsAppLink";
 export function Quantity({
   value,
   onChange,
@@ -65,7 +66,7 @@ export function CartLine({
           {p.name}
         </Link>
         <p>
-          {item.size} <span>·</span> {item.color}
+          {item.size && <>{item.size} <span>·</span> </>}{item.color}
         </p>
         <div className="cart-line-controls">
           <Quantity
@@ -117,11 +118,9 @@ export function OrderSummary({
       {!checkout && (
         <>
           <p className="small-muted">Enter a promo code at checkout. Stock, discounts and final delivery cost are checked when the order is placed.</p>
-          <Tilt>
-            <Link to="/checkout" className="btn btn-blue checkout-btn">
-              A little closer to yours <ArrowRight size={17} />
-            </Link>
-          </Tilt>
+          <Link to="/checkout" className="btn btn-blue checkout-btn">
+            A little closer to yours <ArrowRight size={17} />
+          </Link>
           <p className="checkout-note">
             <LockKeyhole size={12} /> Cash on Delivery only
           </p>
@@ -235,6 +234,7 @@ export default function Cart() {
             </Link>
           </section>
           <OrderSummary />
+          <WhatsAppLink className="btn btn-outline" message={`Hello Boys & Girlz, I would like to ask about these items: ${cart.map((item) => `${productById(item.productId)?.name || item.productId} (${[item.size, item.color].filter(Boolean).join(", ")}) × ${item.quantity}`).join("; ")}.`} />
         </div>
       ) : (
         <div className="empty-state">
