@@ -86,7 +86,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const totals = calculateTotals(
     state.cart,
     new Map(products.map((p) => [p.id, p.price])),
-    state.promo,
   );
   return (
     <StoreContext.Provider

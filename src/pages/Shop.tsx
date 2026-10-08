@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -17,7 +17,19 @@ import {
 import ProductCard from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import { useStore } from "../state/Store";
-import BrandRibbon from "../components/BrandRibbon";
+const matchesCategory = (product: (typeof products)[number], category: Category) =>
+  category === "Sale" ? product.condition === "new" && Boolean(product.originalPrice)
+    : category === "Outlet" ? product.condition === "like-new"
+      : category === "Boys" || category === "Girls" || category === "Unisex"
+        ? product.gender === category
+        : product.category === category;
+const priceCeiling = Math.ceil(Math.max(...products.map((product) => product.price)) / 5) * 5;
+function GenderIcon({ kind }: { kind: "boys" | "girls" }) {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="10" cy="10" r="5" />
+    {kind === "boys" ? <><path d="m13.5 6.5 7-7M16 0h5v5" transform="translate(-1 2)" /></> : <path d="M10 15v7m-4-3.5h8" />}
+  </svg>;
+}
 const copy: Record<Category, string> = {
   Boys: "For muddy knees, sleepy cuddles, and every little adventure.",
   Girls: "Lovely little layers for their own kind of adventure.",
@@ -26,16 +38,17 @@ const copy: Record<Category, string> = {
   Maternity: "A little comfort for your beautiful, growing story.",
   Toys: "Little companions. Big imaginations. Endless play.",
   Outlet: "Like New finds: excellent pre-owned pieces, carefully selected and priced a little lighter.",
+  Sale: "Discounted new items for little ones and growing families.",
 };
 export default function Shop() {
   const { category } = useParams();
   const [params, setParams] = useSearchParams();
   const routeCategory = categories.find((c) => c.toLowerCase() === category);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [max, setMax] = useState(80);
-  const [size, setSize] = useState("");
-  const [color, setColor] = useState("");
   const [mobile, setMobile] = useState(false);
+  const selected = (params.get("category") || "").split(",").filter((value): value is Category => categories.includes(value as Category));
+  const max = Math.min(priceCeiling, Math.max(0, Number(params.get("max") || priceCeiling)));
+  const size = params.get("size") || "";
+  const color = params.get("color") || "";
   const query = params.get("q") || "";
   const sort = params.get("sort") || "featured";
   const sale = params.get("sale") === "true";
@@ -43,17 +56,20 @@ export default function Shop() {
     const next = new URLSearchParams(params);
     if (val) next.set(key, val);
     else next.delete(key);
-    setParams(next, { replace: true });
+    setParams(next);
   };
-  const result = useMemo(() => {
+  const toggleCategory = (value: Category) => updateParam("category", selected.includes(value)
+    ? selected.filter((item) => item !== value).join(",")
+    : [...selected, value].join(","));
+  const result = (() => {
     const activeCategories = routeCategory ? [routeCategory] : selected;
     const filtered = products.filter(
       (p) =>
-        (!activeCategories.length || activeCategories.includes(p.category)) &&
+        (!activeCategories.length || activeCategories.some((active) => matchesCategory(p, active))) &&
         p.price <= max &&
         (!size || p.sizes.includes(size)) &&
         (!color || p.colors.includes(color)) &&
-        (!sale || p.originalPrice) &&
+        (!sale || (p.condition === "new" && p.originalPrice)) &&
         `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase()),
     );
     return filtered.sort((a, b) =>
@@ -61,23 +77,17 @@ export default function Shop() {
         ? a.price - b.price
         : sort === "price-desc"
           ? b.price - a.price
-          : sort === "rating"
-            ? b.rating - a.rating
-            : sort === "newest"
+          : sort === "newest"
               ? Number(b.isNew) - Number(a.isNew)
               : 0,
     );
-  }, [routeCategory, selected, max, size, color, sale, query, sort]);
+  })();
   const reset = () => {
-    setSelected([]);
-    setMax(80);
-    setSize("");
-    setColor("");
     setParams({});
   };
   const filterCount =
     selected.length +
-    Number(max < 80) +
+    Number(max < priceCeiling) +
     Number(!!size) +
     Number(!!color) +
     Number(sale);
@@ -95,14 +105,10 @@ export default function Shop() {
               <input
                 type="checkbox"
                 checked={selected.includes(c)}
-                onChange={() =>
-                  setSelected((a) =>
-                    a.includes(c) ? a.filter((v) => v !== c) : [...a, c],
-                  )
-                }
+                onChange={() => toggleCategory(c)}
               />
               {c}
-              <span>{products.filter((p) => p.category === c).length}</span>
+              <span>{products.filter((p) => matchesCategory(p, c)).length}</span>
             </label>
           ))}
         </fieldset>
@@ -115,14 +121,14 @@ export default function Shop() {
           aria-label="Maximum price"
           type="range"
           min="10"
-          max="80"
+          max={priceCeiling}
           step="5"
           value={max}
-          onChange={(e) => setMax(+e.target.value)}
+          onChange={(e) => updateParam("max", e.target.value)}
         />
         <div className="range-labels">
           <span>$10</span>
-          <span>$80</span>
+          <span>${priceCeiling}</span>
         </div>
       </fieldset>
       <fieldset>
@@ -130,7 +136,7 @@ export default function Shop() {
         <select
           aria-label="Filter by size"
           value={size}
-          onChange={(e) => setSize(e.target.value)}
+          onChange={(e) => updateParam("size", e.target.value)}
         >
           <option value="">All sizes</option>
           {[...new Set(products.flatMap((p) => p.sizes))].map((s) => (
@@ -142,7 +148,7 @@ export default function Shop() {
         <legend>
           Color{" "}
           {color && (
-            <button className="clear-color" onClick={() => setColor("")}>
+            <button className="clear-color" onClick={() => updateParam("color", "")}>
               Clear
             </button>
           )}
@@ -152,7 +158,7 @@ export default function Shop() {
             <button
               key={c}
               className={color === c ? "selected" : ""}
-              onClick={() => setColor(color === c ? "" : c)}
+              onClick={() => updateParam("color", color === c ? "" : c)}
               aria-label={`Filter ${c}`}
               aria-pressed={color === c}
             >
@@ -190,13 +196,13 @@ export default function Shop() {
           <span className="eyebrow">Made for little moments</span>
           <h1>
             {routeCategory
-              ? `${routeCategory === "Maternity" ? "For mama" : routeCategory === "Toys" ? "A little playtime" : routeCategory === "Outlet" ? "Like New little finds" : `Little ${routeCategory.toLowerCase()}`}.`
+              ? `${routeCategory === "Maternity" ? "For mama" : routeCategory === "Toys" ? "A little playtime" : routeCategory === "Outlet" ? "Like New little finds" : routeCategory === "Sale" ? "Sale" : `Little ${routeCategory.toLowerCase()}`}.`
               : sale
                 ? "Lovely little offers."
                 : "All the little things."}
           </h1>
-          {routeCategory === "Boys" && <span className="gender-mark" aria-label="Male symbol">♂ <span>Little Boys</span></span>}
-          {routeCategory === "Girls" && <span className="gender-mark" aria-label="Female symbol">♀ <span>Little Girls</span></span>}
+          {routeCategory === "Boys" && <span className="gender-mark"><GenderIcon kind="boys" /> <span>Little Boys</span></span>}
+          {routeCategory === "Girls" && <span className="gender-mark"><GenderIcon kind="girls" /> <span>Little Girls</span></span>}
           <p>
             {routeCategory
               ? copy[routeCategory]
@@ -212,7 +218,6 @@ export default function Shop() {
           <Heart size={58} strokeWidth={1} />
         </span>
       </div>
-      <BrandRibbon />
       <div className="shop-layout">
         <aside className="desktop-filters" aria-label="Product filters">
           {filters}
@@ -256,7 +261,6 @@ export default function Shop() {
               <option value="newest">Newest first</option>
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
-              <option value="rating">Top rated</option>
             </select>
           </div>
           <div className="results-line">

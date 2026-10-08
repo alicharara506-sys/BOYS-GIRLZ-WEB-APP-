@@ -1,11 +1,4 @@
-const brands = [
-  "Carter's", "Old Navy", "Gap", "Little& loved", "Little beginners",
-  "Koala baby", "Nicole Miller", "Disney", "Gerber", "Little Me",
-  "Nike", "Garanimals", "Cloud Island", "Cat & jack", "Hudson Baby",
-  "First Impression", "Baby Essentials", "Baby View", "Kyle & Deena",
-  "Sweet & Soft", "Rabbit+Bear", "Eddie Bauer", "Wonder Nation",
-  "Tahari", "Chickpea", "Burt's Bees", "DuckDuckGoose", "Calvin Klein",
-] as const;
+import { approvedBrands } from "../data/brands";
 
 export default function BrandRibbon() {
   return (
@@ -15,7 +8,7 @@ export default function BrandRibbon() {
         <div className="brand-ribbon-track">
           {[0, 1].map((copy) => (
             <ul key={copy} aria-hidden={copy === 1}>
-              {brands.map((brand) => <li key={brand}>{brand}</li>)}
+              {approvedBrands.map((brand) => <li key={brand}>{brand}</li>)}
             </ul>
           ))}
         </div>

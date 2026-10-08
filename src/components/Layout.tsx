@@ -96,7 +96,8 @@ export function Header() {
       <NavLink to="/category/accessories">Accessories</NavLink>
       <NavLink to="/category/maternity">Maternity</NavLink>
       <NavLink to="/category/toys">Toys</NavLink>
-      <NavLink to="/category/outlet">Outlet · Like New</NavLink>
+      <NavLink to="/category/sale">Sale</NavLink>
+      <NavLink to="/category/outlet">Outlet</NavLink>
       <NavLink to="/about">About us</NavLink>
       <NavLink to="/contact">Contact</NavLink>
     </>
@@ -116,11 +117,12 @@ export function Header() {
             <NavLink to="/category/boys">Boys</NavLink>
             <NavLink to="/category/girls">Girls</NavLink>
             <NavLink to="/category/unisex">Baby</NavLink>
-            <NavLink className="nav-sale" to="/category/outlet">Sale</NavLink>
+            <NavLink className="nav-sale" to="/category/sale">Sale</NavLink>
             <details className="nav-more"><summary>More</summary><div>
               <Link to="/category/accessories">Accessories</Link>
               <Link to="/category/maternity">Maternity</Link>
               <Link to="/category/toys">Toys</Link>
+              <Link to="/category/outlet">Outlet</Link>
               <Link to="/shop">Shop all</Link>
             </div></details>
           </nav>

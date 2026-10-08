@@ -10,6 +10,7 @@ export default [
   route("wishlist", "routes/wishlist.tsx"),
   route("about", "routes/about.tsx"),
   route("contact", "routes/contact.tsx"),
+  route("newsletter", "routes/newsletter.tsx"),
   route("faq", "routes/faq.tsx"),
   route("help/:topic", "routes/help.tsx"),
   route("*", "routes/not-found.tsx"),

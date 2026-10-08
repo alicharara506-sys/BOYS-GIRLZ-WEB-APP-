@@ -7,7 +7,6 @@ export interface CartItem {
 export interface StoreState {
   cart: CartItem[];
   wishlist: string[];
-  promo: string;
 }
 export type Action =
   | { type: "HYDRATE"; state: StoreState }
@@ -15,9 +14,8 @@ export type Action =
   | { type: "QUANTITY"; key: string; quantity: number }
   | { type: "REMOVE"; key: string }
   | { type: "WISH"; id: string }
-  | { type: "PROMO"; code: string }
   | { type: "CLEAR_CART" };
-export const initialState: StoreState = { cart: [], wishlist: [], promo: "" };
+export const initialState: StoreState = { cart: [], wishlist: [] };
 export const itemKey = (i: CartItem) =>
   [i.productId, i.size, i.color].join("::");
 const clamp = (n: number) =>
@@ -64,16 +62,8 @@ export function storeReducer(state: StoreState, action: Action): StoreState {
           ? state.wishlist.filter((id) => id !== action.id)
           : [...state.wishlist, action.id],
       };
-    case "PROMO":
-      return {
-        ...state,
-        promo:
-          action.code.trim().toUpperCase() === "LITTLELOVE10"
-            ? "LITTLELOVE10"
-            : "",
-      };
     case "CLEAR_CART":
-      return { ...state, cart: [], promo: "" };
+      return { ...state, cart: [] };
     default:
       return state;
   }
@@ -116,7 +106,6 @@ export function restoreStore(
           ),
         ),
       ],
-      promo: data?.promo === "LITTLELOVE10" ? data.promo : "",
     };
   } catch {
     return initialState;
@@ -125,7 +114,6 @@ export function restoreStore(
 export function calculateTotals(
   cart: CartItem[],
   prices: Map<string, number>,
-  promo: string,
 ) {
   const subtotal =
     Math.round(
@@ -134,13 +122,10 @@ export function calculateTotals(
         0,
       ) * 100,
     ) / 100;
-  const discount =
-    promo === "LITTLELOVE10" ? Math.round(subtotal * 10) / 100 : 0;
-  const shipping = subtotal === 0 || subtotal >= 99 ? 0 : 5.95;
   return {
     subtotal,
-    discount,
-    shipping,
-    total: Math.round((subtotal - discount + shipping) * 100) / 100,
+    discount: 0,
+    shipping: 0,
+    total: subtotal,
   };
 }

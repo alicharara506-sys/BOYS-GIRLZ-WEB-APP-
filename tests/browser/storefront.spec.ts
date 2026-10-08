@@ -52,3 +52,22 @@ test("reduced motion keeps shopping available without a blocking loader", async 
   await expect(page).toHaveURL(/\/category\/boys$/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
+
+test("checkout offers Cash on Delivery and never confirms an unconfigured order", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Quick shop Everyday Overshirt" }).click();
+  await page.locator(".product-card").first().getByRole("button", { name: "Add to bag" }).click();
+  await page.goto("/checkout");
+  await expect(page.getByRole("heading", { name: "Checkout" })).toBeVisible();
+  await expect(page.getByText(/Cash on Delivery/).first()).toBeVisible();
+  await expect(page.getByText("Demo card")).toHaveCount(0);
+  await page.getByLabel("Full name").fill("Sam Customer");
+  await page.getByLabel("Lebanese mobile number").fill("+961 71 234 567");
+  await page.getByLabel("Governorate").selectOption("Beirut");
+  await page.getByLabel("City or area").fill("Achrafieh");
+  await page.getByLabel("Street and building").fill("Main Street, Building 4");
+  await page.getByRole("button", { name: /Review order/ }).click();
+  await page.getByRole("button", { name: /Place Cash on Delivery order/ }).click();
+  await expect(page.getByRole("alert")).toContainText("Ordering is not configured yet");
+  await expect(page.getByRole("heading", { name: "Your order has been received." })).toHaveCount(0);
+});

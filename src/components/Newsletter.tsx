@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { useFetcher } from "react-router";
 import { ArrowRight, Check, Mail } from "lucide-react";
-import { useStore } from "../state/Store";
 export default function Newsletter({ compact = false }: { compact?: boolean }) {
-  const [email, setEmail] = useState("");
-  const [joined, setJoined] = useState(false);
-  const { notify } = useStore();
+  const fetcher = useFetcher<{ success?: boolean; error?: string }>();
+  const joined = Boolean(fetcher.data?.success);
   return (
     <section
       className={`newsletter ${compact ? "compact" : ""}`}
@@ -21,14 +19,7 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
           </div>
         </div>
       )}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setJoined(true);
-          notify("You’re on the list! Newsletter signup saved for this demo.");
-          setEmail("");
-        }}
-      >
+      <fetcher.Form method="post" action="/newsletter">
         <label
           className="sr-only"
           htmlFor={compact ? "footer-email" : "newsletter-email"}
@@ -38,12 +29,13 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
         <input
           id={compact ? "footer-email" : "newsletter-email"}
           type="email"
+          name="email"
           required
           placeholder={joined ? "Thank you for joining!" : "Your email address"}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          disabled={joined}
         />
-        <button className="btn btn-pink" type="submit">
+        <input name="website" className="sr-only" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+        <button className="btn btn-pink" type="submit" disabled={joined || fetcher.state !== "idle"}>
           {joined ? (
             <>
               <Check size={16} /> Joined
@@ -54,7 +46,8 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
             </>
           )}
         </button>
-      </form>
+        {fetcher.data?.error && <p className="form-error" role="alert">{fetcher.data.error}</p>}
+      </fetcher.Form>
     </section>
   );
 }

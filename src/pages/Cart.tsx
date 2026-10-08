@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -9,7 +8,6 @@ import {
   Trash2,
   Truck,
   LockKeyhole,
-  Check,
 } from "lucide-react";
 import { useStore } from "../state/Store";
 import { itemKey, type CartItem } from "../state/storeCore";
@@ -98,9 +96,7 @@ export function OrderSummary({
   checkout?: boolean;
   children?: React.ReactNode;
 }) {
-  const { totals, promo, dispatch } = useStore();
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
+  const { totals } = useStore();
   return (
     <section className="order-summary">
       <h2>A lovely little total</h2>
@@ -110,64 +106,24 @@ export function OrderSummary({
       </div>
       <div className="summary-line">
         <span>Shipping</span>
-        <span>{totals.shipping ? money(totals.shipping) : "On us"}</span>
+        <span>Calculated at checkout</span>
       </div>
-      {totals.discount > 0 && (
-        <div className="summary-line discount">
-          <span>Little love (10%)</span>
-          <span>−{money(totals.discount)}</span>
-        </div>
-      )}
       <div className="summary-total">
-        <span>Total</span>
+        <span>Estimated subtotal</span>
         <strong>
           {money(totals.total)} <small>USD</small>
         </strong>
       </div>
       {!checkout && (
         <>
-          <form
-            className="promo-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (code.trim().toUpperCase() === "LITTLELOVE10") {
-                dispatch({ type: "PROMO", code });
-                setError("");
-              } else setError("That code isn’t quite right. Try LITTLELOVE10.");
-            }}
-          >
-            <input
-              aria-label="Promo code"
-              placeholder="A little promo code?"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <button type="submit">Apply</button>
-          </form>
-          {error && (
-            <p className="form-error" role="alert">
-              {error}
-            </p>
-          )}
-          {promo ? (
-            <p className="promo-success">
-              <Check size={13} /> LITTLELOVE10 applied{" "}
-              <button onClick={() => dispatch({ type: "PROMO", code: "" })}>
-                Remove
-              </button>
-            </p>
-          ) : (
-            <p className="small-muted">
-              A little welcome gift: use <b>LITTLELOVE10</b>.
-            </p>
-          )}
+          <p className="small-muted">Enter a promo code at checkout. Stock, discounts and final delivery cost are checked when the order is placed.</p>
           <Tilt>
             <Link to="/checkout" className="btn btn-blue checkout-btn">
               A little closer to yours <ArrowRight size={17} />
             </Link>
           </Tilt>
           <p className="checkout-note">
-            <LockKeyhole size={12} /> Demo checkout · No real payments
+            <LockKeyhole size={12} /> Cash on Delivery only
           </p>
         </>
       )}
@@ -189,9 +145,9 @@ export function CartDrawer() {
           <div className="shipping-progress">
             <Truck size={18} />
             <p>
-              {totals.subtotal >= 99
+              {totals.subtotal > 99
                 ? "Lovely! Your shipping is on us."
-                : `You’re ${money(99 - totals.subtotal)} away from free shipping.`}
+                : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
             </p>
             <progress
               value={Math.min(totals.subtotal, 99)}
@@ -267,9 +223,9 @@ export default function Cart() {
           <section>
             <div className="cart-shipping">
               <Truck size={20} />
-              {totals.subtotal >= 99
+              {totals.subtotal > 99
                 ? "Your order qualifies for FREE delivery all over Lebanon."
-                : `Add ${money(99 - totals.subtotal)} more for FREE delivery.`}
+                : "FREE delivery within Lebanon on orders over $99."}
             </div>
             {cart.map((i) => (
               <CartLine key={itemKey(i)} item={i} />

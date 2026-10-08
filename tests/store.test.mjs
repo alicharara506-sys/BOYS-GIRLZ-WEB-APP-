@@ -60,46 +60,38 @@ test("malformed and stale persisted state recovers without crashing", () => {
       item,
     ],
     wishlist: ["romper", "romper", "gone"],
-    promo: "LITTLELOVE10",
   };
   assert.deepEqual(restoreStore(JSON.stringify(dirty), catalog), {
     cart: [{ ...item, quantity: 10 }],
     wishlist: ["romper"],
-    promo: "LITTLELOVE10",
   });
 });
-test("shipping threshold and promo math use rounded currency values", () => {
+test("bag subtotal uses rounded currency values; server handles shipping and promo", () => {
   assert.deepEqual(
     calculateTotals(
       [{ ...item, quantity: 2 }],
       new Map([["romper", 37.4]]),
-      "LITTLELOVE10",
     ),
-    { subtotal: 74.8, discount: 7.48, shipping: 5.95, total: 73.27 },
+    { subtotal: 74.8, discount: 0, shipping: 0, total: 74.8 },
   );
   assert.deepEqual(
     calculateTotals(
       [{ ...item, quantity: 2 }],
       new Map([["romper", 49.85]]),
-      "LITTLELOVE10",
     ),
-    { subtotal: 99.7, discount: 9.97, shipping: 0, total: 89.73 },
+    { subtotal: 99.7, discount: 0, shipping: 0, total: 99.7 },
   );
-  assert.deepEqual(calculateTotals([], new Map(), ""), {
+  assert.deepEqual(calculateTotals([], new Map()), {
     subtotal: 0,
     discount: 0,
     shipping: 0,
     total: 0,
   });
 });
-test("promo is normalized and checkout clear preserves wishlist", () => {
-  let state = { cart: [item], wishlist: ["romper"], promo: "" };
-  state = storeReducer(state, { type: "PROMO", code: " littlelove10 " });
-  assert.equal(state.promo, "LITTLELOVE10");
+test("checkout clear preserves wishlist", () => {
+  const state = { cart: [item], wishlist: ["romper"] };
   assert.deepEqual(storeReducer(state, { type: "CLEAR_CART" }), {
     cart: [],
     wishlist: ["romper"],
-    promo: "",
   });
-  assert.equal(storeReducer(state, { type: "PROMO", code: "bad" }).promo, "");
 });

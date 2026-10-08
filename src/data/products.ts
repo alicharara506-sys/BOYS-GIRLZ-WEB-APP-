@@ -5,7 +5,8 @@ export type Category =
   | "Accessories"
   | "Maternity"
   | "Toys"
-  | "Outlet";
+  | "Outlet"
+  | "Sale";
 export type ModelKind =
   "romper" | "cardigan" | "set" | "boots" | "bunny" | "dress" | "duck";
 export interface Product {
@@ -14,6 +15,9 @@ export interface Product {
   price: number;
   originalPrice?: number;
   category: Category;
+  gender: "Boys" | "Girls" | "Unisex" | null;
+  condition: "new" | "like-new";
+  productType: string;
   image: number;
   sizes: string[];
   colors: string[];
@@ -31,6 +35,7 @@ export const categories: Category[] = [
   "Maternity",
   "Toys",
   "Outlet",
+  "Sale",
 ];
 export const colorHex: Record<string, string> = {
   Blue: "#9bbbd7",
@@ -160,6 +165,13 @@ export const products: Product[] = rows.map((r, i) => ({
   name: r[0],
   price: r[1],
   category: r[2],
+  gender: r[2] === "Boys" || r[2] === "Girls" || r[2] === "Unisex"
+    ? r[2]
+    : r[2] === "Outlet"
+      ? i === 32 ? "Boys" : i === 33 ? "Girls" : "Unisex"
+      : null,
+  condition: r[2] === "Outlet" ? "like-new" : "new",
+  productType: r[2] === "Maternity" ? "maternity" : r[2] === "Toys" ? "toys" : r[4] === "boots" ? "shoes" : r[4],
   image: r[3],
   model: r[4],
   colors: r[5],

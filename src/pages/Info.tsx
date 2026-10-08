@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useFetcher, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Heart,
@@ -10,6 +9,7 @@ import {
   Instagram,
 } from "lucide-react";
 import Newsletter from "../components/Newsletter";
+import { business } from "../config/business";
 export function About() {
   return (
     <div className="page-width">
@@ -26,7 +26,7 @@ export function About() {
             themselves.
           </p>
           <p>
-            Boys & Girlz is a children's merchandising shop in Lebanon offering
+            Boys & Girlz is a children's clothing shop in Lebanon offering
             kids clothes, toys, accessories, maternity pieces, and Like New
             outlet finds for growing families.
           </p>
@@ -71,7 +71,7 @@ export function About() {
   );
 }
 export function Contact() {
-  const [sent, setSent] = useState(false);
+  const fetcher = useFetcher<{ success?: boolean; error?: string }>();
   return (
     <div className="page-width">
       <div className="page-heading">
@@ -82,9 +82,7 @@ export function Contact() {
       <div className="contact-layout">
         <div>
           <h2>Let’s talk.</h2>
-          <a href="mailto:support@boysandgirlz.com">
-            <Mail size={20} /> support@boysandgirlz.com
-          </a>
+          {business.phone && <a href={`tel:${business.phone}`}><Mail size={20} /> {business.phone}</a>}
           <a
             href="https://www.instagram.com/boysandgirlz/"
             target="_blank"
@@ -92,45 +90,22 @@ export function Contact() {
           >
             <Instagram size={20} /> @boysandgirlz
           </a>
-          <p>
-            For sizing, shipping, or a little advice.
-            <br />
-            Our sample support hours are Monday–Friday, 9am–5pm.
-          </p>
-          <div className="contact-note">
-            <Heart size={25} />
-            <p>
-              This is a demo storefront. The form gives a local confirmation and
-              does not send a message.
-            </p>
-          </div>
+          {business.address && <p>Visit us: {business.address}</p>}
+          {business.hours && <p>Opening hours: {business.hours}</p>}
+          <p>For sizing, delivery, or a little advice, send a note below.</p>
         </div>
-        <form
-          className="contact-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-            e.currentTarget.reset();
-          }}
-        >
-          {sent ? (
+        <fetcher.Form className="contact-form" method="post">
+          {fetcher.data?.success ? (
             <div className="form-confirmation" role="status">
               <Check size={30} />
-              <h2>Your little note is ready.</h2>
-              <p>Demo complete — no message was sent.</p>
-              <button
-                className="btn btn-outline"
-                type="button"
-                onClick={() => setSent(false)}
-              >
-                Write another note
-              </button>
+              <h2>We received your note.</h2>
+              <p>Thank you for getting in touch.</p>
             </div>
           ) : (
             <>
               <label>
                 Your name
-                <input required name="name" autoComplete="name" />
+                <input required name="fullName" autoComplete="name" minLength={2} />
               </label>
               <label>
                 Email address
@@ -143,14 +118,16 @@ export function Contact() {
               </label>
               <label>
                 Your little note
-                <textarea required name="message" rows={5} />
+                <textarea required name="message" rows={5} minLength={10} />
               </label>
-              <button className="btn btn-pink">
-                Submit demo message <ArrowRight size={16} />
+              <div className="sr-only" aria-hidden="true"><label>Website <input name="website" tabIndex={-1} autoComplete="off" /></label></div>
+              {fetcher.data?.error && <p className="form-error" role="alert">{fetcher.data.error}</p>}
+              <button className="btn btn-pink" disabled={fetcher.state !== "idle"}>
+                {fetcher.state !== "idle" ? "Sending…" : "Send message"} <ArrowRight size={16} />
               </button>
             </>
           )}
-        </form>
+        </fetcher.Form>
       </div>
     </div>
   );
@@ -160,38 +137,30 @@ const help: Record<
   { title: string; intro: string; sections: [string, string][] }
 > = {
   shipping: {
-    title: "A little love, delivered.",
-    intro: "Shipping information for the Boys & Girlz merchandising shop in Lebanon.",
+    title: "Delivery in Lebanon",
+    intro: "Boys & Girlz delivers within Lebanon only.",
     sections: [
       [
         "Shipping within Lebanon",
-        "Our demo offers delivery within Lebanon only. Delivery is free all over Lebanon on orders over $99, before promo discounts.",
+        "Delivery is available within Lebanon only. It is free on orders over $99, before promo discounts.",
       ],
       [
-        "A little patience",
-        "The sample delivery window is 5–10 business days. No actual shipments are created by this frontend.",
+        "Delivery timing",
+        business.deliveryEstimate || "Please contact the shop for the current delivery estimate.",
       ],
       [
         "Your order",
-        "A demo confirmation appears at checkout. No shipping or order email is sent.",
+        "Cash on Delivery is available. Delivery charges and order availability are confirmed at checkout.",
       ],
     ],
   },
   returns: {
-    title: "A little room to change your mind.",
-    intro: "Sample returns and exchanges for the demo store.",
+    title: "Returns and exchanges",
+    intro: "Please review the current returns policy before ordering.",
     sections: [
       [
-        "30 days of flexibility",
-        "Our illustrative return window is 30 days for unworn items with their original packaging. This is sample copy, not an active retail policy.",
-      ],
-      [
-        "Need a different size?",
-        "Use the size guide on each product to find a little room to grow. No real exchanges are processed here.",
-      ],
-      [
-        "Here to help",
-        "Contact support@boysandgirlz.com when a live store is launched. No purchase or return takes place in this demo.",
+        "Current policy",
+        business.returnsPolicy || "The returns policy has not been confirmed yet. Contact the shop before ordering if you need return or exchange details.",
       ],
     ],
   },
@@ -201,15 +170,15 @@ const help: Record<
     sections: [
       [
         "Baby clothing",
-        "New Born through 5–6 Years. Check each product listing for the exact fit and measurements.",
+        "Available sizes vary by item. Check each product listing and contact us for measurements before ordering.",
       ],
       [
         "For mama",
-        "S: UK 8–10 · M: UK 12–14 · L: UK 16–18 · XL: UK 20–22. Choose the shape that feels comfortable.",
+        "Maternity clothing uses S, M, L, XL and XXL. Ask us for garment measurements to confirm the fit.",
       ],
       [
         "A little note",
-        "All measurements are sample values. Real products should include supplier measurements, garment care, fabric content, and toy age guidance.",
+        "Measurements depend on the item. Contact us if a product does not yet list the details you need.",
       ],
     ],
   },
