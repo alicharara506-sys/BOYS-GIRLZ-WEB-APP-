@@ -34,8 +34,8 @@ body { background: #f8f6f3; color: #101832; }
 .announcement-cod svg { width: 16px; height: 16px; color: #fa5d9a; margin-right: 3px; }
 .announcement-divider { display: none; }
 .site-header { position: sticky; top: 0; background: #ffffffee; border-bottom: 0; }
-.nav-inner { height: 78px; gap: 20px; }
-.brand-logo-image { width: 189px; height: 62px; object-fit: contain; mix-blend-mode: multiply; }
+.nav-inner { height: 94px; gap: 20px; }
+.site-header .brand-logo-image { width: 260px; height: 86px; object-fit: contain; mix-blend-mode: multiply; }
 .desktop-nav { gap: clamp(17px, 2.1vw, 32px); font-family: Quicksand, sans-serif; font-size: 14px; font-weight: 700; }
 .desktop-nav a.active::after { display: none; }
 .desktop-nav a:hover, .desktop-nav a.active { color: var(--blue); }
@@ -184,7 +184,8 @@ body { background: #f8f6f3; color: #101832; }
 @media (max-width: 900px) {
   .desktop-nav { display: none; }
   .mobile-menu-button { display: inline-flex; }
-  .brand-logo-image { width: 160px; }
+  .nav-inner { height: 82px; }
+  .site-header .brand-logo-image { width: 220px; height: 74px; }
   .home-hero { height: 450px; }
   .home-hero h1 { font-size: clamp(32px, 5vw, 47px); }
   .home-hero-art .home-mascot { width: 185px; height: 260px; }
@@ -205,8 +206,8 @@ body { background: #f8f6f3; color: #101832; }
   .announcement-main strong { font-size: 8px; }
   .announcement-main svg, .announcement-cod svg { width: 14px; height: 14px; margin-right: 2px; }
   .announcement-cod { font-size: 8px; }
-  .nav-inner { height: 68px; gap: 7px; }
-  .brand-logo-image { width: 118px; height: 46px; }
+  .nav-inner { height: 76px; gap: 7px; }
+  .site-header .brand-logo-image { width: clamp(136px, 42vw, 164px); height: 64px; }
   .nav-icons { gap: 0; }
   .nav-icons .icon-button { width: 32px; height: 34px; }
   .nav-icons .icon-button svg { width: 21px; height: 21px; }
