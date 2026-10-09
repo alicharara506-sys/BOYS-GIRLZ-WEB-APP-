@@ -14,7 +14,7 @@ import { itemKey, type CartItem } from "../state/storeCore";
 import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
-import WhatsAppLink from "../components/WhatsAppLink";
+import { WhatsAppOrderOption } from "../components/WhatsAppLink";
 export function Quantity({
   value,
   onChange,
@@ -97,7 +97,7 @@ export function OrderSummary({
   checkout?: boolean;
   children?: React.ReactNode;
 }) {
-  const { totals } = useStore();
+  const { cart, totals } = useStore();
   return (
     <section className="order-summary">
       <h2>A lovely little total</h2>
@@ -124,6 +124,7 @@ export function OrderSummary({
           <p className="checkout-note">
             <LockKeyhole size={12} /> Cash on Delivery only
           </p>
+          <WhatsAppOrderOption cart={cart} />
         </>
       )}
       {children}
@@ -174,6 +175,7 @@ export function CartDrawer() {
             >
               View your bag <ArrowRight size={16} />
             </Link>
+            <WhatsAppOrderOption cart={cart} onClick={() => setCartOpen(false)} />
             <Link
               to="/checkout"
               className="text-link"
@@ -234,7 +236,6 @@ export default function Cart() {
             </Link>
           </section>
           <OrderSummary />
-          <WhatsAppLink className="btn btn-outline" message={`Hello Boys & Girlz, I would like to ask about these items: ${cart.map((item) => `${productById(item.productId)?.name || item.productId} (${[item.size, item.color].filter(Boolean).join(", ")}) × ${item.quantity}`).join("; ")}.`} />
         </div>
       ) : (
         <div className="empty-state">

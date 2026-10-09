@@ -27,6 +27,7 @@ npm run test:e2e
 - Mock products with size, color, price, sale, review, and category data, including four featured products styled after the approved mockup
 - Search suggestions, category/price/size/color/sale filters, and sorting
 - Persistent variant-aware cart and wishlist with validated `localStorage` recovery
+- Optional WhatsApp chat and order-request handoff from products, bag, and checkout when the confirmed shop number is configured
 - Three-step shipping → payment → review Cash on Delivery interface with an explicit unconfigured state
 - Original illustrated B and G artwork in the hero; the corresponding original letter appears on each Boys/Girls category page
 - Logo entrance, product image reveals, fly-to-bag motion, animated outlet banner, button and newsletter interactions, branded route transitions, and GSAP scroll reveals

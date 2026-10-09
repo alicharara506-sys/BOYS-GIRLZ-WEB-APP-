@@ -119,7 +119,11 @@ function ProductContent({ product: p }: { product: Product }) {
               <WishButton product={p} />
             </div>
           </div>
-          <WhatsAppLink className="text-link product-whatsapp" message={`Hello Boys & Girlz, I would like to ask about ${p.name} (${[size, color].filter(Boolean).join(", ")}), quantity ${quantity}.`} />
+          <WhatsAppLink
+            className="text-link product-whatsapp"
+            label="Ask or order on WhatsApp"
+            message={`Hello Boys & Girlz! I would like to request ${quantity} × ${p.name}${[size, color].filter(Boolean).length ? ` (${[size, color].filter(Boolean).join(", ")})` : ""} for delivery within Lebanon. Please confirm availability, price, and delivery charge.`}
+          />
           <div className="product-reassurance">
             <span>
               <Truck size={17} /> Lebanon delivery · Free over $99

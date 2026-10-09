@@ -10,7 +10,7 @@
     "preview": "node node_modules/@react-router/serve/bin.js build/server/index.js",
     "typecheck": "node node_modules/@react-router/dev/bin.js typegen && node node_modules/typescript/bin/tsc --noEmit",
     "lint": "node node_modules/eslint/bin/eslint.js .",
-    "test": "node --test tests/store.test.mjs tests/order.test.mjs",
+    "test": "node --test tests/store.test.mjs tests/order.test.mjs tests/whatsapp.test.mjs",
     "test:e2e": "node node_modules/@playwright/test/cli.js test"
   },
   "dependencies": {

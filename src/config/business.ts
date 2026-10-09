@@ -5,7 +5,7 @@ export const business = {
   model: "A Lebanon-based shop reselling children's items, with a Like New outlet",
   siteUrl: env.VITE_PUBLIC_SITE_URL?.replace(/\/$/, "") || "",
   phone: env.VITE_SHOP_PHONE || "",
-  whatsappPhone: env.VITE_WHATSAPP_PHONE || env.VITE_SHOP_PHONE || "",
+  whatsappPhone: env.VITE_WHATSAPP_PHONE || "",
   address: env.VITE_SHOP_ADDRESS || "",
   hours: env.VITE_SHOP_HOURS || "",
   returnsPolicy: env.VITE_RETURNS_POLICY || "",

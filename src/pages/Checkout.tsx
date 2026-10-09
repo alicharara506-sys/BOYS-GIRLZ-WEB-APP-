@@ -5,6 +5,7 @@ import { useStore } from "../state/Store";
 import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
 import { itemKey } from "../state/storeCore";
+import { WhatsAppOrderOption } from "../components/WhatsAppLink";
 
 type OrderReply = { error?: string; orderNumber?: string; totals?: { totalCents: number } };
 type Shipping = {
@@ -110,6 +111,7 @@ export default function Checkout() {
         })}</div>
         <div className="summary-line"><span>Estimated subtotal</span><span>{money(totals.subtotal)}</span></div>
         <p className="small-muted">Final shipping, discounts and total are calculated on the server. No payment is collected online.</p>
+        <WhatsAppOrderOption cart={cart} />
       </aside>
     </div>
   </div>;

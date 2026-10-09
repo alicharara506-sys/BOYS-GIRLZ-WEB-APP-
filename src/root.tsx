@@ -1,4 +1,4 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useRouteError } from "react-router";
 import { StoreProvider, useStore } from "./state/Store";
 import { Footer, Header } from "./components/Layout";
 import { CartDrawer } from "./pages/Cart";
@@ -57,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function Shell() {
   const { notice } = useStore();
+  const { pathname } = useLocation();
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
@@ -65,7 +66,7 @@ function Shell() {
       <main id="main"><Outlet /></main>
       <Footer />
       <CartDrawer />
-      <WhatsAppLink className="whatsapp-floating" message="Hello Boys & Girlz, I have a question about the shop." />
+      {pathname !== "/cart" && pathname !== "/checkout" && <WhatsAppLink className="whatsapp-floating" label="Chat with us" ariaLabel="Chat with Boys & Girlz on WhatsApp" message="Hello Boys & Girlz! I have a question about your shop." />}
       <FlyToBag />
       <div className={`toast ${notice ? "visible" : ""}`} role="status" aria-live="polite">{notice}</div>
     </>
