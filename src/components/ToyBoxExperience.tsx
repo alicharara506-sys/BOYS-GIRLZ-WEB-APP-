@@ -13,6 +13,16 @@ const areas = [
   { key: "baby", eyebrow: "The baby nursery", heading: <>Hello, little<br /><span>one.</span></>, body: "Soft essentials for newborns and babies.", path: "/category/unisex", action: "Shop Unisex" },
   { key: "toys", eyebrow: "The toy shelf", heading: <>Small toys,<br /><span>big smiles.</span></>, body: "Playtime companions and thoughtful gifts.", path: "/category/toys", action: "Shop Toys" },
 ];
+const floatingLetters = [
+  { letter: "O", name: "o" },
+  { letter: "Y", name: "y" },
+  { letter: "S", name: "s" },
+  { letter: "&", name: "amp" },
+  { letter: "I", name: "i" },
+  { letter: "R", name: "r" },
+  { letter: "L", name: "l" },
+  { letter: "Z", name: "z" },
+] as const;
 export default function ToyBoxExperience() {
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
@@ -39,8 +49,9 @@ export default function ToyBoxExperience() {
   return <section ref={sectionRef} className="toybox-journey" aria-label="Explore Boys & Girlz">
     <div className="toybox-sticky" aria-hidden="true">
       <div className={`toybox-poster toybox-poster-${areas[active].key} ${animateEntrance ? "toybox-enter" : ""}`}>
-        <span className="toybox-poster-blob toybox-poster-blue" />
-        <span className="toybox-poster-blob toybox-poster-pink" />
+        <div className="toybox-letter-field">
+          {floatingLetters.map(({ letter, name }) => <span className={`toybox-letter toybox-letter-${name}`} key={name}>{letter}</span>)}
+        </div>
         <span className="home-mascot home-mascot-boy" />
         <span className="home-mascot home-mascot-girl" />
       </div>

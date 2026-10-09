@@ -99,6 +99,8 @@ test("the desktop hero shows the exact B and G logo characters", async ({ page }
   await expect(page.getByRole("heading", { name: "Little clothes, for big smiles." })).toBeVisible();
   await expect(page.locator(".toybox-poster .home-mascot-boy")).toBeVisible();
   await expect(page.locator(".toybox-poster .home-mascot-girl")).toBeVisible();
+  await expect(page.locator(".toybox-letter")).toHaveText(["O", "Y", "S", "&", "I", "R", "L", "Z"]);
+  await expect(page.locator(".toybox-poster-blob")).toHaveCount(0);
   await expect(page.locator(".toybox-poster canvas")).toHaveCount(0);
   const artwork = await page.locator(".toybox-poster .home-mascot-boy").evaluate((element) => getComputedStyle(element).backgroundImage);
   expect(artwork).toContain("brand-characters.png");
