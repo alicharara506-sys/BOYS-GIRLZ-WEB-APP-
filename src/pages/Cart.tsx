@@ -15,6 +15,7 @@ import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
+import { useLocale } from "../i18n/Locale";
 export function Quantity({
   value,
   onChange,
@@ -24,10 +25,11 @@ export function Quantity({
   onChange: (v: number) => void;
   label?: string;
 }) {
+  const { language, t } = useLocale();
   return (
-    <div className="quantity-control" role="group" aria-label={label}>
+    <div className="quantity-control" role="group" aria-label={t(label)}>
       <button
-        aria-label={`Decrease ${label.toLowerCase()}`}
+        aria-label={language === "ar" ? `تقليل ${t(label)}` : `Decrease ${label.toLowerCase()}`}
         disabled={value <= 1}
         onClick={() => onChange(value - 1)}
         type="button"
@@ -36,7 +38,7 @@ export function Quantity({
       </button>
       <output aria-live="polite">{value}</output>
       <button
-        aria-label={`Increase ${label.toLowerCase()}`}
+        aria-label={language === "ar" ? `زيادة ${t(label)}` : `Increase ${label.toLowerCase()}`}
         disabled={value >= 10}
         onClick={() => onChange(value + 1)}
         type="button"
@@ -53,6 +55,7 @@ export function CartLine({
   item: CartItem;
   compact?: boolean;
 }) {
+  const { language, t } = useLocale();
   const { dispatch, setCartOpen } = useStore();
   const p = productById(item.productId);
   if (!p) return null;
@@ -63,10 +66,10 @@ export function CartLine({
       </Link>
       <div className="cart-line-info">
         <Link to={`/product/${p.id}`} onClick={() => setCartOpen(false)}>
-          {p.name}
+          {t(p.name)}
         </Link>
         <p>
-          {item.size && <>{item.size} <span>·</span> </>}{item.color}
+          {item.size && <>{t(item.size)} <span>·</span> </>}{t(item.color)}
         </p>
         <div className="cart-line-controls">
           <Quantity
@@ -74,15 +77,15 @@ export function CartLine({
             onChange={(quantity) =>
               dispatch({ type: "QUANTITY", key: itemKey(item), quantity })
             }
-            label={`${p.name} quantity`}
+            label={language === "ar" ? `كمية ${t(p.name)}` : `${p.name} quantity`}
           />
           <button
             className="remove-link"
             onClick={() => dispatch({ type: "REMOVE", key: itemKey(item) })}
-            aria-label={`Remove ${p.name} from bag`}
+            aria-label={language === "ar" ? `إزالة ${t(p.name)} من السلة` : `Remove ${p.name} from bag`}
           >
             <Trash2 size={14} />
-            {!compact && "Remove"}
+            {!compact && t("Remove")}
           </button>
         </div>
       </div>
@@ -97,32 +100,33 @@ export function OrderSummary({
   checkout?: boolean;
   children?: React.ReactNode;
 }) {
+  const { t } = useLocale();
   const { cart, totals } = useStore();
   return (
     <section className="order-summary">
-      <h2>A lovely little total</h2>
+      <h2>{t("A lovely little total")}</h2>
       <div className="summary-line">
-        <span>Subtotal</span>
+        <span>{t("Subtotal")}</span>
         <span>{money(totals.subtotal)}</span>
       </div>
       <div className="summary-line">
-        <span>Shipping</span>
-        <span>Calculated at checkout</span>
+        <span>{t("Shipping")}</span>
+        <span>{t("Calculated at checkout")}</span>
       </div>
       <div className="summary-total">
-        <span>Estimated subtotal</span>
+        <span>{t("Estimated subtotal")}</span>
         <strong>
-          {money(totals.total)} <small>USD</small>
+          {money(totals.total)} <small>{t("USD")}</small>
         </strong>
       </div>
       {!checkout && (
         <>
-          <p className="small-muted">Enter a promo code at checkout. Stock, discounts and final delivery cost are checked when the order is placed.</p>
+          <p className="small-muted">{t("Enter a promo code at checkout. Stock, discounts and final delivery cost are checked when the order is placed.")}</p>
           <Link to="/checkout" className="btn btn-blue checkout-btn">
-            A little closer to yours <ArrowRight size={17} />
+            {t("A little closer to yours")} <ArrowRight size={17} />
           </Link>
           <p className="checkout-note">
-            <LockKeyhole size={12} /> Cash on Delivery only
+            <LockKeyhole size={12} /> {t("Cash on Delivery only")}
           </p>
           <WhatsAppOrderOption cart={cart} />
         </>
@@ -132,12 +136,13 @@ export function OrderSummary({
   );
 }
 export function CartDrawer() {
+  const { language, t } = useLocale();
   const { cartOpen, setCartOpen, cart, count, totals } = useStore();
   return (
     <Modal
       open={cartOpen}
       onClose={() => setCartOpen(false)}
-      title={`Your little bag (${count})`}
+      title={language === "ar" ? `سلّتك الصغيرة (${count})` : `Your little bag (${count})`}
       drawer
     >
       {cart.length ? (
@@ -146,13 +151,13 @@ export function CartDrawer() {
             <Truck size={18} />
             <p>
               {totals.subtotal > 99
-                ? "Lovely! Your shipping is on us."
-                : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
+                ? t("Lovely! Your shipping is on us.")
+                : language === "ar" ? `توصيل مجاني للطلبات فوق 99$. مجموعك الفرعي ${money(totals.subtotal)}.` : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
             </p>
             <progress
               value={Math.min(totals.subtotal, 99)}
               max="99"
-              aria-label="Progress toward free shipping"
+              aria-label={t("Progress toward free shipping")}
             />
           </div>
           <div className="drawer-items">
@@ -162,18 +167,18 @@ export function CartDrawer() {
           </div>
           <div className="drawer-summary">
             <div className="summary-total">
-              <span>Subtotal</span>
+              <span>{t("Subtotal")}</span>
               <strong>{money(totals.subtotal)}</strong>
             </div>
             <p className="small-muted">
-              Shipping and discounts shown in your bag.
+              {t("Shipping and discounts shown in your bag.")}
             </p>
             <Link
               to="/cart"
               className="btn btn-blue"
               onClick={() => setCartOpen(false)}
             >
-              View your bag <ArrowRight size={16} />
+              {t("View your bag")} <ArrowRight size={16} />
             </Link>
             <WhatsAppOrderOption cart={cart} onClick={() => setCartOpen(false)} />
             <Link
@@ -181,21 +186,21 @@ export function CartDrawer() {
               className="text-link"
               onClick={() => setCartOpen(false)}
             >
-              Continue to checkout <ChevronRight size={14} />
+              {t("Continue to checkout")} <ChevronRight size={14} />
             </Link>
           </div>
         </>
       ) : (
         <div className="empty-state">
           <ShoppingBag size={48} strokeWidth={1.2} />
-          <h2>A little empty, for now.</h2>
-          <p>Your next favorite is waiting.</p>
+          <h2>{t("A little empty, for now.")}</h2>
+          <p>{t("Your next favorite is waiting.")}</p>
           <Link
             to="/shop"
             className="btn btn-blue"
             onClick={() => setCartOpen(false)}
           >
-            Let’s explore <ArrowRight size={16} />
+            {t("Let’s explore")} <ArrowRight size={16} />
           </Link>
         </div>
       )}
@@ -203,20 +208,20 @@ export function CartDrawer() {
   );
 }
 export default function Cart() {
+  const { language, t } = useLocale();
   const { cart, count, totals } = useStore();
   return (
     <div className="page-width">
       <div className="breadcrumbs">
-        <Link to="/">Home</Link>
+        <Link to="/">{t("Home")}</Link>
         <ChevronRight size={12} />
-        <span>Your bag</span>
+        <span>{t("Your bag")}</span>
       </div>
       <div className="page-heading">
-        <span className="eyebrow">A few lovely little things</span>
-        <h1>Your shopping bag.</h1>
+        <span className="eyebrow">{t("A few lovely little things")}</span>
+        <h1>{t("Your shopping bag.")}</h1>
         <p>
-          {count} {count === 1 ? "little favorite" : "little favorites"}, chosen
-          with love.
+          {language === "ar" ? `${count} منتجات اخترتها بمحبة.` : <>{count} {count === 1 ? "little favorite" : "little favorites"}, chosen with love.</>}
         </p>
       </div>
       {cart.length ? (
@@ -225,14 +230,14 @@ export default function Cart() {
             <div className="cart-shipping">
               <Truck size={20} />
               {totals.subtotal > 99
-                ? "Your order qualifies for FREE delivery all over Lebanon."
-                : "FREE delivery within Lebanon on orders over $99."}
+                ? t("Your order qualifies for FREE delivery all over Lebanon.")
+                : t("FREE delivery within Lebanon on orders over $99.")}
             </div>
             {cart.map((i) => (
               <CartLine key={itemKey(i)} item={i} />
             ))}
             <Link to="/shop" className="text-link continue-link">
-              Keep exploring <ArrowRight size={15} />
+              {t("Keep exploring")} <ArrowRight size={15} />
             </Link>
           </section>
           <OrderSummary />
@@ -240,10 +245,10 @@ export default function Cart() {
       ) : (
         <div className="empty-state">
           <ShoppingBag size={50} strokeWidth={1.2} />
-          <h2>Good things are on their way.</h2>
-          <p>Start with one little favorite.</p>
+          <h2>{t("Good things are on their way.")}</h2>
+          <p>{t("Start with one little favorite.")}</p>
           <Link to="/shop" className="btn btn-blue">
-            Shop the collection <ArrowRight size={16} />
+            {t("Shop the collection")} <ArrowRight size={16} />
           </Link>
         </div>
       )}

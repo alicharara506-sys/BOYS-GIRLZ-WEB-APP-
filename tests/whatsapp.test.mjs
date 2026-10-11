@@ -29,3 +29,14 @@ test("WhatsApp request identifies Like New items and ignores stale products", ()
   assert.doesNotMatch(message, /missing/);
   assert.equal(whatsAppOrderMessage([]), "");
 });
+
+test("Arabic WhatsApp request keeps the same item values and asks for confirmation", () => {
+  const first = products[0];
+  const translate = (text) => ({ "Everyday Overshirt": "قميص يومي", "New Born": "حديث الولادة", Blue: "أزرق" })[text] || text;
+  const message = whatsAppOrderMessage([
+    { productId: first.id, size: first.sizes[0], color: first.colors[0], quantity: 1 },
+  ], "ar", translate);
+  assert.match(message, /قميص يومي \(حديث الولادة، أزرق\)/);
+  assert.match(message, /يرجى تأكيد توفّر المنتجات/);
+  assert.match(message, /\$28\.00/);
+});

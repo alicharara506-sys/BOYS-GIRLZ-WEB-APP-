@@ -6,6 +6,7 @@ import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
 import { itemKey } from "../state/storeCore";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
+import { useLocale } from "../i18n/Locale";
 
 type OrderReply = { error?: string; orderNumber?: string; totals?: { totalCents: number } };
 type Shipping = {
@@ -28,6 +29,7 @@ const fields: { key: keyof Shipping; label: string; required?: boolean; type?: s
   { key: "promoCode", label: "Promo code (optional)" },
 ];
 export default function Checkout() {
+  const { language, t } = useLocale();
   const { cart, totals, dispatch } = useStore();
   const fetcher = useFetcher<OrderReply>();
   const [shipping, setShipping] = useState<Shipping>(initialShipping);
@@ -48,69 +50,69 @@ export default function Checkout() {
   };
   if (order) return <div className="page-width success-page" role="status">
     <span className="success-icon"><CheckCircle2 size={56} strokeWidth={1.2} /></span>
-    <h1>Your order has been received.</h1>
-    <p>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</p>
-    <p>Total: {money((fetcher.data?.totals?.totalCents ?? 0) / 100)}</p>
-    <Link to="/shop" className="btn btn-blue">Continue shopping <ArrowRight size={16} /></Link>
+    <h1>{t("Your order has been received.")}</h1>
+    <p>{language === "ar" ? <>الطلب <strong>{order}</strong> بانتظار التأكيد. يُرجى تجهيز المبلغ نقداً عند التوصيل.</> : <>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</>}</p>
+    <p>{language === "ar" ? "المجموع:" : "Total:"} {money((fetcher.data?.totals?.totalCents ?? 0) / 100)}</p>
+    <Link to="/shop" className="btn btn-blue">{t("Continue shopping")} <ArrowRight size={16} /></Link>
   </div>;
   if (!cart.length) return <div className="page-width empty-state">
-    <Package size={45} /><h1>Your bag is empty.</h1>
-    <p>Add an item before checking out.</p>
-    <Link to="/shop" className="btn btn-blue">Explore the shop <ArrowRight size={16} /></Link>
+    <Package size={45} /><h1>{t("Your bag is empty.")}</h1>
+    <p>{t("Add an item before checking out.")}</p>
+    <Link to="/shop" className="btn btn-blue">{t("Explore the shop")} <ArrowRight size={16} /></Link>
   </div>;
   return <div className="page-width checkout-page">
     <div className="page-heading">
-      <span className="eyebrow">Delivery within Lebanon</span>
-      <h1>Checkout</h1>
-      <p>Cash on Delivery. Your total and item availability are verified when you place the order.</p>
+      <span className="eyebrow">{t("Delivery within Lebanon")}</span>
+      <h1>{t("Checkout")}</h1>
+      <p>{t("Cash on Delivery. Your total and item availability are verified when you place the order.")}</p>
     </div>
     <ol className="checkout-steps">
-      <li className={review ? "complete" : "current"} aria-current={!review ? "step" : undefined}><span>1</span> Delivery details</li>
-      <li className={review ? "current" : ""} aria-current={review ? "step" : undefined}><span>2</span> Review and order</li>
+      <li className={review ? "complete" : "current"} aria-current={!review ? "step" : undefined}><span>1</span> {t("Delivery details")}</li>
+      <li className={review ? "current" : ""} aria-current={review ? "step" : undefined}><span>2</span> {t("Review and order")}</li>
     </ol>
     <div className="checkout-layout">
       <section className="checkout-panel">
         <form onSubmit={submit}>
-          <h2><Truck size={23} /> {review ? "Review your details" : "Where should we deliver?"}</h2>
+          <h2><Truck size={23} /> {t(review ? "Review your details" : "Where should we deliver?")}</h2>
           <div className="form-grid">
-            {fields.slice(0, 3).map((field) => <label key={field.key} className={field.full ? "full" : ""}>{field.label}
+            {fields.slice(0, 3).map((field) => <label key={field.key} className={field.full ? "full" : ""}>{t(field.label)}
               <input required={field.required} type={field.type || "text"} autoComplete={field.autoComplete}
                 value={shipping[field.key]} onChange={(e) => update(field.key, e.target.value)} disabled={review} />
             </label>)}
-            <label>Governorate
+            <label>{t("Governorate")}
               <select required value={shipping.governorate} onChange={(e) => update("governorate", e.target.value)} disabled={review}>
-                <option value="">Choose a governorate</option>
-                {governorates.map((name) => <option key={name} value={name}>{name}</option>)}
+                <option value="">{t("Choose a governorate")}</option>
+                {governorates.map((name) => <option key={name} value={name}>{t(name)}</option>)}
               </select>
             </label>
-            {fields.slice(3).map((field) => <label key={field.key} className={field.full ? "full" : ""}>{field.label}
+            {fields.slice(3).map((field) => <label key={field.key} className={field.full ? "full" : ""}>{t(field.label)}
               <input required={field.required} type={field.type || "text"} autoComplete={field.autoComplete}
                 value={shipping[field.key]} onChange={(e) => update(field.key, e.target.value)} disabled={review} />
             </label>)}
-            <label className="full">Delivery notes (optional)
+            <label className="full">{t("Delivery notes (optional)")}
               <textarea rows={3} value={shipping.deliveryNotes} onChange={(e) => update("deliveryNotes", e.target.value)} disabled={review} />
             </label>
           </div>
-          <div className="delivery-option"><Truck size={22} /><div><strong>Delivery in Lebanon</strong><p>Cash on Delivery · Delivery timing confirmed with the shop</p></div></div>
-          {review && <p className="demo-disclosure">Payment method: <strong>Cash on Delivery</strong>. The server checks stock, promo eligibility and final shipping before accepting your order.</p>}
-          {fetcher.data?.error && <p className="form-error" role="alert">{fetcher.data.error}</p>}
+          <div className="delivery-option"><Truck size={22} /><div><strong>{t("Delivery in Lebanon")}</strong><p>{t("Cash on Delivery · Delivery timing confirmed with the shop")}</p></div></div>
+          {review && <p className="demo-disclosure">{t("Payment method:")} <strong>{t("Cash on Delivery")}</strong>. {t("The server checks stock, promo eligibility and final shipping before accepting your order.")}</p>}
+          {fetcher.data?.error && <p className="form-error" role="alert">{t(fetcher.data.error)}</p>}
           <div className="step-buttons">
-            {review && <button className="text-link" type="button" onClick={() => setReview(false)}><ArrowLeft size={15} /> Edit details</button>}
+            {review && <button className="text-link" type="button" onClick={() => setReview(false)}><ArrowLeft size={15} /> {t("Edit details")}</button>}
             <button className="btn btn-pink" type="submit" disabled={fetcher.state !== "idle"}>
-              {fetcher.state !== "idle" ? "Checking your order…" : review ? "Place Cash on Delivery order" : "Review order"} <ArrowRight size={16} />
+              {t(fetcher.state !== "idle" ? "Checking your order…" : review ? "Place Cash on Delivery order" : "Review order")} <ArrowRight size={16} />
             </button>
           </div>
         </form>
       </section>
-      <aside className="order-summary" aria-label="Order summary">
-        <h2>Your bag</h2>
+      <aside className="order-summary" aria-label={t("Order summary")}>
+        <h2>{t("Your bag")}</h2>
         <div className="checkout-items">{cart.map((item) => {
           const product = productById(item.productId);
           if (!product) return null;
-          return <div key={itemKey(item)}><ProductImage product={product} /><div><strong>{product.name}</strong><span>{item.size && `${item.size} · `}{item.color} · Qty {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
+          return <div key={itemKey(item)}><ProductImage product={product} /><div><strong>{t(product.name)}</strong><span>{item.size && `${t(item.size)} · `}{t(item.color)} · {language === "ar" ? "الكمية" : "Qty"} {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
         })}</div>
-        <div className="summary-line"><span>Estimated subtotal</span><span>{money(totals.subtotal)}</span></div>
-        <p className="small-muted">Final shipping, discounts and total are calculated on the server. No payment is collected online.</p>
+        <div className="summary-line"><span>{t("Estimated subtotal")}</span><span>{money(totals.subtotal)}</span></div>
+        <p className="small-muted">{t("Final shipping, discounts and total are calculated on the server. No payment is collected online.")}</p>
         <WhatsAppOrderOption cart={cart} />
       </aside>
     </div>

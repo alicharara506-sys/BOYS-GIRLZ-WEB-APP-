@@ -1,9 +1,11 @@
 import { approvedBrands } from "../data/brands";
+import { useLocale } from "../i18n/Locale";
 
 export default function BrandRibbon() {
+  const { t } = useLocale();
   return (
-    <section className="brand-ribbon page-width" aria-label="Brands carried by Boys & Girlz">
-      <span className="brand-ribbon-label">Brands you'll find here</span>
+    <section className="brand-ribbon page-width" aria-label={t("Brands carried by Boys & Girlz")}>
+      <span className="brand-ribbon-label">{t("Brands you'll find here")}</span>
       <div className="brand-ribbon-window">
         <div className="brand-ribbon-track">
           {[0, 1].map((copy) => (

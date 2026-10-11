@@ -4,6 +4,7 @@ import { ArrowRight, Heart } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "../hooks/useExperience";
+import { useLocale } from "../i18n/Locale";
 
 gsap.registerPlugin(ScrollTrigger);
 const areas = [
@@ -24,6 +25,7 @@ const floatingLetters = [
   { letter: "Z", name: "z" },
 ] as const;
 export default function ToyBoxExperience() {
+  const { t } = useLocale();
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -46,7 +48,7 @@ export default function ToyBoxExperience() {
     });
     return () => trigger.kill();
   }, [reduceMotion]);
-  return <section ref={sectionRef} className="toybox-journey" aria-label="Explore Boys & Girlz">
+  return <section ref={sectionRef} className="toybox-journey" aria-label={t("Explore Boys & Girlz")}>
     <div className="toybox-sticky" aria-hidden="true">
       <div className={`toybox-poster toybox-poster-${areas[active].key} ${animateEntrance ? "toybox-enter" : ""}`}>
         <div className="toybox-letter-field">
@@ -59,11 +61,11 @@ export default function ToyBoxExperience() {
     <div className="toybox-steps">
       {areas.map((area, index) => <article className={`toybox-step toybox-step-${area.key}`} key={area.key}>
         <div className="toybox-copy">
-          <span className="home-kicker"><Heart size={17} aria-hidden="true" /> {area.eyebrow}</span>
-          {index === 0 ? <h1>{area.heading}</h1> : <h2>{area.heading}</h2>}
-          <p>{area.body}</p>
+          <span className="home-kicker"><Heart size={17} aria-hidden="true" /> {t(area.eyebrow)}</span>
+          {index === 0 ? <h1>{t("Little clothes,")}<br /><span>{t("for big smiles.")}</span></h1> : <h2>{area.key === "boys" ? <>{t("Ready, set,")}<br /><span>{t("play.")}</span></> : area.key === "girls" ? <>{t("Made to")}<br /><span>{t("shine.")}</span></> : area.key === "baby" ? <>{t("Hello, little")}<br /><span>{t("one.")}</span></> : <>{t("Small toys,")}<br /><span>{t("big smiles.")}</span></>}</h2>}
+          <p>{t(area.body)}</p>
           <Link className={`home-button ${index % 2 ? "home-button-blue" : "home-button-pink"}`} to={area.path}>
-            {area.action} <ArrowRight size={18} aria-hidden="true" />
+            {t(area.action)} <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
       </article>)}

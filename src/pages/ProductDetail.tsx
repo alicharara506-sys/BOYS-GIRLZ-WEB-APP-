@@ -23,6 +23,7 @@ import { Modal } from "../components/Layout";
 import { Quantity } from "./Cart";
 import { NotFound } from "./Shop";
 import WhatsAppLink from "../components/WhatsAppLink";
+import { useLocale } from "../i18n/Locale";
 export default function ProductDetail() {
   const { id } = useParams();
   const product = productById(id || "");
@@ -33,6 +34,7 @@ export default function ProductDetail() {
   );
 }
 function ProductContent({ product: p }: { product: Product }) {
+  const { language, t } = useLocale();
   const [size, setSize] = useState(p.sizes[0] || "");
   const [color, setColor] = useState(p.colors[0]);
   const [quantity, setQuantity] = useState(1);
@@ -44,34 +46,34 @@ function ProductContent({ product: p }: { product: Product }) {
   return (
     <div className="page-width">
       <div className="breadcrumbs">
-        <Link to="/">Home</Link>
+        <Link to="/">{t("Home")}</Link>
         <ChevronRight size={12} />
-        <Link to={`/category/${p.category.toLowerCase()}`}>{p.category}</Link>
+        <Link to={`/category/${p.category.toLowerCase()}`}>{t(p.category)}</Link>
         <ChevronRight size={12} />
-        <span>{p.name}</span>
+        <span>{t(p.name)}</span>
       </div>
       <div className="product-detail-layout">
         <ProductGallery product={p} />
         <div className="product-details">
           <span className="eyebrow">
             {p.isNew
-              ? "A new little favorite"
-              : `The ${p.category.toLowerCase()} collection`}
+              ? t("A new little favorite")
+              : language === "ar" ? `مجموعة ${t(p.category)}` : `The ${p.category.toLowerCase()} collection`}
           </span>
-          <h1>{p.name}</h1>
+          <h1>{t(p.name)}</h1>
           <div className="detail-price">
             {money(p.price)}{" "}
             {p.originalPrice && (
               <>
                 <del>{money(p.originalPrice)}</del>
-                <span>Save {money(p.originalPrice - p.price)}</span>
+                <span>{t("Save")} {money(p.originalPrice - p.price)}</span>
               </>
             )}
           </div>
-          <p className="detail-description">{p.description}</p>
+          <p className="detail-description">{t(p.description)}</p>
           <fieldset className="variant-section">
             <legend>
-              Color <span>— {color}</span>
+              {t("Color")} <span>— {t(color)}</span>
             </legend>
             <div className="detail-colors">
               {p.colors.map((c) => (
@@ -80,7 +82,7 @@ function ProductContent({ product: p }: { product: Product }) {
                   style={{ "--swatch": colorHex[c] } as React.CSSProperties}
                   className={color === c ? "selected" : ""}
                   onClick={() => setColor(c)}
-                  aria-label={`Select ${c}`}
+                  aria-label={`${t("Select")} ${t(c)}`}
                   aria-pressed={color === c}
                 />
               ))}
@@ -88,9 +90,9 @@ function ProductContent({ product: p }: { product: Product }) {
           </fieldset>
           {p.sizes.length > 0 && <fieldset className="variant-section">
             <legend>
-              Size{" "}
+              {t("Size")}{" "}
               <button className="size-guide" onClick={() => setSizeGuide(true)}>
-                <Ruler size={14} /> Size guide
+                <Ruler size={14} /> {t("Size guide")}
               </button>
             </legend>
             <div className="size-options">
@@ -101,7 +103,7 @@ function ProductContent({ product: p }: { product: Product }) {
                   onClick={() => setSize(s)}
                   aria-pressed={size === s}
                 >
-                  {s}
+                  {t(s)}
                 </button>
               ))}
             </div>
@@ -113,7 +115,7 @@ function ProductContent({ product: p }: { product: Product }) {
               disabled={p.productType === "shoes" && p.sizes.length === 0}
               onClick={(e) => add(p, size, color, quantity, e.currentTarget)}
             >
-              {p.productType === "shoes" && p.sizes.length === 0 ? "Sizes coming soon" : `Add to bag — ${money(p.price * quantity)}`} <Plus size={17} />
+              {p.productType === "shoes" && p.sizes.length === 0 ? t("Sizes coming soon") : `${t("Add to bag")} — ${money(p.price * quantity)}`} <Plus size={17} />
             </button>
             <div className="detail-wish">
               <WishButton product={p} />
@@ -121,40 +123,40 @@ function ProductContent({ product: p }: { product: Product }) {
           </div>
           <WhatsAppLink
             className="text-link product-whatsapp"
-            label="Ask or order on WhatsApp"
-            message={`Hello Boys & Girlz! I would like to request ${quantity} × ${p.name}${[size, color].filter(Boolean).length ? ` (${[size, color].filter(Boolean).join(", ")})` : ""} for delivery within Lebanon. Please confirm availability, price, and delivery charge.`}
+            label={t("Ask or order on WhatsApp")}
+            message={language === "ar" ? `مرحباً بويز آند غيرلز! أود طلب ${quantity} × ${t(p.name)} (${[size, color].filter(Boolean).map(t).join("، ")}) للتوصيل داخل لبنان. يرجى تأكيد التوفّر والسعر ورسوم التوصيل.` : `Hello Boys & Girlz! I would like to request ${quantity} × ${p.name}${[size, color].filter(Boolean).length ? ` (${[size, color].filter(Boolean).join(", ")})` : ""} for delivery within Lebanon. Please confirm availability, price, and delivery charge.`}
           />
           <div className="product-reassurance">
             <span>
-              <Truck size={17} /> Lebanon delivery · Free over $99
+              <Truck size={17} /> {t("Lebanon delivery · Free over $99")}
             </span>
             <span>
-              <Heart size={16} /> Chosen with love
+              <Heart size={16} /> {t("Chosen with love")}
             </span>
           </div>
           <div className="product-accordions">
             <details open>
               <summary>
-                All the little details <Plus size={15} />
+                {t("All the little details")} <Plus size={15} />
                 <Minus size={15} />
               </summary>
-              <p>For fabric composition, measurements and age guidance, please contact the shop before ordering.</p>
+              <p>{t("For fabric composition, measurements and age guidance, please contact the shop before ordering.")}</p>
             </details>
             <details>
               <summary>
-                A little care goes a long way <Plus size={15} />
+                {t("A little care goes a long way")} <Plus size={15} />
                 <Minus size={15} />
               </summary>
-              <p>Follow the care label on the item. Contact us if you need care information before ordering.</p>
+              <p>{t("Follow the care label on the item. Contact us if you need care information before ordering.")}</p>
             </details>
             <details>
               <summary>
-                Shipping & returns <Plus size={15} />
+                {t("Shipping & returns")} <Plus size={15} />
                 <Minus size={15} />
               </summary>
               <p>
-                We deliver within Lebanon only. Delivery is free on orders over $99. Read our <Link to="/help/shipping">shipping guide</Link>{" "}
-                and <Link to="/help/returns">returns guide</Link> before ordering.
+                {language === "ar" ? "نوصّل داخل لبنان فقط، والتوصيل مجاني للطلبات التي تتجاوز 99$. اقرأ " : "We deliver within Lebanon only. Delivery is free on orders over $99. Read our "}<Link to="/help/shipping">{t("shipping guide")}</Link>{" "}
+                {language === "ar" ? "و" : "and "}<Link to="/help/returns">{t("returns guide")}</Link>{language === "ar" ? " قبل الطلب." : " before ordering."}
               </p>
             </details>
           </div>
@@ -162,12 +164,12 @@ function ProductContent({ product: p }: { product: Product }) {
       </div>
       <section className="related-section">
         <div className="section-heading">
-          <h2>A few more lovely things.</h2>
+          <h2>{t("A few more lovely things.")}</h2>
           <Link
             to={`/category/${p.category.toLowerCase()}`}
             className="text-link"
           >
-            Explore <ArrowRight size={16} />
+            {t("Explore")} <ArrowRight size={16} />
           </Link>
         </div>
         <div className="related-grid">
@@ -179,27 +181,27 @@ function ProductContent({ product: p }: { product: Product }) {
       <Modal
         open={sizeGuide}
         onClose={() => setSizeGuide(false)}
-        title="A little guide to the right fit"
+        title={t("A little guide to the right fit")}
       >
-        <p className="small-muted">Ask the shop for verified measurements before choosing a size.</p>
+        <p className="small-muted">{t("Ask the shop for verified measurements before choosing a size.")}</p>
         <table className="size-table">
           <thead>
             <tr>
-              <th>Size</th>
-              <th>{p.category === "Maternity" ? "UK size" : "Height / fit"}</th>
+              <th>{t("Size")}</th>
+              <th>{t(p.category === "Maternity" ? "UK size" : "Height / fit")}</th>
             </tr>
           </thead>
           <tbody>
             {p.sizes.map((s) => [s, "See product details"]).map(([s, h]) => (
               <tr key={s}>
-                <td>{s}</td>
-                <td>{h}</td>
+                <td>{t(s)}</td>
+                <td>{t(h)}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <p className="small-muted">
-          Between sizes? Choose a little room to grow.
+          {t("Between sizes? Choose a little room to grow.")}
         </p>
       </Modal>
     </div>

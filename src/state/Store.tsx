@@ -15,6 +15,7 @@ import {
   type Action,
   type StoreState,
 } from "./storeCore";
+import { useLocale } from "../i18n/Locale";
 interface Store extends StoreState {
   dispatch: React.Dispatch<Action>;
   cartOpen: boolean;
@@ -34,6 +35,7 @@ interface Store extends StoreState {
 }
 const StoreContext = createContext<Store | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const { language, t } = useLocale();
   const [state, dispatch] = useReducer(storeReducer, initialState);
   const [hydrated, setHydrated] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -67,7 +69,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   ) => {
     if ((p.sizes.length > 0 && !p.sizes.includes(size)) || (p.sizes.length === 0 && size !== "") || !p.colors.includes(color)) return;
     dispatch({ type: "ADD", item: { productId: p.id, size, color, quantity } });
-    notify(`${p.name} added to your bag`);
+    notify(language === "ar" ? `أُضيف ${t(p.name)} إلى السلّة` : `${p.name} added to your bag`);
     if (element)
       window.dispatchEvent(
         new CustomEvent("fly-to-bag", {
@@ -79,8 +81,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "WISH", id });
     notify(
       state.wishlist.includes(id)
-        ? "Removed from your wishlist"
-        : "A little favorite, saved for later",
+        ? t("Removed from your wishlist")
+        : t("A little favorite, saved for later"),
     );
   };
   const totals = calculateTotals(

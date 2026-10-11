@@ -1,0 +1,89 @@
+.language-switch {
+  flex: none;
+  padding: 7px 10px;
+  border: 1px solid #e8e7e8;
+  border-radius: 999px;
+  background: #fff;
+  color: #253049;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+.language-switch:hover, .language-switch:focus-visible { border-color: #3b97cf; color: #277fb1; }
+
+html[dir="rtl"] body,
+html[dir="rtl"] button,
+html[dir="rtl"] input,
+html[dir="rtl"] select,
+html[dir="rtl"] textarea { font-family: Tahoma, "Segoe UI", Arial, sans-serif; }
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] .desktop-nav { font-family: Tahoma, "Segoe UI", Arial, sans-serif; letter-spacing: 0; }
+html[dir="rtl"] .page-heading,
+html[dir="rtl"] .shop-heading,
+html[dir="rtl"] .product-details,
+html[dir="rtl"] .order-summary,
+html[dir="rtl"] .checkout-panel,
+html[dir="rtl"] .filter-content,
+html[dir="rtl"] .cart-line,
+html[dir="rtl"] .story-layout,
+html[dir="rtl"] .help-page,
+html[dir="rtl"] .contact-layout { text-align: start; }
+html[dir="rtl"] .toybox-copy h1,
+html[dir="rtl"] .toybox-copy h2 { letter-spacing: 0; line-height: 1.28; font-size: clamp(32px, 3.5vw, 53px); }
+html[dir="rtl"] .toybox-copy .home-kicker { letter-spacing: 0; text-transform: none; }
+html[dir="rtl"] .toybox-poster .home-mascot-boy { right: auto; left: 6%; }
+html[dir="rtl"] .toybox-poster .home-mascot-girl { right: auto; left: 24%; }
+html[dir="rtl"] .toybox-letter-o { left: auto; right: 52%; }
+html[dir="rtl"] .toybox-letter-y { left: auto; right: 61%; }
+html[dir="rtl"] .toybox-letter-s { left: auto; right: 75%; }
+html[dir="rtl"] .toybox-letter-amp { left: auto; right: 87%; }
+html[dir="rtl"] .toybox-letter-i { left: auto; right: 49%; }
+html[dir="rtl"] .toybox-letter-r { left: auto; right: 53%; }
+html[dir="rtl"] .toybox-letter-l { left: auto; right: 77%; }
+html[dir="rtl"] .toybox-letter-z { left: auto; right: 93%; }
+html[dir="rtl"] .nav-more > div { left: auto; right: -20px; }
+html[dir="rtl"] .bag-count { right: auto; left: -5px; }
+html[dir="rtl"] .tiny-dot { right: auto; left: 2px; }
+html[dir="rtl"] .home-view-all,
+html[dir="rtl"] .home-sale-link,
+html[dir="rtl"] .search-results svg,
+html[dir="rtl"] .check-label > span { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .home-promise > div { border-right: 0; border-left: 1px solid #ded8d2; }
+html[dir="rtl"] .home-promise > div:last-child { border-left: 0; }
+html[dir="rtl"] .product-tag,
+html[dir="rtl"] .home-product-grid .product-tag,
+html[dir="rtl"] .photo-badge { left: auto; right: 12px; }
+html[dir="rtl"] .wish-button,
+html[dir="rtl"] .home-product-grid .wish-button,
+html[dir="rtl"] .photo-expand { right: auto; left: 8px; }
+html[dir="rtl"] .modal.drawer { inset: 0 auto 0 0; border-radius: 0 24px 24px 0; }
+html[dir="rtl"] .whatsapp-floating { right: auto; left: 22px; }
+html[dir="rtl"] .size-table th,
+html[dir="rtl"] .size-table td { text-align: right; }
+html[dir="rtl"] .detail-price,
+html[dir="rtl"] .product-meta > span:first-child,
+html[dir="rtl"] .cart-line > strong,
+html[dir="rtl"] .summary-line > span:last-child,
+html[dir="rtl"] .summary-total strong { direction: ltr; unicode-bidi: isolate; }
+html[dir="rtl"] .home-button svg,
+html[dir="rtl"] .home-view-all svg,
+html[dir="rtl"] .home-sale-link svg,
+html[dir="rtl"] .btn svg.lucide-arrow-right,
+html[dir="rtl"] .text-link svg.lucide-arrow-right,
+html[dir="rtl"] .breadcrumbs svg.lucide-chevron-right,
+html[dir="rtl"] .text-link svg.lucide-chevron-right { transform: scaleX(-1); }
+html[dir="rtl"] .checkout-steps li:not(:last-child)::after { transform: scaleX(-1); }
+
+@media (max-width: 700px) {
+  .language-switch { padding: 6px 8px; font-size: 11px; }
+  html[dir="rtl"] .toybox-copy h1,
+  html[dir="rtl"] .toybox-copy h2 { font-size: clamp(29px, 7vw, 39px); }
+  html[dir="rtl"] .toybox-poster .home-mascot-boy { left: 3%; right: auto; }
+  html[dir="rtl"] .toybox-poster .home-mascot-girl { left: 39%; right: auto; }
+  html[dir="rtl"] .home-promise > div { border-left: 0; }
+  html[dir="rtl"] .home-sale-link { margin-left: 0; margin-right: 47px; }
+}

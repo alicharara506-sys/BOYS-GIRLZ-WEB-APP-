@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { business } from "../config/business";
-import { pageMeta } from "../config/meta";
+import { localizedMeta } from "../config/meta";
+import { useLocale } from "../i18n/Locale";
 
 const faqs = [
   { question: "Where does Boys & Girlz deliver?", answer: "We deliver within Lebanon only. Delivery is free on orders over $99." },
@@ -10,28 +11,29 @@ const faqs = [
   { question: "What does Like New mean?", answer: "Like New outlet items are pre-owned pieces in excellent condition at reduced prices." },
 ];
 
-export const meta = () => pageMeta("Frequently asked questions", "Answers about Boys & Girlz delivery in Lebanon, Cash on Delivery, returns, sizes and Like New outlet items.", "/faq");
+export const meta = localizedMeta("Frequently asked questions", "Answers about Boys & Girlz delivery in Lebanon, Cash on Delivery, returns, sizes and Like New outlet items.", "/faq");
 
 export default function FAQ() {
+  const { language, t } = useLocale();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map(({ question, answer }) => ({
       "@type": "Question",
-      name: question,
-      acceptedAnswer: { "@type": "Answer", text: answer },
+      name: t(question),
+      acceptedAnswer: { "@type": "Answer", text: t(answer) },
     })),
   };
   return (
     <div className="page-width help-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="page-heading">
-        <span className="eyebrow">Here to help</span>
-        <h1>Frequently asked questions</h1>
-        <p>Answers about shopping with {business.name} in Lebanon.</p>
+        <span className="eyebrow">{t("Here to help")}</span>
+        <h1>{t("Frequently asked questions")}</h1>
+        <p>{language === "ar" ? `إجابات عن التسوّق من ${business.name} في لبنان.` : `Answers about shopping with ${business.name} in Lebanon.`}</p>
       </div>
-      {faqs.map(({ question, answer }) => <section key={question}><h2>{question}</h2><p>{answer}</p></section>)}
-      <Link className="btn btn-blue" to="/contact">Contact us</Link>
+      {faqs.map(({ question, answer }) => <section key={question}><h2>{t(question)}</h2><p>{t(answer)}</p></section>)}
+      <Link className="btn btn-blue" to="/contact">{t("Contact us")}</Link>
     </div>
   );
 }

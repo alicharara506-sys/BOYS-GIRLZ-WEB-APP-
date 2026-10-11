@@ -11,40 +11,37 @@ import {
 import Newsletter from "../components/Newsletter";
 import { business } from "../config/business";
 import WhatsAppLink from "../components/WhatsAppLink";
+import { useLocale } from "../i18n/Locale";
 export function About() {
+  const { t } = useLocale();
   return (
     <div className="page-width">
       <section className="story-layout">
         <div>
-          <span className="eyebrow">A little about us</span>
+          <span className="eyebrow">{t("A little about us")}</span>
           <h1>
-            For their firsts.
+            {t("For their firsts.")}
             <br />
-            <span>And everything after.</span>
+            <span>{t("And everything after.")}</span>
           </h1>
           <p>
-            First smiles. First steps. The first time they insist on dressing
-            themselves.
+            {t("First smiles. First steps. The first time they insist on dressing themselves.")}
           </p>
           <p>
-            Boys & Girlz is a children's clothing shop in Lebanon offering
-            kids clothes, toys, accessories, maternity pieces, and Like New
-            outlet finds for growing families.
+            {t("Boys & Girlz is a children's clothing shop in Lebanon offering kids clothes, toys, accessories, maternity pieces, and Like New outlet finds for growing families.")}
           </p>
           <p>
-            <strong>What is Boys & Girlz?</strong> We are an online baby shop
-            in Lebanon and a family-friendly retail destination where comfort,
-            practical value, and cheerful design come first.
+            <strong>{t("What is Boys & Girlz?")}</strong> {t("We are an online baby shop in Lebanon and a family-friendly retail destination where comfort, practical value, and cheerful design come first.")}
           </p>
-          <p><strong>Where do you ship?</strong> We ship within Lebanon only. Every order is prepared locally with care.</p>
+          <p><strong>{t("Where do you ship?")}</strong> {t("We ship within Lebanon only. Every order is prepared locally with care.")}</p>
           <Link to="/shop" className="btn btn-blue">
-            Meet your next favorite <ArrowRight size={16} />
+            {t("Meet your next favorite")} <ArrowRight size={16} />
           </Link>
         </div>
         <div
           className="story-image"
           role="img"
-          aria-label="Happy babies in soft blue and pink outfits"
+          aria-label={t("Happy babies in soft blue and pink outfits")}
         />
       </section>
       <div className="story-values">
@@ -61,8 +58,8 @@ export function About() {
           return (
             <div key={String(title)}>
               <I size={30} strokeWidth={1.2} />
-              <h2>{String(title)}</h2>
-              <p>{String(text)}</p>
+              <h2>{t(String(title))}</h2>
+              <p>{t(String(text))}</p>
             </div>
           );
         })}
@@ -72,19 +69,20 @@ export function About() {
   );
 }
 export function Contact() {
+  const { language, t } = useLocale();
   const fetcher = useFetcher<{ success?: boolean; error?: string }>();
   return (
     <div className="page-width">
       <div className="page-heading">
-        <span className="eyebrow">We’re all ears</span>
-        <h1>A little hello goes a long way.</h1>
-        <p>Questions about a little favorite? We’re here to help.</p>
+        <span className="eyebrow">{t("We’re all ears")}</span>
+        <h1>{t("A little hello goes a long way.")}</h1>
+        <p>{t("Questions about a little favorite? We’re here to help.")}</p>
       </div>
       <div className="contact-layout">
         <div>
-          <h2>Let’s talk.</h2>
+          <h2>{t("Let’s talk.")}</h2>
           {business.phone && <a href={`tel:${business.phone}`}><Phone size={20} /> {business.phone}</a>}
-          <WhatsAppLink message="Hello Boys & Girlz, I have a question about an item." />
+          <WhatsAppLink message={language === "ar" ? "مرحباً بويز آند غيرلز، لدي سؤال عن أحد المنتجات." : "Hello Boys & Girlz, I have a question about an item."} />
           <a
             href="https://www.instagram.com/boysandgirlz/"
             target="_blank"
@@ -92,25 +90,25 @@ export function Contact() {
           >
             <Instagram size={20} /> @boysandgirlz
           </a>
-          {business.address && <p>Visit us: {business.address} · <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} target="_blank" rel="noopener noreferrer">View map</a></p>}
-          {business.hours && <p>Opening hours: {business.hours}</p>}
-          <p>For sizing, delivery, or a little advice, send a note below.</p>
+          {business.address && <p>{t("Visit us:")} {business.address} · <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} target="_blank" rel="noopener noreferrer">{t("View map")}</a></p>}
+          {business.hours && <p>{t("Opening hours:")} {business.hours}</p>}
+          <p>{t("For sizing, delivery, or a little advice, send a note below.")}</p>
         </div>
         <fetcher.Form className="contact-form" method="post">
           {fetcher.data?.success ? (
             <div className="form-confirmation" role="status">
               <Check size={30} />
-              <h2>We received your note.</h2>
-              <p>Thank you for getting in touch.</p>
+              <h2>{t("We received your note.")}</h2>
+              <p>{t("Thank you for getting in touch.")}</p>
             </div>
           ) : (
             <>
               <label>
-                Your name
+                {t("Your name")}
                 <input required name="fullName" autoComplete="name" minLength={2} />
               </label>
               <label>
-                Email address
+                {t("Email address")}
                 <input
                   required
                   type="email"
@@ -119,13 +117,13 @@ export function Contact() {
                 />
               </label>
               <label>
-                Your little note
+                {t("Your little note")}
                 <textarea required name="message" rows={5} minLength={10} />
               </label>
               <div className="sr-only" aria-hidden="true"><label>Website <input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-              {fetcher.data?.error && <p className="form-error" role="alert">{fetcher.data.error}</p>}
+              {fetcher.data?.error && <p className="form-error" role="alert">{t(fetcher.data.error)}</p>}
               <button className="btn btn-pink" disabled={fetcher.state !== "idle"}>
-                {fetcher.state !== "idle" ? "Sending…" : "Send message"} <ArrowRight size={16} />
+                {t(fetcher.state !== "idle" ? "Sending…" : "Send message")} <ArrowRight size={16} />
               </button>
             </>
           )}
@@ -186,23 +184,24 @@ const help: Record<
   },
 };
 export function Help() {
+  const { t } = useLocale();
   const { topic } = useParams();
   const content = help[topic || ""] || help.shipping;
   return (
     <div className="page-width help-page">
       <div className="page-heading">
-        <span className="eyebrow">Here for the little things</span>
-        <h1>{content.title}</h1>
-        <p>{content.intro}</p>
+        <span className="eyebrow">{t("Here for the little things")}</span>
+        <h1>{t(content.title)}</h1>
+        <p>{t(content.intro)}</p>
       </div>
       {content.sections.map(([h, p]) => (
         <section key={h}>
-          <h2>{h}</h2>
-          <p>{p}</p>
+          <h2>{t(h)}</h2>
+          <p>{t(p)}</p>
         </section>
       ))}
       <Link to="/contact" className="btn btn-blue">
-        A little more help <ArrowRight size={16} />
+        {t("A little more help")} <ArrowRight size={16} />
       </Link>
     </div>
   );

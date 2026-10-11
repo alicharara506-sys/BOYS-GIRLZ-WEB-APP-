@@ -1,12 +1,12 @@
 import Checkout from "../pages/Checkout";
-import { pageMeta } from "../config/meta";
+import { localizedMeta } from "../config/meta";
 import { data } from "react-router";
 import { z, ZodError } from "zod";
 import { createOrder, OrderValidationError } from "../server/orderService";
 import { postgresOrderRepository, resolveVariantSelection } from "../server/postgres.server";
 import type { Route } from "./+types/checkout";
 
-export const meta = () => pageMeta("Checkout", "Complete a Boys & Girlz order for delivery within Lebanon.", "/checkout");
+export const meta = localizedMeta("Checkout", "Complete a Boys & Girlz order for delivery within Lebanon.", "/checkout");
 
 const selectionSchema = z.object({
   fullName: z.string(), mobile: z.string(), email: z.string(),

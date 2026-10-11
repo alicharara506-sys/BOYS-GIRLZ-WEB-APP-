@@ -23,7 +23,8 @@ npm run test:e2e
 
 ## Included experience
 
-- Responsive home, shop, seven category pages, product detail, cart, checkout, wishlist, about, contact, shipping, returns, and size-guide routes
+- Responsive home, shop, eight category pages, product detail, cart, checkout, wishlist, about, contact, shipping, returns, and size-guide routes
+- English and Arabic storefront with a persistent header language switch, server-rendered `lang`/`dir`, Arabic product and policy copy, and full RTL desktop/mobile layout
 - Mock products with size, color, price, sale, review, and category data, including four featured products styled after the approved mockup
 - Search suggestions, category/price/size/color/sale filters, and sorting
 - Persistent variant-aware cart and wishlist with validated `localStorage` recovery
@@ -44,6 +45,7 @@ src/
   components/       Shared navigation, cards, drawers, logo-art scenes, and motion
   data/             Typed mock product catalog
   hooks/            Motion and device capability helpers
+  i18n/             Arabic translations and persisted language setting
   pages/            Route-level storefront screens
   state/            Cart/wishlist context and pure reducer logic
 public/
