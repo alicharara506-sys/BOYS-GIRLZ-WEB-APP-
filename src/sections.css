@@ -1,0 +1,137 @@
+/* Entrance animations tilt cards in 3D; never let that widen the page. */
+.home-page { overflow-x: clip; }
+
+/* ---------- Outlet feature ---------- */
+.outlet { position: relative; isolation: isolate; overflow: hidden; padding: clamp(40px, 5vw, 72px) 0 clamp(40px, 4vw, 64px); }
+.outlet-fields {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+}
+.outlet-field { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; animation: bh-drift 20s ease-in-out infinite alternate; }
+.outlet-field-pink { inset-inline-start: 6%; top: 10%; width: 42%; height: 60%; background: #ffc2d7; }
+.outlet-field-blue { inset-inline-end: 4%; top: 18%; width: 44%; height: 62%; background: #bfe9ff; animation-duration: 24s; animation-delay: -7s; }
+.outlet-field-peach { inset-inline-start: 26%; bottom: 4%; width: 36%; height: 46%; background: #ffe6d4; animation-duration: 28s; animation-delay: -12s; }
+.outlet-field-sky { inset-inline-end: 24%; bottom: 10%; width: 30%; height: 40%; background: #e2d9ff; animation-duration: 22s; animation-delay: -4s; }
+
+.outlet-inner { position: relative; display: grid; justify-items: center; gap: clamp(28px, 3vw, 44px); margin: 0 auto; }
+.outlet-inner > .promise { width: 100%; margin: 0; }
+.outlet-action { display: flex; justify-content: center; }
+.outlet-copy { position: relative; z-index: 2; display: grid; justify-items: center; gap: 18px; max-width: 600px; padding: 24px 24px 0; text-align: center; }
+.outlet-copy h2 { margin: 0; color: #1f2633; font-family: Quicksand, sans-serif; font-size: clamp(36px, 4.6vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; }
+.outlet-gradient { background: linear-gradient(90deg, #fc538e, #b36be0 50%, #00b3fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.outlet-copy p { max-width: 460px; margin: 0; color: #566373; font-size: clamp(15px, 1.2vw, 17px); line-height: 1.65; }
+
+.outlet-sparkles { position: absolute; inset: -10% -14%; pointer-events: none; }
+.outlet-sparkles svg { position: absolute; fill: #fc538e; opacity: 0; animation: outlet-twinkle 3.6s ease-in-out infinite; }
+.outlet-sparkles svg:nth-child(even) { fill: #00b3fc; }
+@keyframes outlet-twinkle {
+  0%, 100% { opacity: 0; transform: scale(.3) rotate(0deg); }
+  50% { opacity: .9; transform: scale(1) rotate(90deg); }
+}
+
+/* ---------- Promise cards ---------- */
+@property --arc { syntax: "<percentage>"; inherits: false; initial-value: 6%; }
+.promise { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 24px); margin: 0 auto; padding-bottom: 56px; }
+.promise-drift:nth-child(2) { margin-top: 40px; }
+
+.promise-card {
+  --mx: 50%; --my: 50%; --rx: 0deg; --ry: 0deg;
+  --accent: #2f9e6a; --accent-2: #8fd8b0; --tint: #e8f7ef;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; justify-items: start; align-content: start; gap: 8px;
+  min-height: 200px; padding: 26px 26px 30px; border: 1.5px solid transparent; border-radius: 24px;
+  /* A white face, and a shiny arc travelling round the border that widens on hover. */
+  background:
+    linear-gradient(160deg, #ffffff, #fffaf7) padding-box,
+    conic-gradient(from var(--beam), #f0e6ea 0%, var(--accent) var(--arc), #ffffff calc(var(--arc) * 2), var(--accent-2) calc(var(--arc) * 3), #f0e6ea calc(var(--arc) * 4)) border-box;
+  box-shadow: 0 1px 2px #1f26330d, 0 18px 40px -30px #3a2a3a55;
+  transform: perspective(1000px) translateY(var(--lift, 0px)) rotateX(var(--rx)) rotateY(var(--ry));
+  animation: bh-beam 6s linear infinite;
+  transition: --arc .6s cubic-bezier(.23, 1, .32, 1), transform .5s cubic-bezier(.23, 1, .32, 1), box-shadow .5s ease;
+}
+.promise-card-sun { --accent: #e7a400; --accent-2: #ffd36e; --tint: #fff4d6; animation-delay: -2s; }
+.promise-card-shirt { --accent: #0898d6; --accent-2: #8fd9ff; --tint: #e3f6ff; animation-delay: -4s; }
+.promise-card:hover {
+  --arc: 18%; --lift: -8px;
+  box-shadow: 0 1px 2px #1f26330d, 0 34px 60px -30px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+/* A soft light following the cursor. */
+.promise-card::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0; pointer-events: none;
+  background: radial-gradient(220px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 14%, transparent), transparent 75%);
+  transition: opacity .45s ease;
+}
+.promise-card:hover::after { opacity: 1; }
+
+/* A dot texture fading out from the top corner. */
+.promise-dots {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(color-mix(in oklab, var(--accent) 35%, transparent) 1px, transparent 1.5px);
+  background-size: 14px 14px;
+  -webkit-mask-image: radial-gradient(circle at 100% 0%, #000, transparent 55%); mask-image: radial-gradient(circle at 100% 0%, #000, transparent 55%);
+  opacity: .55; transition: opacity .5s ease;
+  animation: promise-dots 12s linear infinite;
+}
+.promise-card:hover .promise-dots { opacity: 1; }
+@keyframes promise-dots { to { background-position: 14px 14px; } }
+html[dir="rtl"] .promise-dots { -webkit-mask-image: radial-gradient(circle at 0% 0%, #000, transparent 55%); mask-image: radial-gradient(circle at 0% 0%, #000, transparent 55%); }
+
+/* A soft shade of the card's colour glowing in the corner, breathing slowly. */
+.promise-shade {
+  position: absolute; top: -40%; inset-inline-end: -20%; z-index: -1; width: 75%; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in oklab, var(--accent-2) 70%, transparent) 0%, color-mix(in oklab, var(--accent) 18%, transparent) 45%, transparent 70%);
+  filter: blur(20px); opacity: .55;
+  animation: promise-breathe 7s ease-in-out infinite alternate;
+  transition: opacity .6s ease;
+}
+.promise-card-sun .promise-shade { animation-delay: -2.3s; }
+.promise-card-shirt .promise-shade { animation-delay: -4.6s; }
+.promise-card:hover .promise-shade { opacity: .9; }
+@keyframes promise-breathe {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-8%, 6%) scale(1.15); }
+}
+
+/* The icon in a round chip with a ring in the card's colour. */
+.promise-icon {
+  display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 10px; border-radius: 50%;
+  background: var(--tint); color: var(--accent);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px color-mix(in oklab, var(--accent) 40%, transparent), 0 10px 20px -12px var(--accent);
+  transition: box-shadow .5s ease, transform .6s cubic-bezier(.34, 1.56, .64, 1);
+}
+.promise-card:hover .promise-icon { transform: scale(1.08); box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--accent), 0 0 26px -2px color-mix(in oklab, var(--accent) 55%, transparent); }
+.promise-card-leaf svg { transform-origin: 20% 85%; animation: promise-sway 3.2s ease-in-out infinite alternate; }
+.promise-card-sun svg { animation: promise-turn 14s linear infinite; }
+.promise-card-shirt svg { transform-origin: 50% 10%; }
+.promise-card-shirt:hover svg { animation: promise-swing 1s ease-in-out; }
+@keyframes promise-sway { from { transform: rotate(-9deg); } to { transform: rotate(7deg); } }
+@keyframes promise-turn { to { transform: rotate(360deg); } }
+@keyframes promise-swing { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-4deg); } }
+
+.promise-card strong { color: #1f2633; font-family: Quicksand, sans-serif; font-size: clamp(19px, 1.6vw, 22px); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+.promise-card small { color: #6f7d92; font-size: 14px; line-height: 1.5; }
+
+/* A bar of colour along the foot that runs out to full width on hover. */
+.promise-bar {
+  position: absolute; bottom: 0; inset-inline-start: 0; height: 3px; width: 34%; border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width .7s cubic-bezier(.23, 1, .32, 1);
+}
+html[dir="rtl"] .promise-bar { border-radius: 3px 0 0 3px; background: linear-gradient(270deg, var(--accent), var(--accent-2)); }
+.promise-card:hover .promise-bar { width: 100%; }
+
+html[dir="rtl"] .outlet-copy h2 { letter-spacing: 0; line-height: 1.3; }
+
+@media (max-width: 900px) {
+  .outlet-inner { min-height: 0; }
+  .outlet-copy { margin: 0 auto; }
+  .promise { grid-template-columns: 1fr; }
+  .promise-drift:nth-child(2) { margin-top: 0; }
+  .promise { padding-bottom: 0; }
+  .promise-card { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .outlet *, .promise-card, .promise-card * { animation: none !important; transition: none !important; }
+  .promise-card { transform: none; }
+  .outlet-sparkles svg { opacity: .7; }
+}

@@ -1,47 +1,4 @@
 /* Motion is layered over the approved storefront layout. */
-.brand-ribbon {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  min-height: 56px;
-  margin-top: 13px;
-  padding: 0 18px;
-  overflow: hidden;
-  border: 1px solid #e8f1f5;
-  border-radius: 13px;
-  background: #f7fbfd;
-}
-.shop-heading + .brand-ribbon { margin-bottom: 22px; }
-.brand-ribbon-label {
-  position: relative;
-  z-index: 2;
-  flex: none;
-  color: #387ea7;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .7px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.brand-ribbon-window { position: relative; min-width: 0; flex: 1; overflow: hidden; }
-.brand-ribbon-window::before, .brand-ribbon-window::after {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  bottom: 0;
-  width: 22px;
-  content: "";
-  pointer-events: none;
-}
-.brand-ribbon-window::before { left: 0; background: linear-gradient(90deg,#f7fbfd,transparent); }
-.brand-ribbon-window::after { right: 0; background: linear-gradient(270deg,#f7fbfd,transparent); }
-.brand-ribbon-track { display: flex; width: max-content; animation: brandFlow 80s linear infinite; will-change: transform; }
-.brand-ribbon:hover .brand-ribbon-track, .brand-ribbon:focus-within .brand-ribbon-track { animation-play-state: paused; }
-.brand-ribbon ul { display: flex; flex: none; align-items: center; gap: 36px; margin: 0; padding: 0 36px 0 0; list-style: none; }
-.brand-ribbon li { display: inline-flex; align-items: center; gap: 36px; color: #34435c; font-family: Quicksand,sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; }
-.brand-ribbon li::before { width: 5px; height: 5px; border-radius: 50%; background: #f48caf; content: ""; }
-.brand-ribbon li:nth-child(even)::before { background: #80c6eb; }
-@keyframes brandFlow { to { transform: translateX(-50%); } }
 
 .loading-stage { isolation: isolate; }
 .loading-logo-scene { position: relative; z-index: 1; display: block; animation: loadingLogoReveal 1.2s cubic-bezier(.2,.8,.2,1) both; }
@@ -102,9 +59,6 @@
 @keyframes routeReveal { from { opacity: .6; transform: translate3d(0,0,0); } to { opacity: 0; transform: translate3d(0,-22px,0); visibility: hidden; } }
 
 @media (max-width: 680px) {
-  .brand-ribbon { min-height: 55px; display: block; margin-top: 10px; padding: 7px 10px; }
-  .brand-ribbon-label { display: block; margin-bottom: 4px; font-size: 8px; letter-spacing: 1px; }
-  .brand-ribbon li { font-size: 11px; gap: 17px; }.brand-ribbon ul { gap: 17px; padding-right: 17px; }
   .home-sale { min-height: 0; flex-wrap: wrap; gap: 9px; margin-top: 13px; padding: 13px; border-radius: 12px; }
   .home-sale-icon { width: 38px; height: 38px; border-radius: 12px; }.home-sale-icon svg { width: 20px; }
   .home-sale > div { flex: 1; min-width: 0; }.home-sale h2 { font-size: 16px; }.home-sale p { font-size: 9px; }
@@ -114,10 +68,6 @@
   .loading-caption { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .brand-ribbon-window { overflow-x: auto; scrollbar-width: thin; }
-  .brand-ribbon-window::before, .brand-ribbon-window::after { display: none; }
-  .brand-ribbon-track { animation: none; will-change: auto; }
-  .brand-ribbon-track ul[aria-hidden="true"] { display: none; }
   .home-feature, .home-feature .home-mascot, .product-card .tilt { transform: none !important; }
   .home-sale-glow, .home-sale-icon, .loading-orbit, .loading-logo-scene, .loading-caption { animation: none; }
 }

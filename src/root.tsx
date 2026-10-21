@@ -1,12 +1,12 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useRouteError, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError, useRouteLoaderData } from "react-router";
 import { StoreProvider, useStore } from "./state/Store";
-import { Footer, Header } from "./components/Layout";
+import { Header } from "./components/Layout";
+import Footer from "./components/Footer";
 import { CartDrawer } from "./pages/Cart";
 import { FlyToBag, RouteEffects } from "./components/MotionEffects";
-import WhatsAppLink from "./components/WhatsAppLink";
 import { business } from "./config/business";
 import { LocaleProvider, useLocale, type Language } from "./i18n/Locale";
-import type { LoaderFunctionArgs } from "react-router";
+import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from "react-router";
 import "@fontsource/quicksand/500.css";
 import "@fontsource/quicksand/600.css";
 import "@fontsource/quicksand/700.css";
@@ -18,12 +18,30 @@ import "./shop.css";
 import "./redesign.css";
 import "./motion.css";
 import "./toybox.css";
+import "./hero.css";
 import "./rtl.css";
+import "./cards.css";
+import "./sections.css";
+import "./footer.css";
+import "./header.css";
+import "./shop-v2.css";
+import "./about.css";
+import "./contact.css";
+import "./faq.css";
+import "./help.css";
+import "./bag.css";
+import "./product.css";
 
 export function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") || "";
   const language: Language = /(?:^|;\s*)bg-language=ar(?:;|$)/.test(cookie) ? "ar" : "en";
   return { language };
+}
+
+// The language is read once from the cookie and then switched in the browser, so following a
+// link never needs it reloaded; only a form submission does.
+export function shouldRevalidate({ formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+  return formMethod ? defaultShouldRevalidate : false;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -35,7 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         "@type": "Organization",
         name: business.name,
         ...(business.siteUrl ? { url: business.siteUrl } : {}),
-        sameAs: [business.instagram],
+        sameAs: [business.instagram, business.facebook, business.tiktok],
       },
       {
         "@type": "ClothingStore",
@@ -67,8 +85,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function Shell() {
   const { notice } = useStore();
-  const { language, t } = useLocale();
-  const { pathname } = useLocation();
+  const { t } = useLocale();
   return (
     <>
       <a className="skip-link" href="#main">{t("Skip to content")}</a>
@@ -77,7 +94,6 @@ function Shell() {
       <main id="main"><Outlet /></main>
       <Footer />
       <CartDrawer />
-      {pathname !== "/cart" && pathname !== "/checkout" && <WhatsAppLink className="whatsapp-floating" label={t("Chat with us")} ariaLabel={t("Chat with Boys & Girlz on WhatsApp")} message={language === "ar" ? "مرحباً بويز آند غيرلز! لدي سؤال عن المتجر." : "Hello Boys & Girlz! I have a question about your shop."} />}
       <FlyToBag />
       <div className={`toast ${notice ? "visible" : ""}`} role="status" aria-live="polite">{notice}</div>
     </>

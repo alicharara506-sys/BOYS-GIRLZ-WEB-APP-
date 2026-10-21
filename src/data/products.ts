@@ -24,6 +24,8 @@ export interface Product {
   model: ModelKind;
   isNew: boolean;
   description: string;
+  // The product's brand, from the approved list in brands.ts; not yet assigned for any product.
+  brand?: string;
 }
 export const categories: Category[] = [
   "Boys",
@@ -188,3 +190,9 @@ export const money = (n: number) =>
     n,
   );
 export const productById = (id: string) => products.find((p) => p.id === id);
+export const matchesCategory = (product: Product, category: Category) =>
+  category === "Sale" ? product.condition === "new" && Boolean(product.originalPrice)
+    : category === "Outlet" ? product.condition === "like-new"
+      : category === "Boys" || category === "Girls" || category === "Unisex"
+        ? product.gender === category
+        : product.category === category;

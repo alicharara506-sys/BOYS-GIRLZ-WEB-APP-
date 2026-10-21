@@ -5,8 +5,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "../hooks/useExperience";
 
 gsap.registerPlugin(ScrollTrigger);
+// The shop and its categories are one page, so moving between them keeps the scroll and effects.
+const pageKey = (pathname: string) => (pathname === "/shop" || pathname.startsWith("/category/") ? "/shop" : pathname);
+
 export function RouteEffects() {
   const location = useLocation();
+  const page = pageKey(location.pathname);
   const reduce = useReducedMotion();
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -14,11 +18,11 @@ export function RouteEffects() {
       else window.scrollTo({ top: 0, behavior: "instant" });
     }, 60);
     return () => clearTimeout(id);
-  }, [location.pathname, location.hash, reduce]);
+  }, [page, location.hash, reduce]);
   useEffect(() => {
     if (reduce) return;
     const context = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>(".home-favorites, .home-sale, .home-promise, .home-newsletter, .shop-heading, .product-detail-layout, .related-section").forEach((element) =>
+      gsap.utils.toArray<HTMLElement>(".shop-heading, .product-detail-layout, .related-section").forEach((element) =>
         gsap.from(element, {
           y: 24, opacity: 0, duration: .65, ease: "power2.out",
           scrollTrigger: { trigger: element, start: "top 94%", once: true },
@@ -33,8 +37,8 @@ export function RouteEffects() {
       );
     });
     return () => context.revert();
-  }, [location.pathname, reduce]);
-  return <div key={location.pathname} className="route-depth-reveal" aria-hidden="true" />;
+  }, [page, reduce]);
+  return <div key={page} className="route-depth-reveal" aria-hidden="true" />;
 }
 
 export function FlyToBag() {

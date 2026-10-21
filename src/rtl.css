@@ -32,19 +32,6 @@ html[dir="rtl"] .cart-line,
 html[dir="rtl"] .story-layout,
 html[dir="rtl"] .help-page,
 html[dir="rtl"] .contact-layout { text-align: start; }
-html[dir="rtl"] .toybox-copy h1,
-html[dir="rtl"] .toybox-copy h2 { letter-spacing: 0; line-height: 1.28; font-size: clamp(32px, 3.5vw, 53px); }
-html[dir="rtl"] .toybox-copy .home-kicker { letter-spacing: 0; text-transform: none; }
-html[dir="rtl"] .toybox-poster .home-mascot-boy { right: auto; left: 6%; }
-html[dir="rtl"] .toybox-poster .home-mascot-girl { right: auto; left: 24%; }
-html[dir="rtl"] .toybox-letter-o { left: auto; right: 52%; }
-html[dir="rtl"] .toybox-letter-y { left: auto; right: 61%; }
-html[dir="rtl"] .toybox-letter-s { left: auto; right: 75%; }
-html[dir="rtl"] .toybox-letter-amp { left: auto; right: 87%; }
-html[dir="rtl"] .toybox-letter-i { left: auto; right: 49%; }
-html[dir="rtl"] .toybox-letter-r { left: auto; right: 53%; }
-html[dir="rtl"] .toybox-letter-l { left: auto; right: 77%; }
-html[dir="rtl"] .toybox-letter-z { left: auto; right: 93%; }
 html[dir="rtl"] .nav-more > div { left: auto; right: -20px; }
 html[dir="rtl"] .bag-count { right: auto; left: -5px; }
 html[dir="rtl"] .tiny-dot { right: auto; left: 2px; }
@@ -80,10 +67,6 @@ html[dir="rtl"] .checkout-steps li:not(:last-child)::after { transform: scaleX(-
 
 @media (max-width: 700px) {
   .language-switch { padding: 6px 8px; font-size: 11px; }
-  html[dir="rtl"] .toybox-copy h1,
-  html[dir="rtl"] .toybox-copy h2 { font-size: clamp(29px, 7vw, 39px); }
-  html[dir="rtl"] .toybox-poster .home-mascot-boy { left: 3%; right: auto; }
-  html[dir="rtl"] .toybox-poster .home-mascot-girl { left: 39%; right: auto; }
   html[dir="rtl"] .home-promise > div { border-left: 0; }
   html[dir="rtl"] .home-sale-link { margin-left: 0; margin-right: 47px; }
 }

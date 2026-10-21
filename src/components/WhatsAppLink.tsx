@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "./SocialIcons";
 import { business } from "../config/business";
 import type { CartItem } from "../state/storeCore";
 import { whatsAppOrderMessage } from "../utils/whatsappOrder";
@@ -18,7 +18,7 @@ export default function WhatsAppLink({
   const url = whatsAppUrl(message);
   if (!url) return null;
   return <a className={className} href={url} target="_blank" rel="noopener noreferrer" aria-label={t(ariaLabel || label)} onClick={onClick}>
-    <MessageCircle size={18} aria-hidden="true" /> {t(label)}
+    <WhatsAppIcon size={18} /> {t(label)}
   </a>;
 }
 

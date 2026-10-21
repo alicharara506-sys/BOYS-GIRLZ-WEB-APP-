@@ -33,7 +33,7 @@ test("Arabic mobile layout has no horizontal overflow", async ({ page }) => {
   await page.getByRole("button", { name: "Switch to Arabic" }).click();
   await page.getByRole("button", { name: "افتح القائمة" }).click();
   await expect(page.getByRole("navigation", { name: "قائمة الهاتف" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "ملابس الأمومة" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "قائمة الهاتف" }).getByRole("link", { name: "ملابس الأمومة" })).toBeVisible();
   await page.keyboard.press("Escape");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);

@@ -1,0 +1,261 @@
+@property --pc-glow { syntax: "<color>"; inherits: true; initial-value: #f3c6d6; }
+
+/* ---------- Featured products section ---------- */
+.favorites { margin: 0 auto; padding: clamp(8px, 1.5vw, 20px) 0 clamp(72px, 8vw, 120px); }
+.favorites-heading { display: grid; justify-items: center; gap: 16px; margin-bottom: clamp(28px, 3.4vw, 48px); text-align: center; }
+.favorites-heading h2 { margin: 0 0 4px; color: #1f2633; font-family: Quicksand, sans-serif; font-size: clamp(32px, 4vw, 54px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; }
+
+.favorites-filters {
+  --pill-x: 0px; --pill-w: 0px;
+  position: relative; isolation: isolate;
+  display: inline-flex; gap: 4px; padding: 5px; border-radius: 999px;
+  background: #ffffff8c; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 0 0 1px #ffffffd9 inset, 0 18px 36px -24px #4a3a5a55;
+}
+.favorites-pill {
+  position: absolute; z-index: -1; top: 5px; bottom: 5px; left: 0;
+  width: var(--pill-w); border-radius: 999px;
+  background: linear-gradient(120deg, #fc538e, #ff7aa8 45%, #4cc4ff);
+  box-shadow: 0 10px 22px -10px #fc538e99;
+  transform: translateX(var(--pill-x));
+  transition: transform .55s cubic-bezier(.34, 1.4, .64, 1), width .55s cubic-bezier(.34, 1.4, .64, 1);
+}
+.favorites-filters button {
+  min-width: 72px; padding: 10px 20px; border-radius: 999px; background: transparent;
+  color: #46526a; font-size: 13px; font-weight: 700; transition: color .35s ease;
+}
+.favorites-filters button:hover { color: #1f2633; }
+.favorites-filters button.active { color: #fff; }
+
+/* Fixed-width columns centred, so a filter with only one or two products stays in the middle. */
+.favorites-grid { --cols: 4; --gap: clamp(14px, 1.6vw, 24px); display: grid; grid-template-columns: repeat(auto-fit, calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols))); justify-content: center; gap: var(--gap); min-height: 200px; }
+.favorites-more { display: flex; justify-content: center; margin-top: clamp(28px, 3vw, 44px); }
+.favorites-view-all {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 999px;
+  background: #ffffffa6; box-shadow: 0 0 0 1px #e5d9de inset; color: #1f2633; font-size: 14px; font-weight: 700;
+  transition: background-color .3s ease, box-shadow .3s ease;
+}
+.favorites-view-all:hover { background: #fff; color: #1f2633; box-shadow: 0 0 0 1px #fc538e66 inset, 0 12px 26px -16px #fc538e88; }
+
+/* ---------- Product card ---------- */
+.pc { --mx: 50%; --my: 0%; --rx: 0deg; --ry: 0deg; min-width: 0; transition: --pc-glow .7s ease; }
+.pc-tilt {
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; height: 100%;
+  padding: 6px; border-radius: 26px;
+  background: #ffffffb3; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 1px #ffffffcc inset, 0 1px 2px #1f26330d;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .5s ease-out, box-shadow .5s ease, background-color .5s ease;
+}
+.pc:hover .pc-tilt, .pc:focus-within .pc-tilt { background: #ffffffeb; box-shadow: 0 0 0 1px #ffffffcc inset, 0 30px 56px -28px #3a2a3a66; }
+
+/* A soft light following the cursor, in the product's colour. */
+.pc-light {
+  position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(260px circle at var(--mx) var(--my), color-mix(in oklab, var(--pc-glow) 38%, transparent), transparent 70%);
+  transition: opacity .5s ease;
+}
+.pc:hover .pc-light { opacity: 1; }
+
+/* Two lights always running round the edge, faint and soft; they come into focus on hover. */
+.pc-edge {
+  position: absolute; inset: 0; z-index: 4; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--beam),
+    #fc538e1f 0deg, #fc538e 50deg, #ffd1e1 75deg, #fc538e1f 115deg,
+    #00b3fc1f 180deg, #00b3fc 230deg, #c9efff 255deg, #00b3fc1f 295deg) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: .35; filter: blur(1.5px);
+  animation: bh-beam 5s linear infinite;
+  transition: opacity .7s ease-out, filter .7s ease-out;
+}
+.pc:nth-child(2n) .pc-edge { animation-delay: -1.7s; }
+.pc:nth-child(3n) .pc-edge { animation-delay: -3.3s; }
+.pc:hover .pc-edge, .pc:focus-within .pc-edge { opacity: 1; filter: none; }
+
+/* The photo floats over a glow in the product's colour. */
+.pc-media { position: relative; overflow: hidden; aspect-ratio: 1; border-radius: 20px; background: #f8f3eb; }
+.pc-aura {
+  position: absolute; inset: 8%; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--pc-glow) 75%, white) 0%, transparent 68%);
+  filter: blur(18px); opacity: .7;
+  transition: opacity .6s ease, transform .8s cubic-bezier(.16, 1, .3, 1);
+}
+.pc:hover .pc-aura { opacity: 1; transform: scale(1.12); }
+.pc-shadow {
+  position: absolute; left: 22%; right: 22%; bottom: 7%; height: 7%; border-radius: 50%;
+  background: radial-gradient(closest-side, #3a2a3a40, transparent);
+  transition: transform .6s cubic-bezier(.16, 1, .3, 1), opacity .6s ease;
+}
+.pc:hover .pc-shadow { transform: scale(.78); opacity: .6; }
+.pc-image-link { position: relative; display: block; width: 100%; height: 100%; }
+.pc .pc-photo {
+  width: 100%; height: 100%; background-color: transparent; mix-blend-mode: multiply;
+  transition: transform .7s cubic-bezier(.16, 1, .3, 1);
+}
+.pc:hover .pc-photo { transform: translateY(-4%) scale(1.05); }
+/* A shine that sweeps across the photo on hover. */
+.pc-image-link::after {
+  content: ""; position: absolute; inset: -30% -60%; pointer-events: none;
+  background: linear-gradient(105deg, transparent 42%, #ffffff8c 50%, transparent 58%);
+  transform: translateX(-70%) rotate(8deg);
+  transition: transform .9s cubic-bezier(.2, .75, .2, 1);
+}
+.pc:hover .pc-image-link::after { transform: translateX(70%) rotate(8deg); }
+
+.pc-tag {
+  position: absolute; top: 12px; inset-inline-start: 12px; z-index: 2;
+  padding: 5px 10px; border-radius: 999px;
+  background: #ffd36ee6; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  color: #1f2633; font-size: 10px; font-weight: 800; letter-spacing: .06em; pointer-events: none;
+}
+.pc-tag-sale { background: #fc538ee6; color: #fff; }
+.pc .wish-button {
+  top: 10px; right: 10px; left: auto; z-index: 3;
+  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+  background: #ffffffb3; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #1f2633; box-shadow: 0 6px 16px -8px #3a2a3a55;
+}
+.pc .wish-button.is-wished { color: #fc538e; }
+
+/* Quick add: a glass bar that slides up over the photo. */
+.pc-quick {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3;
+  border-radius: 18px; overflow: hidden;
+  background: #ffffffc7; backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: 0 0 0 1px #ffffffe6 inset, 0 14px 28px -16px #3a2a3a66;
+  transform: translateY(calc(100% + 14px));
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1);
+}
+.pc:hover .pc-quick, .pc:focus-within .pc-quick, .pc-open .pc-quick { transform: none; }
+.pc-quick-button {
+  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 42px;
+  background: transparent; color: #1f2633; font-size: 13px; font-weight: 700;
+}
+.pc-quick-button svg { transition: transform .35s ease; }
+.pc-open .pc-quick-button svg { transform: rotate(45deg); }
+.pc-quick-options { display: grid; gap: 14px; padding: 14px 14px 6px; }
+.pc-quick-options > * { animation: pc-options .5s cubic-bezier(.16, 1, .3, 1) both; }
+.pc-quick-options > :nth-child(2) { animation-delay: .06s; }
+.pc-quick-options > :nth-child(3) { animation-delay: .12s; }
+.pc-field { display: grid; gap: 8px; min-width: 0; }
+.pc-field-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: #6f7d92; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.pc-field-label b { color: #1f2633; font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* Sizes: one row of chips that scrolls sideways, fading at its edges. */
+.pc-chips {
+  display: flex; gap: 6px; overflow-x: auto; padding: 2px; margin: -2px; scroll-snap-type: x proximity; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+.pc-chips::-webkit-scrollbar { display: none; }
+.pc-chips button {
+  flex: none; scroll-snap-align: start; padding: 8px 12px; border-radius: 999px;
+  background: #ffffffb3; box-shadow: 0 0 0 1px #e6dde1 inset; color: #46526a; font-size: 12px; font-weight: 700; white-space: nowrap;
+  transition: background-color .3s ease, color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+.pc-chips button:hover { color: #1f2633; box-shadow: 0 0 0 1px #fc538e66 inset; }
+.pc-chips button.active { background: #1f2633; color: #fff; box-shadow: 0 8px 16px -10px #1f2633aa; transform: scale(1.04); }
+
+/* Colours: swatches with a ring that springs round the chosen one. */
+.pc-swatches { display: flex; gap: 10px; padding: 3px; }
+.pc-swatches button {
+  position: relative; width: 28px; height: 28px; border-radius: 50%; background: var(--swatch);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #e6dde1;
+  transition: box-shadow .35s cubic-bezier(.34, 1.56, .64, 1), transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.pc-swatches button:hover { transform: scale(1.08); }
+.pc-swatches button.active { box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1f2633; transform: scale(1.06); }
+.pc-swatches button.active::after {
+  content: ""; position: absolute; inset: 0; margin: auto; width: 9px; height: 5px;
+  border-inline-start: 2px solid #1f2633; border-bottom: 2px solid #1f2633; transform: translateY(-1px) rotate(-45deg);
+  animation: pc-tick .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes pc-tick { from { opacity: 0; transform: translateY(-1px) rotate(-45deg) scale(.3); } }
+
+.pc-add {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border-radius: 14px;
+  background: linear-gradient(120deg, #f2477f, #fc6a9e 30%, #ff8fb5 50%, #fc6a9e 70%, #f2477f) 0 0 / 220% 100%;
+  color: #fff; font-size: 13px; font-weight: 700;
+  box-shadow: 0 1px 0 #ffffff55 inset, 0 12px 22px -12px #f2477fcc;
+  transition: background-position .8s cubic-bezier(.16, 1, .3, 1), box-shadow .45s ease;
+}
+/* The resting shine that passes every few seconds. */
+.pc-add::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, #ffffff66 50%, transparent 65%); transform: translateX(-120%); animation: bh-shine 3.6s ease-in-out 1s infinite; }
+/* On hover the gradient flows across, the glow deepens, an inner light rises and the + turns. */
+.pc-add::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0;
+  background: radial-gradient(120% 140% at 50% 120%, #ffffff40, transparent 60%);
+  transition: opacity .45s ease;
+}
+.pc-add svg { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.pc-add:hover:not(:disabled) { background-position: 100% 0; box-shadow: 0 1px 0 #ffffff66 inset, 0 0 0 4px #fc538e26, 0 18px 30px -12px #f2477fee; }
+.pc-add:hover:not(:disabled)::before { opacity: 1; }
+.pc-add:hover:not(:disabled) svg { transform: rotate(90deg) scale(1.15); }
+.pc-add:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #fc538e; }
+.pc-add:active:not(:disabled) { box-shadow: 0 1px 0 #ffffff44 inset, 0 0 0 3px #fc538e33, 0 8px 16px -10px #f2477fcc; }
+.pc-add:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Close options: a soft pill fades in behind it and the cross turns a further quarter. */
+.pc-open .pc-quick-button {
+  width: auto; min-height: 34px; margin: 2px auto 8px; padding: 0 14px; border-radius: 999px;
+  color: #6f7d92; font-size: 12px;
+  transition: color .35s ease, background-color .35s ease;
+}
+.pc-open .pc-quick-button svg { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.pc-open .pc-quick-button:hover { background: #1f26330d; color: #1f2633; }
+.pc-open .pc-quick-button:hover svg { transform: rotate(135deg); }
+.pc-quick-button:not(.pc-open .pc-quick-button):hover svg { transform: rotate(90deg); }
+.pc-quick-button:focus-visible { outline: 2px solid #fc538e; outline-offset: -2px; }
+@keyframes pc-options { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
+.pc-info { display: grid; gap: 3px; padding: 14px 10px 10px; }
+.pc-name { color: #1f2633; font-size: 14px; font-weight: 700; line-height: 1.35; transition: color .3s ease; }
+.pc-name:hover, .pc:hover .pc-name { color: #1f2633; }
+.pc-range { color: #6f7d92; font-size: 12px; }
+.pc-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.pc-price { color: #1f2633; font-size: 16px; font-weight: 800; }
+.pc-price del { margin-inline-start: 6px; color: #9d9a94; font-size: 12px; font-weight: 500; }
+.pc-dots { display: inline-flex; gap: 6px; }
+.pc-dots button {
+  width: 16px; height: 16px; padding: 0; border-radius: 50%; background: var(--swatch);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #e7dde1;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.pc-dots button:hover { transform: scale(1.18); }
+.pc-dots button.active { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #1f2633; }
+
+html[dir="rtl"] .pc .wish-button { right: auto; left: 10px; }
+html[dir="rtl"] .favorites-heading h2 { letter-spacing: 0; line-height: 1.3; }
+html[dir="rtl"] .favorites-view-all svg { scale: -1 1; }
+
+@media (max-width: 1100px) {
+  .favorites-grid { --cols: 3; }
+}
+@media (max-width: 760px) {
+  .favorites-grid { --cols: 2; --gap: 10px; }
+  .favorites-filters button { min-width: 0; padding: 9px 14px; font-size: 12px; }
+  .pc-tilt { padding: 4px; border-radius: 20px; }
+  .pc-media { border-radius: 16px; }
+  .pc-info { padding: 10px 6px 6px; }
+  .pc-name { font-size: 12px; }
+  .pc-range { font-size: 10px; }
+  .pc-price { font-size: 14px; }
+  .pc-dots button { width: 12px; height: 12px; }
+  .pc .wish-button { width: 32px; height: 32px; top: 7px; right: 7px; }
+  html[dir="rtl"] .pc .wish-button { left: 7px; }
+  .pc-tag { top: 8px; inset-inline-start: 8px; font-size: 9px; padding: 4px 8px; }
+  .pc-quick { left: 6px; right: 6px; bottom: 6px; border-radius: 14px; }
+  .pc-quick-button { min-height: 36px; font-size: 11px; }
+}
+@media (hover: none) {
+  .pc-quick { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pc-tilt { transform: none; }
+  .pc *, .pc *::after, .favorites-pill { animation: none !important; transition: none !important; }
+}
+.pc .pc-photo, .pc:hover .pc-photo { scale: none; filter: none; }
+/* The sprite cells bleed a sliver of the next product at their bottom edge. */
+.pc .pc-photo { clip-path: inset(0 0 4% 0); }

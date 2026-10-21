@@ -38,7 +38,7 @@ const arabic: Record<string, string> = {
   "All": "الكل", "Baby": "رضّع", "View all": "عرض الكل", "A little more to love": "المزيد من الأشياء الجميلة",
   "Lovely finds. Lighter prices.": "قطع جميلة بأسعار ألطف.",
   "Explore our Like New outlet favorites, carefully chosen for their next little chapter.": "اكتشف قطع الأوتليت شبه الجديدة، المختارة بعناية لقصص صغيرة جديدة.",
-  "Shop the outlet": "تسوّق الأوتليت", "Why shop with us": "لماذا تتسوّق معنا",
+  "Shop the outlet": "تسوّق الأوتليت", "Brands": "العلامات التجارية", "Why shop with us": "لماذا تتسوّق معنا",
   "Soft on little skin": "لطيفة على بشرة الصغار", "Gentle, breathable fabrics": "أقمشة ناعمة تسمح بالتهوية",
   "Made for everyday play": "مناسبة للّعب اليومي", "Comfortable and durable": "مريحة ومتينة",
   "Easy size guide": "دليل مقاسات سهل", "Find the perfect fit": "اختر المقاس المناسب",
@@ -67,7 +67,7 @@ const arabic: Record<string, string> = {
   "Featured": "المميزة", "Newest first": "الأحدث أولاً", "Price: low to high": "السعر: من الأقل إلى الأعلى",
   "Price: high to low": "السعر: من الأعلى إلى الأقل", "Filters": "الفلاتر",
   "No little matches just yet.": "لا توجد نتائج حالياً.", "Try a different size, color, or search.": "جرّب مقاساً أو لوناً أو عبارة بحث أخرى.",
-  "Clear filters": "مسح الفلاتر", "Find your favorites": "ابحث عن مفضّلاتك", "Show": "عرض",
+  "Clear filters": "مسح الفلاتر", "Clear all": "مسح الكل", "Close": "إغلاق", "Follow us": "تابعنا", "Delivery": "التوصيل", "Payment": "الدفع", "Returns": "الإرجاع", "Sizes": "المقاسات", "Still have a question?": "لديك سؤال آخر؟", "Search the questions": "ابحث في الأسئلة", "Find your favorites": "ابحث عن مفضّلاتك", "Show": "عرض",
   "favorites": "منتجات", "favorite": "منتج", "Kept close to your heart": "احتفظ بما تحب",
   "Your little wishlist.": "قائمة المفضّلة.", "Some things are too lovely to forget.": "بعض الأشياء جميلة لدرجة يصعب نسيانها.",
   "A little room for love.": "مكان للمفضّلات.", "Tap a heart on anything you love. We’ll keep it here.": "اضغط على القلب لأي منتج يعجبك وسنحتفظ به هنا.",
@@ -217,6 +217,7 @@ const productNames: Record<string, string> = {
 
 export function translate(text: string, language: Language) {
   if (language === "en") return text;
+  if (arabic[text]) return arabic[text];
   if (text.startsWith("Shop ")) return `تسوّق ${arabic[text.slice(5)] || text.slice(5)}`;
   if (text.startsWith("Help: ")) return `المساعدة: ${arabic[text.slice(6)] || text.slice(6)}`;
   return arabic[text] || productNames[text] || text;
