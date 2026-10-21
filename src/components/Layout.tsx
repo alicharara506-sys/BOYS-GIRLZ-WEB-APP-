@@ -13,11 +13,12 @@ import {
 import { useStore } from "../state/Store";
 import { products, money } from "../data/products";
 import { ProductImage } from "./ProductCard";
-import { useLocale } from "../i18n/Locale";
+import { localizedCount, useLocale } from "../i18n/Locale";
 export function Logo() {
+  const { t } = useLocale();
   return (
-    <Link to="/" className="logo" aria-label="Boys and Girlz home">
-      <img className="brand-logo-image" src="/assets/boys-girlz-logo.jpg" alt="Boys & Girlz" />
+    <Link to="/" className="logo" aria-label={t("Boys and Girlz home")}>
+      <img className="brand-logo-image" src="/assets/boys-girlz-logo.jpg" alt="Boys & Girlz" width={1600} height={800} />
     </Link>
   );
 }
@@ -27,15 +28,18 @@ export function Modal({
   title,
   children,
   drawer = false,
+  id,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
   drawer?: boolean;
+  id?: string;
 }) {
   const { language } = useLocale();
   const ref = useRef<HTMLDialogElement>(null);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const d = ref.current;
     if (open && d && !d.open) d.showModal();
@@ -48,12 +52,30 @@ export function Modal({
       };
     }
   }, [open]);
+  useEffect(() => {
+    if (!open || !window.visualViewport) return;
+    const viewport = window.visualViewport;
+    const resize = () => ref.current?.style.setProperty("--dialog-viewport-height", `${viewport.height}px`);
+    resize();
+    viewport.addEventListener("resize", resize);
+    return () => viewport.removeEventListener("resize", resize);
+  }, [open]);
   return (
     <dialog
       ref={ref}
+      id={id}
       className={`modal ${drawer ? "drawer" : ""}`}
       aria-label={title}
       onCancel={onClose}
+      onPointerDown={(event) => {
+        if (drawer && event.pointerType === "touch" && (event.target as Element).closest(".modal-heading") && !(event.target as Element).closest("button")) swipe.current = { x: event.clientX, y: event.clientY };
+      }}
+      onPointerUp={(event) => {
+        const start = swipe.current;
+        swipe.current = null;
+        if (start && (event.clientX - start.x) * (language === "ar" ? -1 : 1) > 72 && Math.abs(event.clientY - start.y) < 48) onClose();
+      }}
+      onPointerCancel={() => { swipe.current = null; }}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
@@ -80,8 +102,12 @@ export function Header() {
   const [query, setQuery] = useState("");
   const moreRef = useRef<HTMLDetailsElement>(null);
   const location = useLocation();
+  const previousRoute = useRef(`${location.pathname}${location.search}`);
   const navigate = useNavigate();
   useEffect(() => {
+    const route = `${location.pathname}${location.search}`;
+    if (previousRoute.current === route) return;
+    previousRoute.current = route;
     setMobile(false);
     setSearchOpen(false);
     if (moreRef.current) moreRef.current.open = false;
@@ -149,6 +175,7 @@ export function Header() {
             <button className="language-switch" type="button" onClick={() => setLanguage(language === "en" ? "ar" : "en")} lang={language === "en" ? "ar" : "en"} aria-label={language === "en" ? "Switch to Arabic" : "التبديل إلى الإنجليزية"}>
               {language === "en" ? "العربية" : "English"}
             </button>
+            <div className="nav-actions">
             <button
               className="icon-button"
               onClick={() => setSearchOpen(true)}
@@ -159,7 +186,7 @@ export function Header() {
             <Link
               to="/wishlist"
               className="icon-button"
-              aria-label={language === "ar" ? `المفضّلة، ${wishlist.length} منتجات` : `Wishlist, ${wishlist.length} items`}
+              aria-label={language === "ar" ? `المفضّلة، ${localizedCount(wishlist.length, "product", language)}` : `Wishlist, ${wishlist.length} items`}
             >
               <Heart size={22} />
               {wishlist.length > 0 && <span className="tiny-dot" />}
@@ -168,7 +195,7 @@ export function Header() {
               id="cart-icon"
               className="icon-button bag-button"
               onClick={() => setCartOpen(true)}
-              aria-label={language === "ar" ? `سلّة التسوّق، ${count} منتجات` : `Shopping bag, ${count} items`}
+              aria-label={language === "ar" ? `سلّة التسوّق، ${localizedCount(count, "product", language)}` : `Shopping bag, ${count} items`}
             >
               <ShoppingBag size={21} />
               <span key={count} className="bag-count">
@@ -178,20 +205,26 @@ export function Header() {
             <button
               className="icon-button mobile-menu-button"
               aria-label={t("Open navigation")}
+              aria-expanded={mobile}
+              aria-controls="mobile-navigation"
               onClick={() => setMobile(true)}
             >
               <Menu size={22} />
             </button>
+            </div>
           </div>
         </div>
       </header>
       <Modal
+        id="mobile-navigation"
         open={mobile}
         onClose={() => setMobile(false)}
         title={t("Explore a little")}
         drawer
       >
-        <nav className="mobile-nav" aria-label={t("Mobile navigation")}>
+        <nav className="mobile-nav" aria-label={t("Mobile navigation")} onClick={(event) => {
+          if ((event.target as Element).closest("a")) setMobile(false);
+        }}>
           {mobileNav}
         </nav>
       </Modal>
@@ -222,7 +255,7 @@ export function Header() {
           </button>
         </form>
         <p className="small-muted">
-          {query ? language === "ar" ? `${results.length} اقتراحات` : `${results.length} suggestions` : t("A few little favorites")}
+          {query ? localizedCount(results.length, "suggestion", language) : t("A few little favorites")}
         </p>
         <div className="search-results">
           {results.map((p) => (
@@ -248,7 +281,6 @@ export function Footer() {
   return (
     <footer className="page-width site-footer">
       <div className="footer-main">
-        <Logo />
         <nav aria-label={t("Footer navigation")}>
           <Link to="/about">{t("About Us")}</Link>
           <Link to="/help/sizing">{t("Size Guide")}</Link>

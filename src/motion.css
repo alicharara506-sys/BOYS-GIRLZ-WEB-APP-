@@ -55,7 +55,7 @@
 @keyframes loadingOrbitPink { to { transform: translate(-27px,-19px) rotate(-28deg) scale(.94); } }
 
 .home-feature { --card-rx: 0deg; --card-ry: 0deg; --art-x: 0px; --art-y: 0px; transform: perspective(900px) rotateX(var(--card-rx)) rotateY(var(--card-ry)); transform-style: preserve-3d; transition: transform .24s ease-out, box-shadow .25s ease; }
-.home-feature:hover { box-shadow: 0 18px 30px -23px #27466055; }
+.home-feature:hover { box-shadow: 0 18px 30px -23px #28252A55; }
 .home-feature .home-mascot { transform: translate3d(var(--art-x),var(--art-y),18px); transition: transform .24s ease-out; }
 .home-feature-copy { transform: translateZ(25px); }
 .home-feature-spark, .home-feature-heart { transition: transform .3s ease; }
@@ -63,7 +63,7 @@
 .home-feature:hover .home-feature-heart { transform: rotate(25deg) scale(1.18); }
 
 .product-card .tilt { transition: transform .2s ease-out, filter .28s ease; }
-.product-card:hover .tilt, .product-card:focus-within .tilt { filter: drop-shadow(0 14px 12px #24375120); }
+.product-card:hover .tilt, .product-card:focus-within .tilt { filter: drop-shadow(0 14px 12px #28252A20); }
 .product-image-button .product-photo { transition: scale .55s cubic-bezier(.2,.8,.2,1), filter .55s ease; }
 .product-card:hover .product-photo, .product-card:focus-within .product-photo { scale: 1.055; filter: saturate(1.045); }
 .product-card .product-tag { transition: transform .25s ease; }
@@ -80,7 +80,7 @@
 .home-sale-icon { position: relative; z-index: 1; display: grid; flex: none; place-items: center; width: 58px; height: 58px; border-radius: 18px; background: #fff8; color: #f45898; box-shadow: 0 8px 18px #d2538520; animation: saleFloat 3s ease-in-out infinite alternate; }
 .home-sale > div { position: relative; z-index: 1; }
 .home-sale-label { color: #bd537d; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
-.home-sale h2 { margin: 3px 0; color: #17213b; font-size: clamp(20px,2vw,27px); letter-spacing: -.6px; }
+.home-sale h2 { margin: 3px 0; color: var(--text-primary); font-size: clamp(20px,2vw,27px); letter-spacing: -.6px; }
 .home-sale p { color: #6c7086; font-size: 12px; line-height: 1.45; }
 .home-sale-link { position: relative; z-index: 1; display: inline-flex; flex: none; align-items: center; gap: 9px; margin-left: auto; padding: 12px 19px; border-radius: 999px; background: #fff; color: #a93f70; font-size: 12px; font-weight: 700; box-shadow: 0 7px 20px #d6749c1e; transition: transform .25s, box-shadow .25s; }
 .home-sale-link:hover, .home-sale-link:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 25px #d6749c33; }

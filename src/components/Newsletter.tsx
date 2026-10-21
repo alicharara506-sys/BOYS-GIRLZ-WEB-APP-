@@ -31,6 +31,7 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
         <input
           id={compact ? "footer-email" : "newsletter-email"}
           type="email"
+          autoComplete="email"
           name="email"
           required
           placeholder={t(joined ? "Thank you for joining!" : "Your email address")}

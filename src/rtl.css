@@ -4,7 +4,7 @@
   border: 1px solid #e8e7e8;
   border-radius: 999px;
   background: #fff;
-  color: #253049;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -22,6 +22,17 @@ html[dir="rtl"] h2,
 html[dir="rtl"] h3,
 html[dir="rtl"] h4,
 html[dir="rtl"] .desktop-nav { font-family: Tahoma, "Segoe UI", Arial, sans-serif; letter-spacing: 0; }
+html[dir="rtl"] .eyebrow,
+html[dir="rtl"] .home-sale-label,
+html[dir="rtl"] .brand-ribbon-label { letter-spacing: 0; text-transform: none; }
+html[dir="rtl"] .shop-heading h1,
+html[dir="rtl"] .page-heading h1,
+html[dir="rtl"] .product-details > h1 { letter-spacing: 0; line-height: 1.5; }
+html[dir="rtl"] .product-info > a { line-height: 1.75; }
+html[dir="rtl"] .product-range { display: block; line-height: 1.65; }
+html[dir="rtl"] .desktop-nav { font-size: 13px; gap: clamp(12px, 1.7vw, 24px); }
+html[dir="rtl"] .desktop-nav a,
+html[dir="rtl"] .desktop-nav summary { white-space: nowrap; }
 html[dir="rtl"] .page-heading,
 html[dir="rtl"] .shop-heading,
 html[dir="rtl"] .product-details,
@@ -77,6 +88,13 @@ html[dir="rtl"] .text-link svg.lucide-arrow-right,
 html[dir="rtl"] .breadcrumbs svg.lucide-chevron-right,
 html[dir="rtl"] .text-link svg.lucide-chevron-right { transform: scaleX(-1); }
 html[dir="rtl"] .checkout-steps li:not(:last-child)::after { transform: scaleX(-1); }
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  html[dir="rtl"] .desktop-nav { display: none; }
+  html[dir="rtl"] .mobile-menu-button { display: inline-flex; }
+  html[dir="rtl"] .nav-inner { height: 82px; }
+  html[dir="rtl"] .site-header .brand-logo-image { width: 220px; height: 74px; }
+}
 
 @media (max-width: 700px) {
   .language-switch { padding: 6px 8px; font-size: 11px; }

@@ -12,13 +12,15 @@ import {
   categories,
   colorHex,
   products,
+  sizeOptions,
   type Category,
 } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import CategoryScene from "../components/CategoryScene";
+import CategoryHero from "../components/CategoryHero";
 import { useStore } from "../state/Store";
-import { useLocale } from "../i18n/Locale";
+import { localizedCount, useLocale } from "../i18n/Locale";
 const matchesCategory = (product: (typeof products)[number], category: Category) =>
   category === "Sale" ? product.condition === "new" && Boolean(product.originalPrice)
     : category === "Outlet" ? product.condition === "like-new"
@@ -26,12 +28,6 @@ const matchesCategory = (product: (typeof products)[number], category: Category)
         ? product.gender === category
         : product.category === category;
 const priceCeiling = Math.ceil(Math.max(...products.map((product) => product.price)) / 5) * 5;
-function GenderIcon({ kind }: { kind: "boys" | "girls" }) {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="10" cy="10" r="5" />
-    {kind === "boys" ? <><path d="m13.5 6.5 7-7M16 0h5v5" transform="translate(-1 2)" /></> : <path d="M10 15v7m-4-3.5h8" />}
-  </svg>;
-}
 const copy: Record<Category, string> = {
   Boys: "For muddy knees, sleepy cuddles, and every little adventure.",
   Girls: "Lovely little layers for their own kind of adventure.",
@@ -56,6 +52,13 @@ export default function Shop() {
   const selected = (params.get("category") || "").split(",").filter((value): value is Category => categories.includes(value as Category));
   const max = Math.min(priceCeiling, Math.max(0, Number(params.get("max") || priceCeiling)));
   const size = params.get("size") || "";
+  const categoryProducts = products.filter((product) => routeCategory
+    ? matchesCategory(product, routeCategory)
+    : !selected.length || selected.some((active) => matchesCategory(product, active)));
+  const availableSizes = [...new Set(categoryProducts.flatMap((product) => product.sizes))];
+  const orderedSizes = [...sizeOptions, ...availableSizes.filter((option) => !sizeOptions.some((babySize) => babySize === option))]
+    .filter((option) => availableSizes.includes(option) || option === size);
+  if (size && !orderedSizes.includes(size)) orderedSizes.push(size);
   const color = params.get("color") || "";
   const query = params.get("q") || "";
   const sort = params.get("sort") || "featured";
@@ -147,7 +150,7 @@ export default function Shop() {
           onChange={(e) => updateParam("size", e.target.value)}
         >
           <option value="">{t("All sizes")}</option>
-          {[...new Set(products.flatMap((p) => p.sizes))].map((s) => (
+          {orderedSizes.map((s) => (
             <option key={s} value={s}>{t(s)}</option>
           ))}
         </select>
@@ -167,7 +170,7 @@ export default function Shop() {
               key={c}
               className={color === c ? "selected" : ""}
               onClick={() => updateParam("color", color === c ? "" : c)}
-              aria-label={language === "ar" ? `تصفية اللون ${t(c)}` : `Filter ${c}`}
+              aria-label={language === "ar" ? `التصفية حسب اللون: ${t(c)}` : `Filter ${c}`}
               aria-pressed={color === c}
             >
               <i style={{ background: hex }} />
@@ -199,7 +202,9 @@ export default function Shop() {
         <ChevronRight size={12} />
         <span>{t(routeCategory || "Shop")}</span>
       </div>
-      <div className={`shop-heading ${routeCategory?.toLowerCase() || ""}`}>
+      {routeCategory === "Boys" || routeCategory === "Girls" || routeCategory === "Unisex" ? (
+        <CategoryHero key={routeCategory} category={routeCategory} count={products.filter((product) => matchesCategory(product, routeCategory)).length} />
+      ) : <div className={`shop-heading ${routeCategory?.toLowerCase() || ""}`}>
         <div>
           <span className="eyebrow">{t("Made for little moments")}</span>
           <h1>
@@ -209,8 +214,6 @@ export default function Shop() {
                 ? t("Lovely little offers.")
                 : t("All the little things.")}
           </h1>
-          {routeCategory === "Boys" && <span className="gender-mark"><GenderIcon kind="boys" /> <span>{t("Little Boys")}</span></span>}
-          {routeCategory === "Girls" && <span className="gender-mark"><GenderIcon kind="girls" /> <span>{t("Little Girls")}</span></span>}
           <p>
             {routeCategory
               ? t(copy[routeCategory])
@@ -223,12 +226,25 @@ export default function Shop() {
           )}
         </div>
         {routeCategory ? <CategoryScene category={routeCategory} /> : <span className="heading-heart"><Heart size={58} strokeWidth={1} /></span>}
-      </div>
-      <div className="shop-layout">
+      </div>}
+      <div className="shop-layout" id="category-products" tabIndex={-1}>
         <aside className="desktop-filters" aria-label={t("Product filters")}>
           {filters}
         </aside>
         <div className="shop-results">
+          {(orderedSizes.length > 0 || size) && <section className="shop-size-picker" aria-label={t("Shop by size")}>
+            <div>
+              <label htmlFor="shopping-size">{t("Shop by size")}</label>
+              <p>{t("Choose a size to see only matching pieces.")}</p>
+            </div>
+            <select id="shopping-size" value={size} onChange={(event) => updateParam("size", event.target.value)}>
+              <option value="">{t("All sizes")}</option>
+              {orderedSizes.map((option) => <option key={option} value={option}>{t(option)}</option>)}
+            </select>
+            {size && <button type="button" className="btn btn-outline btn-small" onClick={() => updateParam("size", "")}>
+              {t("Clear size")} <X size={16} aria-hidden="true" />
+            </button>}
+          </section>}
           <div className="shop-toolbar">
             <div className="listing-search">
               <Search size={18} />
@@ -271,7 +287,7 @@ export default function Shop() {
           </div>
           <div className="results-line">
             <p role="status">
-              {language === "ar" ? `${result.length} ${t("favorites")}` : <>{result.length} little {result.length === 1 ? "favorite" : "favorites"}</>}
+              {language === "ar" ? localizedCount(result.length, "product", language) : <>{result.length} little {result.length === 1 ? "favorite" : "favorites"}</>}
             </p>
             <button
               className="mobile-filter btn btn-outline btn-small"
@@ -284,7 +300,7 @@ export default function Shop() {
           {result.length ? (
             <div className="shop-grid">
               {result.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={`${p.id}:${size}`} product={p} selectedSize={size} />
               ))}
             </div>
           ) : (
@@ -310,7 +326,7 @@ export default function Shop() {
           className="btn btn-blue filter-apply"
           onClick={() => setMobile(false)}
         >
-          {t("Show")} {result.length} {t("favorites")} <ArrowRight size={16} />
+          {language === "ar" ? `عرض النتائج (${result.length})` : <>{t("Show")} {result.length} {t("favorites")}</>} <ArrowRight size={16} />
         </button>
       </Modal>
     </div>
@@ -327,7 +343,7 @@ export function Wishlist() {
         <h1>{t("Your little wishlist.")}</h1>
         <p>
           {saved.length
-            ? language === "ar" ? `${saved.length} منتجات محفوظة لوقت لاحق.` : `${saved.length} lovely ${saved.length === 1 ? "thing" : "things"}, saved for later.`
+            ? language === "ar" ? `${localizedCount(saved.length, "product", language)} في قائمة المفضلة.` : `${saved.length} lovely ${saved.length === 1 ? "thing" : "things"}, saved for later.`
             : t("Some things are too lovely to forget.")}
         </p>
       </div>

@@ -1,14 +1,15 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useFetcher } from "react-router";
-import { ArrowLeft, ArrowRight, CheckCircle2, Package, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Package, Printer, Truck } from "lucide-react";
 import { useStore } from "../state/Store";
 import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
-import { itemKey } from "../state/storeCore";
+import { itemKey, type CartItem } from "../state/storeCore";
+import ReceiptFrame from "../components/ReceiptFrame";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
 import { useLocale } from "../i18n/Locale";
 
-type OrderReply = { error?: string; orderNumber?: string; totals?: { totalCents: number } };
+type OrderReply = { error?: string; orderNumber?: string; totals?: { subtotalCents: number; discountCents: number; shippingCents: number; totalCents: number } };
 type Shipping = {
   fullName: string; mobile: string; email: string; governorate: string;
   cityArea: string; streetBuilding: string; landmark: string;
@@ -34,12 +35,19 @@ export default function Checkout() {
   const fetcher = useFetcher<OrderReply>();
   const [shipping, setShipping] = useState<Shipping>(initialShipping);
   const [review, setReview] = useState(false);
+  const [submittedItems, setSubmittedItems] = useState<CartItem[]>([]);
   const order = fetcher.data?.orderNumber;
-  useEffect(() => { if (order) dispatch({ type: "CLEAR_CART" }); }, [order, dispatch]);
+  useEffect(() => {
+    if (!order) return;
+    dispatch({ type: "CLEAR_CART" });
+    document.getElementById("order-received-heading")?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [order, dispatch]);
   const update = (key: keyof Shipping, value: string) => setShipping((current) => ({ ...current, [key]: value }));
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!review) { setReview(true); return; }
+    setSubmittedItems(cart.map((item) => ({ ...item })));
     fetcher.submit({
       ...shipping,
       items: cart.map((item) => ({
@@ -50,9 +58,25 @@ export default function Checkout() {
   };
   if (order) return <div className="page-width success-page" role="status">
     <span className="success-icon"><CheckCircle2 size={56} strokeWidth={1.2} /></span>
-    <h1>{t("Your order has been received.")}</h1>
-    <p>{language === "ar" ? <>الطلب <strong>{order}</strong> بانتظار التأكيد. يُرجى تجهيز المبلغ نقداً عند التوصيل.</> : <>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</>}</p>
-    <p>{language === "ar" ? "المجموع:" : "Total:"} {money((fetcher.data?.totals?.totalCents ?? 0) / 100)}</p>
+    <h1 id="order-received-heading" tabIndex={-1}>{t("Your order has been received.")}</h1>
+    <p>{language === "ar" ? <>طلبك رقم <strong><bdi>{order}</bdi></strong> بانتظار التأكيد. يُرجى تجهيز المبلغ نقدًا عند الاستلام.</> : <>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</>}</p>
+    <ReceiptFrame className="confirmed-receipt" label={t("Order receipt")}>
+      <h2>{t("Order receipt")}</h2>
+      <p className="receipt-order-number"><bdi>{order}</bdi></p>
+      <p>{shipping.fullName}<br />{t(shipping.governorate)} · {shipping.cityArea}<br />{shipping.streetBuilding}<br /><bdi>{shipping.mobile}</bdi></p>
+      <div className="receipt-order-items">{submittedItems.map((item) => {
+        const product = productById(item.productId);
+        return product && <div key={itemKey(item)}><strong>{t(product.name)}</strong><span>{item.size && `${t(item.size)} · `}{t(item.color)} · {t("Quantity")}: {item.quantity}</span></div>;
+      })}</div>
+      {fetcher.data?.totals && <>
+        <div className="summary-line"><span>{t("Subtotal")}</span><bdi>{money(fetcher.data.totals.subtotalCents / 100)}</bdi></div>
+        <div className="summary-line"><span>{t("Discount")}</span><bdi>{money(fetcher.data.totals.discountCents / 100)}</bdi></div>
+        <div className="summary-line"><span>{t("Shipping")}</span><bdi>{money(fetcher.data.totals.shippingCents / 100)}</bdi></div>
+        <div className="summary-total"><span>{t("Total")}</span><strong><bdi>{money(fetcher.data.totals.totalCents / 100)}</bdi></strong></div>
+      </>}
+      <p className="receipt-payment-note">{t("Cash on Delivery")} · {t("Awaiting confirmation")}</p>
+    </ReceiptFrame>
+    <button type="button" className="btn btn-outline receipt-print-button" onClick={() => window.print()}><Printer size={18} /> {t("Print receipt")}</button>
     <Link to="/shop" className="btn btn-blue">{t("Continue shopping")} <ArrowRight size={16} /></Link>
   </div>;
   if (!cart.length) return <div className="page-width empty-state">
@@ -104,7 +128,7 @@ export default function Checkout() {
           </div>
         </form>
       </section>
-      <aside className="order-summary" aria-label={t("Order summary")}>
+      <ReceiptFrame className="order-summary" label={t("Order summary")}>
         <h2>{t("Your bag")}</h2>
         <div className="checkout-items">{cart.map((item) => {
           const product = productById(item.productId);
@@ -114,7 +138,7 @@ export default function Checkout() {
         <div className="summary-line"><span>{t("Estimated subtotal")}</span><span>{money(totals.subtotal)}</span></div>
         <p className="small-muted">{t("Final shipping, discounts and total are calculated on the server. No payment is collected online.")}</p>
         <WhatsAppOrderOption cart={cart} />
-      </aside>
+      </ReceiptFrame>
     </div>
   </div>;
 }

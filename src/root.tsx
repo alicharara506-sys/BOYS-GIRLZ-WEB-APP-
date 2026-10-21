@@ -19,6 +19,9 @@ import "./redesign.css";
 import "./motion.css";
 import "./toybox.css";
 import "./rtl.css";
+import "./category-hero.css";
+import "./responsive.css";
+import "./receipt-theme.css";
 
 export function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") || "";
@@ -51,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang={language} dir={language === "ar" ? "rtl" : "ltr"}>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <Meta />
         <Links />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />

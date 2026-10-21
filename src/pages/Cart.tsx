@@ -15,7 +15,8 @@ import { money, productById } from "../data/products";
 import { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
-import { useLocale } from "../i18n/Locale";
+import { localizedCount, useLocale } from "../i18n/Locale";
+import ReceiptFrame from "../components/ReceiptFrame";
 export function Quantity({
   value,
   onChange,
@@ -103,7 +104,7 @@ export function OrderSummary({
   const { t } = useLocale();
   const { cart, totals } = useStore();
   return (
-    <section className="order-summary">
+    <ReceiptFrame className="order-summary" label={t("Order summary")}>
       <h2>{t("A lovely little total")}</h2>
       <div className="summary-line">
         <span>{t("Subtotal")}</span>
@@ -132,7 +133,7 @@ export function OrderSummary({
         </>
       )}
       {children}
-    </section>
+    </ReceiptFrame>
   );
 }
 export function CartDrawer() {
@@ -142,7 +143,7 @@ export function CartDrawer() {
     <Modal
       open={cartOpen}
       onClose={() => setCartOpen(false)}
-      title={language === "ar" ? `سلّتك الصغيرة (${count})` : `Your little bag (${count})`}
+      title={language === "ar" ? `سلة التسوّق (${count})` : `Your little bag (${count})`}
       drawer
     >
       {cart.length ? (
@@ -152,7 +153,7 @@ export function CartDrawer() {
             <p>
               {totals.subtotal > 99
                 ? t("Lovely! Your shipping is on us.")
-                : language === "ar" ? `توصيل مجاني للطلبات فوق 99$. مجموعك الفرعي ${money(totals.subtotal)}.` : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
+                : language === "ar" ? <>التوصيل مجاني للطلبات التي تتجاوز 99 دولارًا. المجموع الفرعي لطلبك: <bdi>{money(totals.subtotal)}</bdi>.</> : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
             </p>
             <progress
               value={Math.min(totals.subtotal, 99)}
@@ -160,6 +161,7 @@ export function CartDrawer() {
               aria-label={t("Progress toward free shipping")}
             />
           </div>
+          <ReceiptFrame className="bag-receipt" label={t("Order summary")} active={cartOpen}>
           <div className="drawer-items">
             {cart.map((i) => (
               <CartLine key={itemKey(i)} item={i} compact />
@@ -189,6 +191,7 @@ export function CartDrawer() {
               {t("Continue to checkout")} <ChevronRight size={14} />
             </Link>
           </div>
+          </ReceiptFrame>
         </>
       ) : (
         <div className="empty-state">
@@ -221,7 +224,7 @@ export default function Cart() {
         <span className="eyebrow">{t("A few lovely little things")}</span>
         <h1>{t("Your shopping bag.")}</h1>
         <p>
-          {language === "ar" ? `${count} منتجات اخترتها بمحبة.` : <>{count} {count === 1 ? "little favorite" : "little favorites"}, chosen with love.</>}
+          {language === "ar" ? count ? `${localizedCount(count, "product", language)} في سلة التسوّق.` : "لم تُضف أيّ منتجات إلى سلة التسوّق بعد." : <>{count} {count === 1 ? "little favorite" : "little favorites"}, chosen with love.</>}
         </p>
       </div>
       {cart.length ? (

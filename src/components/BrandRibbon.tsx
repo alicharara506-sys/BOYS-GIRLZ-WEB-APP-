@@ -6,7 +6,7 @@ export default function BrandRibbon() {
   return (
     <section className="brand-ribbon page-width" aria-label={t("Brands carried by Boys & Girlz")}>
       <span className="brand-ribbon-label">{t("Brands you'll find here")}</span>
-      <div className="brand-ribbon-window">
+      <div className="brand-ribbon-window" tabIndex={0}>
         <div className="brand-ribbon-track">
           {[0, 1].map((copy) => (
             <ul key={copy} aria-hidden={copy === 1}>

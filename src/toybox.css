@@ -28,7 +28,7 @@
   line-height: 1;
   letter-spacing: -.09em;
   opacity: .25;
-  text-shadow: 0 13px 16px #35485824;
+  text-shadow: 0 13px 16px #28252A24;
   user-select: none;
   transform: rotate(var(--angle, 0deg));
   animation: toybox-letter-float var(--duration, 6s) ease-in-out var(--delay, 0s) infinite alternate;

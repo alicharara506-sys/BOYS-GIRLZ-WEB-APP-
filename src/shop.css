@@ -1,3 +1,23 @@
+.shop-size-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--blue);
+  border-radius: 20px;
+  background: var(--cream);
+}
+.shop-size-picker > div { flex: 1 1 220px; min-width: 0; }
+.shop-size-picker label { display: block; font-size: 18px; font-weight: 700; }
+.shop-size-picker p { margin: 6px 0 0; font-size: 16px; line-height: 1.5; }
+.shop-size-picker select { min-height: 44px; max-width: 100%; flex: 1 1 180px; width: auto; font-size: 16px; }
+.shop-size-picker button { min-height: 44px; }
+@media (max-width: 767.98px) {
+  .shop-size-picker { padding: 16px; gap: 12px; }
+  .shop-size-picker > div, .shop-size-picker select { flex-basis: 100%; width: 100%; }
+}
 .shop-heading {
   padding: 34px 40px;
   background: #f8f1e8;

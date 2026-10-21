@@ -104,7 +104,7 @@ test("the desktop hero shows the exact B and G logo characters", async ({ page }
   await expect(page.locator(".toybox-poster canvas")).toHaveCount(0);
   const artwork = await page.locator(".toybox-poster .home-mascot-boy").evaluate((element) => getComputedStyle(element).backgroundImage);
   expect(artwork).toContain("brand-characters.png");
-  await expect(page.locator(".toybox-copy h1 span")).toHaveCSS("color", "rgb(252, 83, 142)");
+  await expect(page.locator(".toybox-copy h1 span")).toHaveCSS("color", "rgb(248, 107, 160)");
   await page.screenshot({ path: "test-results/logo-hero-desktop.png", fullPage: false });
   expect(errors).toEqual([]);
 });

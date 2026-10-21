@@ -1,0 +1,223 @@
+/* Receipt-paper surfaces and the two Boys & Girlz brand accents. */
+:root {
+  --blue: #4AC5FB;
+  --pink: #F86BA0;
+  --cream: #FFF1E6;
+  --logo-blue: #4AC5FB;
+  --logo-pink: #F86BA0;
+  --receipt-ink: #28252A;
+  --receipt-line: #28252A30;
+  --receipt-blue-wash: color-mix(in srgb, var(--blue) 13%, white);
+  --receipt-pink-wash: color-mix(in srgb, var(--pink) 13%, white);
+  --border: #28252A18;
+}
+body { background: var(--cream); color: var(--receipt-ink); }
+#root { background: #fff; box-shadow: 0 12px 48px #28252A0d; }
+.announcement { background: var(--receipt-pink-wash); color: var(--receipt-ink); }
+.announcement-main svg, .announcement-main strong { color: var(--receipt-ink); }
+.announcement-main svg { stroke: var(--blue); }
+.announcement-cod svg { color: var(--pink); }
+.site-header { background: #fff; padding-bottom: 10px; }
+.site-header .nav-inner {
+  position: relative;
+  border-radius: 0 0 24px 24px;
+  border-bottom: 1px dashed var(--receipt-line);
+  box-shadow: 0 7px 0 var(--receipt-blue-wash), 0 10px 0 #fff, 0 11px 0 var(--receipt-pink-wash);
+}
+.site-header .brand-logo-image { mix-blend-mode: multiply; }
+.desktop-nav a.active, .desktop-nav a:hover { color: var(--receipt-ink); text-decoration: underline; text-decoration-color: var(--blue); text-decoration-thickness: 3px; text-underline-offset: 8px; }
+.desktop-nav .nav-sale, .desktop-nav .nav-sale.active { color: var(--receipt-ink); text-decoration-color: var(--pink); }
+.nav-icons .icon-button { border-radius: 14px; background: var(--receipt-blue-wash); color: var(--receipt-ink); }
+.nav-icons a.icon-button { background: var(--receipt-pink-wash); }
+.bag-count, .tiny-dot { background: var(--pink); color: var(--receipt-ink); }
+.language-switch { border-color: var(--receipt-line); color: var(--receipt-ink); background: #fff; }
+.nav-more > div, .modal { border-color: var(--receipt-line); box-shadow: 0 18px 55px #28252A18; }
+.modal-heading { border-bottom: 1px dashed var(--receipt-line); }
+.modal-heading h2 { color: var(--receipt-ink); }
+.btn-blue, .checkout-btn, .home-button-blue, .collection-cta { background: var(--blue); color: var(--receipt-ink); }
+.btn-pink, .home-button-pink, .home-newsletter .newsletter .btn { background: var(--pink); color: var(--receipt-ink); }
+.btn-blue:hover, .checkout-btn:hover, .home-button-blue:hover, .collection-cta:hover { background: var(--blue); color: var(--receipt-ink); box-shadow: 0 4px 0 #28252A18; }
+.btn-pink:hover, .home-button-pink:hover, .home-newsletter .newsletter .btn:hover { background: var(--pink); color: var(--receipt-ink); box-shadow: 0 4px 0 #28252A18; }
+.btn-outline { background: #fff; border-color: var(--receipt-line); color: var(--receipt-ink); }
+.btn-outline:hover { background: var(--receipt-blue-wash); }
+:is(.btn, .home-button, .collection-cta):focus-visible { outline: 3px solid var(--receipt-ink); outline-offset: 4px; }
+.text-link, .home-view-all, .continue-link { color: var(--receipt-ink); text-decoration-color: var(--blue); }
+
+/* A real CSS printer, kept separate from the receipt's semantic content. */
+.receipt-frame { min-width: 0; width: 100%; isolation: isolate; }
+.receipt-frame.order-summary { padding: 0; border: 0; border-radius: 28px 28px 0 0; background: transparent; }
+.receipt-printer {
+  position: relative;
+  padding: 13px 17px 0;
+  height: 100px;
+  border: 1px solid var(--pink);
+  border-bottom: 0;
+  border-radius: 30px 30px 13px 13px;
+  background: linear-gradient(105deg, #fff9, transparent 14% 85%, #fff7), var(--pink);
+  box-shadow: inset 0 3px 0 #fff9, inset 0 -8px 12px #28252A12, 0 12px 24px #28252A0c;
+}
+.receipt-printer-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  height: 57px;
+  padding: 10px 20px;
+  border: 4px solid #fff;
+  border-radius: 19px;
+  background: repeating-linear-gradient(45deg, #fff2 0 1px, transparent 1px 7px), var(--pink);
+  box-shadow: 0 0 0 1px #28252A16, inset 0 2px 4px #28252A0b;
+  color: var(--receipt-ink);
+}
+.receipt-printer-panel svg { width: 21px; height: 21px; flex: none; stroke-width: 1.8; }
+.receipt-printer-panel svg:last-child { fill: var(--blue); }
+.receipt-printer-panel > span { width: 44px; height: 8px; border: 2px solid #fff; border-radius: 99px; background: var(--blue); }
+.receipt-printer::before, .receipt-printer::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  bottom: 0;
+  top: 72px;
+  background: var(--blue);
+  box-shadow: inset 3px 0 3px #fff7;
+}
+.receipt-printer::before { left: 7px; border-radius: 8px 0 0 4px; }
+.receipt-printer::after { right: 7px; border-radius: 0 8px 4px 0; }
+.receipt-printer-slot { position: absolute; bottom: 0; left: 22px; right: 22px; height: 17px; border-radius: 8px 8px 0 0; background: var(--receipt-ink); box-shadow: inset 0 3px 6px #0005; }
+.receipt-paper {
+  position: relative;
+  margin: -6px 25px 14px;
+  padding: 10px clamp(14px, 2vw, 24px) 22px;
+  background: #fff;
+  color: var(--receipt-ink);
+  box-shadow: 0 10px 24px #28252A0e, inset 0 7px 9px -9px var(--receipt-ink);
+  overflow-wrap: anywhere;
+}
+.receipt-feed { position: relative; padding-bottom: 10px; margin-top: -6px; }
+.receipt-feed .receipt-paper { margin-top: 0; }
+.receipt-frame[data-receipt-state="waiting"] .receipt-feed { clip-path: inset(0 0 100% 0); }
+.receipt-frame[data-receipt-state="printing"] .receipt-printer-panel > span { animation: printer-status .32s steps(1, end) infinite; }
+.receipt-frame[data-receipt-state="printing"] .receipt-printer { animation: printer-motor .13s steps(2, end) infinite; }
+.receipt-frame[data-receipt-state="ready"] .receipt-printer-panel > span { background: var(--blue); }
+.receipt-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; border-bottom: 1px dashed var(--receipt-line); }
+.receipt-brand img { display: block; width: min(210px, 77%); height: auto; aspect-ratio: 2; object-fit: contain; }
+.receipt-brand svg { width: 22px; height: 22px; flex: none; color: var(--blue); rotate: -12deg; }
+.receipt-brand svg:last-child { color: var(--pink); rotate: 14deg; }
+.receipt-paper h2 { font-size: 21px; line-height: 1.35; margin-bottom: 20px; color: var(--receipt-ink); }
+.receipt-paper .summary-line { gap: 12px; color: var(--receipt-ink); line-height: 1.5; }
+.receipt-paper .summary-line > :last-child { text-align: end; }
+.receipt-paper .summary-total { gap: 12px; flex-wrap: wrap; border-top: 1px dashed var(--receipt-line); color: var(--receipt-ink); }
+.receipt-paper .summary-total strong { color: var(--receipt-ink); }
+.receipt-paper .small-muted { line-height: 1.6; color: #5d565e; }
+.receipt-signoff { display: flex; justify-content: center; gap: 14px; padding: 20px 0 0; margin-top: 20px; border-top: 1px dashed var(--receipt-line); color: var(--blue); }
+.receipt-signoff svg { width: 18px; height: 18px; }
+.receipt-signoff svg:nth-child(2) { color: var(--pink); fill: var(--pink); }
+.receipt-paper-edge { position: absolute; top: 100%; left: 0; right: 0; height: 10px; background: linear-gradient(135deg, #fff 5px, transparent 0) 0 0 / 10px 10px repeat-x, linear-gradient(225deg, #fff 5px, transparent 0) 0 0 / 10px 10px repeat-x; }
+.bag-receipt { margin-top: 18px; }
+.bag-receipt .receipt-paper { margin-inline: 16px; padding-inline: 14px; }
+.bag-receipt .cart-line.compact { grid-template-columns: 54px minmax(0, 1fr); gap: 12px; }
+.bag-receipt .cart-line.compact > a { width: 54px; height: 68px; }
+.bag-receipt .cart-line.compact > strong { grid-column: 2; text-align: start; }
+.bag-receipt .drawer-summary { padding-top: 16px; }
+.receipt-paper .cart-line { border-bottom: 1px dashed var(--receipt-line); }
+.receipt-paper .checkout-items > div { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; padding-block: 12px; border-bottom: 1px dashed var(--receipt-line); }
+.receipt-paper .checkout-items .product-photo { width: 42px; height: 55px; }
+.receipt-paper .checkout-items > div > span { grid-column: 2; margin: 0; color: var(--receipt-ink); }
+.receipt-paper .checkout-items strong { font-size: 14px; }
+.confirmed-receipt { max-width: 520px; margin: 28px auto 0; text-align: start; }
+.confirmed-receipt .receipt-order-number { font-weight: 700; padding: 10px 14px; border-radius: 99px; background: var(--receipt-pink-wash); text-align: center; }
+.confirmed-receipt p { line-height: 1.65; }
+.receipt-order-items { padding-block: 14px; margin-block: 16px; border-block: 1px dashed var(--receipt-line); }
+.receipt-order-items > div { display: grid; gap: 5px; padding-block: 10px; }
+.receipt-order-items span, .receipt-payment-note { font-size: 14px; }
+.receipt-print-button { gap: 10px; }
+.success-icon { background: var(--receipt-blue-wash); color: var(--receipt-ink); }
+
+/* Carry the same paper, stitching and candy-shell language through every page. */
+.toybox-journey { --logo-blue: #4AC5FB; --logo-pink: #F86BA0; }
+.toybox-sticky { background: var(--cream); border: 1px solid var(--receipt-line); box-shadow: 0 12px 35px #28252A0a; }
+.toybox-poster { background: radial-gradient(ellipse at 80% 30%, var(--receipt-blue-wash), transparent 60%), radial-gradient(ellipse at 50% 90%, var(--receipt-pink-wash), transparent 60%), #fff; }
+.toybox-copy, .toybox-step-opening .toybox-copy { position: relative; border: 1px solid var(--receipt-line); border-top: 12px solid var(--pink); border-bottom: 1px dashed var(--receipt-line); background: #ffffffed; box-shadow: 0 -5px 0 var(--blue), 0 14px 28px #28252A0a; }
+.toybox-copy .home-kicker { color: var(--receipt-ink); }
+.toybox-copy .home-kicker svg { color: var(--pink); }
+.toybox-copy h1, .toybox-copy h2 { color: var(--receipt-ink); }
+.toybox-copy h1 span, .toybox-copy h2 span { color: var(--pink); }
+.toybox-step-boys .toybox-copy h2 span { color: var(--blue); }
+.home-filters button.active { background: var(--blue); color: var(--receipt-ink); }
+.home-filters button:hover { background: var(--receipt-blue-wash); }
+.home-section-heading h2 { text-decoration: underline; text-decoration-color: var(--pink); text-underline-offset: 7px; text-decoration-thickness: 4px; }
+.home-promise { background: var(--cream); border: 1px dashed var(--receipt-line); border-radius: 20px; }
+.home-promise > div { border-color: var(--receipt-line); }
+.home-promise svg { color: var(--receipt-ink); fill: var(--receipt-blue-wash); }
+.home-newsletter .newsletter, .newsletter { background: var(--receipt-blue-wash); border: 1px dashed var(--receipt-line); }
+.home-newsletter .newsletter-heart { color: var(--pink); }
+.home-sale { background: var(--receipt-pink-wash); border-color: var(--pink); }
+.home-sale-icon, .home-sale-label { color: var(--receipt-ink); }
+.home-sale-link { background: var(--pink); color: var(--receipt-ink); }
+.brand-ribbon-window { border-block: 1px dashed var(--receipt-line); background: #fff; }
+.brand-ribbon-word, .brand-ribbon-mark { color: var(--receipt-ink); }
+.shop-heading { border: 1px dashed var(--receipt-line); background: var(--cream); border-radius: 26px; }
+.shop-heading.boys, .shop-heading.accessories, .filter-note { background: var(--receipt-blue-wash); }
+.shop-heading.girls, .shop-heading.maternity { background: var(--receipt-pink-wash); }
+.shop-heading .eyebrow, .collection-eyebrow, .product-details .eyebrow { color: var(--receipt-ink); }
+.collection-hero { --collection-accent: #4AC5FB; --collection-wash: #FFF1E6; --collection-orb: var(--receipt-blue-wash); --collection-secondary: var(--receipt-pink-wash); border: 1px solid var(--receipt-line); }
+.collection-hero-girls { --collection-accent: #F86BA0; }
+.collection-copy h1, .collection-hero-unisex .collection-copy h1 { color: var(--pink); }
+.collection-copy h1 span { color: var(--blue); }
+.collection-hero-boys .collection-copy h1 { color: var(--receipt-ink); }
+.collection-doodle-star { color: var(--blue); }
+.collection-doodle-star svg { fill: var(--receipt-blue-wash); }
+.collection-footer { border-top: 1px dashed var(--receipt-line); background: #ffffffb3; }
+.collection-tabs a[aria-current="page"] { color: var(--receipt-ink); border-color: var(--collection-accent); }
+.shop-size-picker { background: var(--receipt-blue-wash); border: 1px dashed var(--blue); }
+.shop-grid .card-front, .wishlist-grid .card-front, .related-grid .card-front, .home-product-grid .card-front { border: 1px solid var(--receipt-line); border-radius: 20px; }
+.product-info { border-bottom: 1px dashed var(--receipt-line); padding-bottom: 16px; }
+.shop-grid .product-tag, .wishlist-grid .product-tag, .related-grid .product-tag, .home-product-grid .product-tag { background: var(--blue); color: var(--receipt-ink); border-radius: 99px; }
+.shop-grid .sale-tag, .home-product-grid .sale-tag, .wishlist-grid .sale-tag, .related-grid .sale-tag { background: var(--pink); }
+.card-quick-button { background: var(--receipt-pink-wash); border-color: var(--receipt-line); color: var(--receipt-ink); border-radius: 12px; }
+.card-quick-button:hover { background: var(--pink); color: var(--receipt-ink); }
+.size-options > button.selected { background: var(--blue); border-color: var(--blue); color: var(--receipt-ink); }
+.cart-shipping, .shipping-progress, .delivery-option { background: var(--receipt-blue-wash); color: var(--receipt-ink); border-color: var(--receipt-line); }
+.shipping-progress progress { accent-color: var(--pink); }
+.checkout-panel, .story-panel, .contact-details, .review-grid article { background: #fff; border: 1px solid var(--receipt-line); border-radius: 24px; }
+.checkout-panel > form > h2 { padding-bottom: 18px; border-bottom: 1px dashed var(--receipt-line); }
+.checkout-steps .current > span { background: var(--pink); color: var(--receipt-ink); }
+.checkout-steps .complete > span { background: var(--blue); color: var(--receipt-ink); }
+.site-footer { background: #fff; border-top: 1px dashed var(--receipt-line); }
+.footer-bottom { border-top: 1px dashed var(--receipt-line); color: var(--receipt-ink); }
+@keyframes printer-status { 0%, 100% { background: var(--blue); } 50% { background: var(--pink); } }
+@keyframes printer-motor { 0%, 100% { translate: 0 0; } 50% { translate: .35px 0; } }
+@media (max-width: 1023.98px) {
+  .receipt-frame.order-summary { position: static; }
+  .receipt-paper .checkout-items strong, .receipt-paper .checkout-items span, .receipt-order-items span, .receipt-payment-note { font-size: 16px; }
+  .receipt-printer { height: 90px; padding-inline: 13px; }
+  .receipt-printer-panel { height: 52px; }
+  .receipt-printer::before, .receipt-printer::after { top: 65px; }
+}
+@media (max-width: 479.98px) {
+  .receipt-paper { margin-inline: 15px; padding-inline: 14px; }
+  .receipt-printer-slot { left: 12px; right: 12px; }
+  .receipt-paper .summary-total { font-size: 16px; }
+  .receipt-paper .summary-total strong { font-size: 23px; }
+  .bag-receipt .cart-line-controls { flex-wrap: wrap; }
+  .bag-receipt .receipt-paper { margin-inline: 10px; padding-inline: 10px; }
+  .bag-receipt .cart-line.compact { grid-template-columns: 42px minmax(0, 1fr); gap: 8px; }
+  .bag-receipt .cart-line.compact > a { width: 42px; height: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt-frame .receipt-printer, .receipt-frame .receipt-printer-panel > span { animation: none; }
+  .receipt-frame .receipt-feed { clip-path: none !important; }
+  .receipt-frame .receipt-paper { transform: none !important; }
+}
+@media print {
+  @page { margin: 12mm; }
+  body, #root { background: #fff; margin: 0; box-shadow: none; border-radius: 0; }
+  .skip-link, .announcement, .site-header, .site-footer, .whatsapp-floating, .toast, .fly-item, .success-page > :not(.confirmed-receipt), .receipt-printer, .receipt-signoff, .receipt-paper-edge { display: none !important; }
+  .success-page { padding: 0; }
+  .confirmed-receipt { display: block; max-width: 100%; margin: 0; }
+  .confirmed-receipt .receipt-paper { margin: 0; padding: 0; box-shadow: none; animation: none; }
+  .receipt-frame .receipt-feed { clip-path: none !important; padding: 0; }
+  .receipt-frame .receipt-paper { transform: none !important; }
+  .receipt-brand img { width: 190px; }
+  .receipt-order-items > div, .summary-total { break-inside: avoid; }
+}

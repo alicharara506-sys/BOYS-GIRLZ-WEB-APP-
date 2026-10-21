@@ -70,16 +70,18 @@ export function WishButton({ product }: { product: Product }) {
     </button>
   );
 }
-export default function ProductCard({ product, showRange = false }: { product: Product; showRange?: boolean }) {
+export default function ProductCard({ product, showRange = false, selectedSize = "" }: { product: Product; showRange?: boolean; selectedSize?: string }) {
   const { language, t } = useLocale();
   const [quickOpen, setQuickOpen] = useState(false);
-  const [size, setSize] = useState(product.sizes[0] || "");
+  const matchingSize = product.sizes.includes(selectedSize) ? selectedSize : "";
+  const productUrl = `/product/${product.id}${matchingSize ? `?size=${encodeURIComponent(matchingSize)}` : ""}`;
+  const [size, setSize] = useState(matchingSize || product.sizes[0] || "");
   const [color, setColor] = useState(product.colors[0]);
   const { add } = useStore();
   return (
     <article className="product-card product-card-simple">
       <div className="card-front">
-        <Link className="product-image-link" to={`/product/${product.id}`} aria-label={language === "ar" ? `عرض ${t(product.name)}` : `View ${product.name}`}>
+        <Link className="product-image-link" to={productUrl} aria-label={language === "ar" ? `عرض ${t(product.name)}` : `View ${product.name}`}>
           <ProductImage product={product} />
         </Link>
         {(product.isNew || product.originalPrice || product.condition === "like-new") && (
@@ -90,8 +92,11 @@ export default function ProductCard({ product, showRange = false }: { product: P
         <WishButton product={product} />
       </div>
       <div className="product-info">
-        <Link to={`/product/${product.id}`}>{t(product.name)}</Link>
-        {showRange && product.sizes.length > 0 && <span className="product-range">{t(product.sizes[0])}–{t(product.sizes.at(-1) || "")}</span>}
+        <Link to={productUrl}>{t(product.name)}</Link>
+        {matchingSize && <span className="product-range">{t("Size")}: {t(matchingSize)}</span>}
+        {showRange && product.sizes.length > 0 && <span className="product-range">{language === "ar" && product.sizes[0] === "New Born" && product.sizes.at(-1) === "5–6 Years"
+          ? t("Newborn to 6 years")
+          : <>{t(product.sizes[0])}–{t(product.sizes.at(-1) || "")}</>}</span>}
         <div className="product-meta">
           <span>
             {money(product.price)}{" "}

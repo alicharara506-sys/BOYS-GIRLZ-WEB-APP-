@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ChevronRight,
@@ -27,15 +27,17 @@ import { useLocale } from "../i18n/Locale";
 export default function ProductDetail() {
   const { id } = useParams();
   const product = productById(id || "");
+  const [params] = useSearchParams();
+  const selectedSize = params.get("size") || "";
   return product ? (
-    <ProductContent key={product.id} product={product} />
+    <ProductContent key={`${product.id}:${selectedSize}`} product={product} selectedSize={selectedSize} />
   ) : (
     <NotFound />
   );
 }
-function ProductContent({ product: p }: { product: Product }) {
+function ProductContent({ product: p, selectedSize }: { product: Product; selectedSize: string }) {
   const { language, t } = useLocale();
-  const [size, setSize] = useState(p.sizes[0] || "");
+  const [size, setSize] = useState(p.sizes.includes(selectedSize) ? selectedSize : p.sizes[0] || "");
   const [color, setColor] = useState(p.colors[0]);
   const [quantity, setQuantity] = useState(1);
   const [sizeGuide, setSizeGuide] = useState(false);
@@ -155,7 +157,7 @@ function ProductContent({ product: p }: { product: Product }) {
                 <Minus size={15} />
               </summary>
               <p>
-                {language === "ar" ? "نوصّل داخل لبنان فقط، والتوصيل مجاني للطلبات التي تتجاوز 99$. اقرأ " : "We deliver within Lebanon only. Delivery is free on orders over $99. Read our "}<Link to="/help/shipping">{t("shipping guide")}</Link>{" "}
+                {language === "ar" ? "نوفّر التوصيل داخل لبنان فقط، ويكون مجانيًا للطلبات التي تتجاوز 99 دولارًا. يُرجى الاطّلاع على " : "We deliver within Lebanon only. Delivery is free on orders over $99. Read our "}<Link to="/help/shipping">{t("shipping guide")}</Link>{" "}
                 {language === "ar" ? "و" : "and "}<Link to="/help/returns">{t("returns guide")}</Link>{language === "ar" ? " قبل الطلب." : " before ordering."}
               </p>
             </details>
@@ -184,6 +186,7 @@ function ProductContent({ product: p }: { product: Product }) {
         title={t("A little guide to the right fit")}
       >
         <p className="small-muted">{t("Ask the shop for verified measurements before choosing a size.")}</p>
+        <div className="table-scroll" role="region" aria-label={t("Size guide")} tabIndex={0}>
         <table className="size-table">
           <thead>
             <tr>
@@ -200,6 +203,7 @@ function ProductContent({ product: p }: { product: Product }) {
             ))}
           </tbody>
         </table>
+        </div>
         <p className="small-muted">
           {t("Between sizes? Choose a little room to grow.")}
         </p>
