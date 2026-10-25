@@ -1,9 +1,9 @@
 import { useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, HelpCircle, LayoutGrid, Tag, Truck } from "lucide-react";
+import { ArrowRight, HelpCircle, LayoutGrid, Sparkles, Tag, Truck } from "lucide-react";
 import { whatsAppUrl } from "./WhatsAppLink";
 import { socials, WhatsAppIcon } from "./SocialIcons";
-import { approvedBrands, brandSlug } from "../data/brands";
+import { approvedBrands } from "../data/brands";
 import { categories, matchesCategory, products } from "../data/products";
 import { useLocale } from "../i18n/Locale";
 import { brandColors } from "./BrandRibbon";
@@ -117,9 +117,12 @@ export default function Footer() {
           <FooterPanel title={t("Brands")} icon={<Tag size={14} />} count={approvedBrands.length}>
             <ul className="footer-brands">
               {approvedBrands.slice(0, FOOTER_BRANDS).map((brand) => <li key={brand}>
-                <Link to={`/shop?brand=${brandSlug(brand)}`} style={{ "--brand": brandColors[brand] ?? "#fc538e" } as CSSProperties}>{brand}</Link>
+                <span className="footer-brand-tile" style={{ "--brand": brandColors[brand] ?? "#fc538e" } as CSSProperties}>{brand}</span>
               </li>)}
             </ul>
+            <FooterLinkList>
+              <FooterLink to="/brands"><strong>{t("All brands")}</strong></FooterLink>
+            </FooterLinkList>
           </FooterPanel>
 
           <FooterPanel title={t("Help")} icon={<HelpCircle size={14} />}>
@@ -137,7 +140,8 @@ export default function Footer() {
     <div className="footer-bottom-v2">
       <div className="page-width">
         <span>© {new Date().getFullYear()} Boys & Girlz · {t("A children's shop in Lebanon")}</span>
-        <span><Truck size={14} aria-hidden="true" /> {t("Delivery within Lebanon only")} · <Link to="/contact">{t("Contact us")}</Link></span>
+        <span><Truck size={14} aria-hidden="true" /> {t("Delivery all over Lebanon")} · <Link to="/contact">{t("Contact us")}</Link></span>
+        <span className="footer-credit"><Sparkles size={13} aria-hidden="true" /> {t("Powered by")} <b dir="ltr">Olon Agency</b></span>
       </div>
     </div>
   </footer>;

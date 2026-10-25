@@ -3,7 +3,9 @@
   --ink: #151b33;
   position: relative; isolation: isolate; overflow: hidden;
   margin-top: clamp(24px, 4vw, 56px);
-  background: var(--ink); color: #ffffffd9;
+  /* The brand's blue blending smoothly into its pink. */
+  background: linear-gradient(118deg, #0a3a8f 0%, #0f63c9 30%, #3d7fd6 46%, #e0478a 64%, #e8326f 82%, #d4245f 100%);
+  color: #ffffffe0;
 }
 /* A light travelling slowly along the top edge. */
 .footer-beam { position: absolute; inset-inline: 0; top: 0; height: 1px; overflow: hidden; background: #ffffff1a; }
@@ -16,13 +18,21 @@
 html[dir="rtl"] .footer-beam span { animation-direction: reverse; }
 
 /* The ink lit like a surface: a light falling from the top, pink and blue glows drifting, edges sinking deeper, a faint dot grid. */
-.footer-glows { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-.footer-glow { position: absolute; border-radius: 50%; filter: blur(120px); }
-.footer-glow-top { inset-inline: 10%; top: -60%; height: 100%; background: #3a4880; opacity: .55; }
-.footer-glow-pink { inset-inline-start: -15%; top: 5%; width: 55%; height: 70%; background: #fc538e; opacity: .18; animation: bh-drift 22s ease-in-out infinite alternate; }
-.footer-glow-blue { inset-inline-end: -12%; bottom: -35%; width: 55%; height: 80%; background: #00b3fc; opacity: .2; animation: bh-drift 26s ease-in-out -12s infinite alternate; }
-.footer-dots { position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle, #fff 1px, transparent 1.5px); background-size: 22px 22px; }
-.footer-glows::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, #0b0f22aa); }
+.footer-glows { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* A slow aurora of blue and pink light turning across the blend. */
+.footer-glows::before {
+  content: ""; position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg at 50% 50%, #00b3fc00, #00b3fc55 20%, #00b3fc00 36%, #fc538e55 56%, #fc538e00 72%, #00b3fc40 88%, #00b3fc00);
+  filter: blur(80px); animation: footer-aurora 38s linear infinite;
+}
+@keyframes footer-aurora { to { transform: rotate(360deg); } }
+.footer-glow { position: absolute; border-radius: 50%; filter: blur(110px); }
+.footer-glow-top { inset-inline: 15%; top: -55%; height: 90%; background: #ffffff; opacity: .1; }
+.footer-glow-pink { inset-inline-end: -10%; top: -10%; width: 50%; height: 80%; background: #ff6fa5; opacity: .35; animation: bh-drift 22s ease-in-out infinite alternate; }
+.footer-glow-blue { inset-inline-start: -12%; bottom: -30%; width: 55%; height: 90%; background: #1ab8ff; opacity: .35; animation: bh-drift 26s ease-in-out -12s infinite alternate; }
+.footer-dots { position: absolute; inset: 0; opacity: .1; background-image: radial-gradient(circle, #fff 1px, transparent 1.5px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 85%); mask-image: linear-gradient(180deg, #000, transparent 85%); }
+/* Edges sink a little deeper so the white text always reads clearly. */
+.footer-glows::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #00000014, transparent 30%, transparent 70%, #00000033); }
 
 .footer-inner { margin: 0 auto; padding-top: clamp(40px, 5vw, 64px); }
 
@@ -122,13 +132,13 @@ html[dir="rtl"] .footer-link-arrow { scale: -1 1; }
 
 /* Brand names on glass tiles that turn white and take the brand's colour on hover. */
 .footer-brands { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; padding: 4px; list-style: none; }
-.footer-brands a {
+.footer-brands a, .footer-brand-tile {
   display: grid; place-items: center; min-height: 52px; padding: 6px 10px; border-radius: 14px; text-align: center;
   background: #ffffff0a; box-shadow: 0 0 0 1px #ffffff1a inset;
   color: #ffffffbf; font-family: Quicksand, sans-serif; font-size: 13px; font-weight: 700;
   transition: background-color .3s ease, color .3s ease, box-shadow .3s ease;
 }
-.footer-brands a:hover, .footer-brands a:focus-visible { background: #fff; color: var(--brand); box-shadow: 0 0 0 1px #fff inset, 0 12px 26px -12px #000a; outline: none; }
+.footer-brands a:hover, .footer-brands a:focus-visible, .footer-brand-tile:hover { background: #fff; color: var(--brand); box-shadow: 0 0 0 1px #fff inset, 0 12px 26px -12px #000a; outline: none; }
 
 /* ---------- Copyright line ---------- */
 .footer-bottom-v2 { margin-top: clamp(40px, 5vw, 56px); border-top: 1px solid #ffffff1a; }
@@ -159,5 +169,15 @@ html[dir="rtl"] .footer-panel-title, html[dir="rtl"] .footer-contact-copy small 
   .footer-links a { padding: 7px 8px; font-size: 13px; }
   .footer-link-count { display: none; }
   .footer-brands { grid-template-columns: repeat(3, 1fr); }
-  .footer-brands a { min-height: 44px; font-size: 12px; }
+  .footer-brands a, .footer-brand-tile { min-height: 44px; font-size: 12px; }
 }
+
+/* ---------- Powered by ---------- */
+.footer-credit { display: inline-flex; align-items: center; gap: 6px; color: #ffffffa6; }
+.footer-credit svg { color: #ffd36e; animation: outlet-twinkle 3s ease-in-out infinite; }
+.footer-credit b {
+  background: linear-gradient(90deg, #8fdcff, #ffffff 45%, #ffb0cf) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 800; letter-spacing: .01em; animation: footer-credit 5s linear infinite;
+}
+@keyframes footer-credit { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .footer-glows::before, .footer-credit * { animation: none !important; transition: none !important; } }

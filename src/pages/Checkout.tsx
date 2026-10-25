@@ -103,7 +103,7 @@ export default function Checkout() {
         <span className="about-field about-field-pink" />
         <span className="about-field about-field-blue" />
       </div>
-      <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Truck size={13} /></span>{t("Delivery within Lebanon")}</span>
+      <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Truck size={13} /></span>{t("Delivery all over Lebanon")}</span>
       <h1 className="contact-title"><SplitTitle text={t("Checkout")} byWord={language === "ar"} /></h1>
       <p className="contact-lead">{t("Cash on Delivery. Your total and item availability are verified when you place the order.")}</p>
     </section>

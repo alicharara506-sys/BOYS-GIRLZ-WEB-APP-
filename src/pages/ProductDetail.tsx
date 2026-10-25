@@ -10,14 +10,16 @@ import {
   Plus,
   Ruler,
   Check,
+  Banknote,
+  RotateCcw,
   Info,
-  Sparkles,
   ShoppingBag,
 } from "lucide-react";
 import {
   colorHex,
   money,
   productById,
+  sizeHeights,
   products,
   type Product,
 } from "../data/products";
@@ -85,13 +87,8 @@ function ProductContent({ product: p }: { product: Product }) {
     }, section);
     return () => ctx.revert();
   }, [reduceMotion]);
-  const details: { title: string; Icon: typeof Info; tint: string; body: ReactNode }[] = [
-    { title: "All the little details", Icon: Info, tint: "#0898d6", body: t("For fabric composition, measurements and age guidance, please contact the shop before ordering.") },
-    { title: "A little care goes a long way", Icon: Sparkles, tint: "#9b7be0", body: t("Follow the care label on the item. Contact us if you need care information before ordering.") },
-    { title: "Shipping & returns", Icon: Truck, tint: "#fc538e", body: <>
-      {language === "ar" ? "نوصّل داخل لبنان فقط، والتوصيل مجاني للطلبات التي تتجاوز 99$. اقرأ " : "We deliver within Lebanon only. Delivery is free on orders over $99. Read our "}<Link to="/help/shipping">{t("shipping guide")}</Link>{" "}
-      {language === "ar" ? "و" : "and "}<Link to="/help/returns">{t("returns guide")}</Link>{language === "ar" ? " قبل الطلب." : " before ordering."}
-    </> },
+  const details: { title: string; Icon: typeof Info; tint: string; blend?: boolean; body: ReactNode }[] = [
+    { title: "All the little details", Icon: Info, tint: "#0898d6", blend: true, body: t("For fabric composition, measurements and age guidance, please contact the shop before ordering.") },
   ];
   const related = products
     .filter((q) => q.category === p.category && q.id !== p.id)
@@ -156,7 +153,8 @@ function ProductContent({ product: p }: { product: Product }) {
                   onClick={() => setSize(s)}
                   aria-pressed={size === s}
                 >
-                  {t(s)}
+                  <span>{t(s)}</span>
+                  {sizeHeights[s] && <small className="size-cm"><bdi>{t(sizeHeights[s])}</bdi> {t("cm")}</small>}
                 </button>
               ))}
             </div>
@@ -180,21 +178,28 @@ function ProductContent({ product: p }: { product: Product }) {
           </div>
           <WhatsAppLink
             className="text-link product-whatsapp"
-            label={t("Ask or order on WhatsApp")}
+            label={t("Ask on WhatsApp")}
             message={language === "ar" ? `مرحباً بويز آند غيرلز! أود طلب ${quantity} × ${t(p.name)} (${[size, color].filter(Boolean).map(t).join("، ")}) للتوصيل داخل لبنان. يرجى تأكيد التوفّر والسعر ورسوم التوصيل.` : `Hello Boys & Girlz! I would like to request ${quantity} × ${p.name}${[size, color].filter(Boolean).length ? ` (${[size, color].filter(Boolean).join(", ")})` : ""} for delivery within Lebanon. Please confirm availability, price, and delivery charge.`}
           />
-          <div className="product-reassurance">
-            <span className="reassure-truck">
-              <Truck size={17} /> {t("Lebanon delivery · Free over $99")}
-            </span>
-            <span className="reassure-heart">
-              <Heart size={16} /> {t("Chosen with love")}
-            </span>
+          <div className="ship-strip">
+            <div className="ship-row ship-row-truck">
+              <span className="ship-icon" aria-hidden="true"><span className="bh-road" /><Truck size={18} /></span>
+              <span><strong>{t("Free delivery over $99")}</strong><small>{t("Delivery all over Lebanon")}</small></span>
+            </div>
+            <div className="ship-row ship-row-cash">
+              <span className="ship-icon" aria-hidden="true"><Banknote size={18} /></span>
+              <span><strong>{t("Cash on Delivery")}</strong><small>{t("Pay when it arrives")}</small></span>
+            </div>
+            <div className="ship-row ship-row-return">
+              <span className="ship-icon" aria-hidden="true"><RotateCcw size={18} /></span>
+              <span><strong>{t("Returns")}</strong><small>{t("Ask us before ordering")}</small></span>
+            </div>
+            <Link className="ship-more" to="/help/shipping">{t("Delivery & returns details")} <ArrowRight size={14} aria-hidden="true" /></Link>
           </div>
           <div className="product-accordions detail-cards">
-            {details.map(({ title, Icon, tint, body }, index) => {
+            {details.map(({ title, Icon, tint, blend, body }, index) => {
               const open = openDetail === index;
-              return <section key={title} className={`faq-item ${open ? "is-open" : ""}`} style={{ "--tint": tint, "--i": index } as CSSProperties} onPointerMove={spotlight}>
+              return <section key={title} className={`faq-item ${blend ? "is-blend" : ""} ${open ? "is-open" : ""}`} style={{ "--tint": tint, "--i": index } as CSSProperties} onPointerMove={spotlight}>
                 <h2>
                   <button type="button" aria-expanded={open} aria-controls={`detail-${index}`} onClick={() => setOpenDetail(open ? -1 : index)}>
                     <span className="faq-icon" aria-hidden="true"><Icon size={18} /></span>
@@ -255,10 +260,12 @@ function ProductContent({ product: p }: { product: Product }) {
               onClick={() => { setSize(s); setSizeGuide(false); }}>
               <span className="fit-dot" aria-hidden="true">{size === s && <Check size={13} />}</span>
               <span className="fit-name">{t(s)}</span>
+              {sizeHeights[s] && <span className="fit-cm">{sizeHeights[s].startsWith("up") ? "" : "≈ "}<bdi>{t(sizeHeights[s])}</bdi> {t("cm")}</span>}
               <ArrowRight className="fit-arrow" size={15} aria-hidden="true" />
             </button>
           </li>)}
         </ol>
+        <p className="fit-guide-cm">{t("Approximate child height. Sizes can vary a little by brand.")}</p>
         <p className="fit-guide-tip"><Heart size={15} aria-hidden="true" /> {t("Between sizes? Choose a little room to grow.")}</p>
         <WhatsAppLink
           className="fit-guide-wa"

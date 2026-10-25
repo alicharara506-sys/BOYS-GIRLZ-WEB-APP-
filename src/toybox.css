@@ -11,16 +11,6 @@
 .product-card-simple .card-quick-options label { display: grid; gap: 4px; font-size: 11px; color: #45586b; }
 .product-card-simple .card-quick-options select { min-height: 38px; width: 100%; padding: 6px 9px; border: 1px solid #ccdae2; border-radius: 9px; background: white; }
 .product-card-simple .card-quick-options .btn { width: 100%; }
-.category-scene { position: relative; flex: 0 0 clamp(190px, 25vw, 320px); height: 190px; overflow: hidden; border-radius: 17px; background: #fffaf5a6; }
-.category-scene-blob { position: absolute; inset: 18% auto auto 12%; width: 58%; height: 76%; border-radius: 52% 48% 63% 37%; background: #00b3fc20; }
-.category-scene-blob-pink { left: auto; right: 5%; background: #fc538e20; transform: rotate(24deg); }
-.category-scene .home-mascot { position: absolute; width: 122px; height: 165px; bottom: -2px; background-size: 300% auto; transition: transform .4s ease; }
-.category-scene .home-mascot-boy { left: 13%; }
-.category-scene .home-mascot-girl { right: 8%; }
-.category-scene-boys .home-mascot-boy, .category-scene-girls .home-mascot-girl { width: 132px; height: 174px; bottom: 8px; }
-.category-scene-boys .home-mascot-boy { left: calc(50% - 66px); }
-.category-scene-girls .home-mascot-girl { right: calc(50% - 66px); }
-.category-scene:hover .home-mascot { transform: translateY(-5px) rotateY(5deg); }
 .shop-heading.boys { background: color-mix(in srgb, #00b3fc 11%, white); }
 .shop-heading.girls { background: color-mix(in srgb, #fc538e 11%, white); }
 .shop-heading.boys .gender-mark { color: #007fb4; }
@@ -33,12 +23,6 @@
 .whatsapp-order-button:hover, .whatsapp-order-button:focus-visible { background: #0f7353; color: #fff; }
 .whatsapp-order-option p { margin: 8px 0 0; color: #657168; font-size: 11px; line-height: 1.5; }
 @media (max-width: 700px) {
-  .category-scene { flex-basis: 110px; height: 105px; }
-  .category-scene .home-mascot { width: 82px; height: 105px; bottom: 0; }
-  .category-scene-boys .home-mascot-boy, .category-scene-girls .home-mascot-girl { width: 86px; height: 110px; bottom: 0; }
-  .category-scene-boys .home-mascot-boy { left: calc(50% - 43px); }
-  .category-scene-girls .home-mascot-girl { right: calc(50% - 43px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .category-scene .home-mascot, .product-card-simple, .product-card-simple .product-photo { animation: none !important; transition: none !important; }
 }

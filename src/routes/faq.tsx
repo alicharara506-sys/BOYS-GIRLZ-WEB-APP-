@@ -7,10 +7,10 @@ import { useLocale } from "../i18n/Locale";
 import { SplitTitle } from "../components/HeroSection";
 
 const faqs: { id: string; topic: string; Icon: LucideIcon; tint: string; question: string; answer: string }[] = [
-  { id: "delivery", topic: "Delivery", Icon: Truck, tint: "#0898d6", question: "Where does Boys & Girlz deliver?", answer: "We deliver within Lebanon only. Delivery is free on orders over $99." },
-  { id: "payment", topic: "Payment", Icon: Banknote, tint: "#16a36d", question: "Can I pay on delivery?", answer: "Cash on Delivery is available for orders within Lebanon." },
+  { id: "delivery", topic: "Delivery", Icon: Truck, tint: "#0898d6", question: "Where does Boys & Girlz deliver?", answer: "We deliver all over Lebanon. Delivery is free on orders over $99." },
+  { id: "payment", topic: "Payment", Icon: Banknote, tint: "#16a36d", question: "Can I pay on delivery?", answer: "Cash on Delivery is available all over Lebanon." },
   { id: "returns", topic: "Returns", Icon: RotateCcw, tint: "#e7a400", question: "What is the returns policy?", answer: "Our returns policy is being confirmed. Please contact the shop before ordering if you need return or exchange details." },
-  { id: "sizes", topic: "Sizes", Icon: Ruler, tint: "#9b7be0", question: "How do I choose a size?", answer: "Children's clothes use New Born through 5–6 Years. Maternity uses S through XXL. Check each product's available sizes and contact us for fit details." },
+  { id: "sizes", topic: "Sizes", Icon: Ruler, tint: "#0898d6", question: "How do I choose a size?", answer: "Children's clothes use New Born through 5–6 Years. Maternity uses S through XXL. Check each product's available sizes and contact us for fit details." },
   { id: "outlet", topic: "Outlet", Icon: Recycle, tint: "#fc538e", question: "What does Like New mean?", answer: "Like New outlet items are pre-owned pieces in excellent condition at reduced prices." },
 ];
 

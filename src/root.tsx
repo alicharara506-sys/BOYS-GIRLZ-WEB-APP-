@@ -1,9 +1,10 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useRouteError, useRouteLoaderData } from "react-router";
 import { StoreProvider, useStore } from "./state/Store";
 import { Header } from "./components/Layout";
 import Footer from "./components/Footer";
 import { CartDrawer } from "./pages/Cart";
 import { FlyToBag, RouteEffects } from "./components/MotionEffects";
+import { FloatingWhatsApp } from "./components/WhatsAppLink";
 import { business } from "./config/business";
 import { LocaleProvider, useLocale, type Language } from "./i18n/Locale";
 import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from "react-router";
@@ -31,6 +32,8 @@ import "./faq.css";
 import "./help.css";
 import "./bag.css";
 import "./product.css";
+import "./tones.css";
+import "./brands.css";
 
 export function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") || "";
@@ -86,6 +89,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function Shell() {
   const { notice } = useStore();
   const { t } = useLocale();
+  const { pathname } = useLocation();
   return (
     <>
       <a className="skip-link" href="#main">{t("Skip to content")}</a>
@@ -94,6 +98,7 @@ function Shell() {
       <main id="main"><Outlet /></main>
       <Footer />
       <CartDrawer />
+      {!["/cart", "/checkout"].includes(pathname) && <FloatingWhatsApp />}
       <FlyToBag />
       <div className={`toast ${notice ? "visible" : ""}`} role="status" aria-live="polite">{notice}</div>
     </>

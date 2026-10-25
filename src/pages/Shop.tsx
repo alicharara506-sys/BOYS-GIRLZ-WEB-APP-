@@ -317,9 +317,9 @@ export default function Shop() {
         {routeCategory && <CategoryScene category={routeCategory} />}
       </div>
       <nav className="shop-cats" aria-label={t("Shop for")}>
-        <Link to={{ pathname: "/shop", search: chipSearch }} preventScrollReset className={!routeCategory && !selected.length ? "active" : ""} aria-current={!routeCategory && !selected.length ? "page" : undefined}>{t("All")} <span>{products.length}</span></Link>
-        {categories.map((c) => <Link key={c} to={{ pathname: `/category/${c.toLowerCase()}`, search: chipSearch }} preventScrollReset className={routeCategory === c ? "active" : ""} aria-current={routeCategory === c ? "page" : undefined}>
-          {t(c)} <span>{products.filter((p) => matchesCategory(p, c)).length}</span>
+        <Link to={{ pathname: "/shop", search: chipSearch }} preventScrollReset data-tone="all" className={!routeCategory && !selected.length ? "active tone-pill" : ""} aria-current={!routeCategory && !selected.length ? "page" : undefined}>{t("All")} <span>{products.length}</span></Link>
+        {categories.map((c) => <Link key={c} to={{ pathname: `/category/${c.toLowerCase()}`, search: chipSearch }} preventScrollReset data-tone={c === "Boys" ? "boys" : c === "Girls" ? "girls" : c === "Unisex" ? "unisex" : "all"} className={routeCategory === c ? "active tone-pill" : ""} aria-current={routeCategory === c ? "page" : undefined}>
+          {routeCategory === c && <span className="tone-burst" aria-hidden="true" />}{t(c)} <span>{products.filter((p) => matchesCategory(p, c)).length}</span>
         </Link>)}
       </nav>
       <div className="shop-layout">

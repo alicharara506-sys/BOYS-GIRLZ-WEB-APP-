@@ -12,6 +12,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const featured = products.slice(0, 4);
 const filters = ["All", "Boys", "Girls", "Baby"] as const;
+// Boys take the blue, girls the pink, and baby (unisex) pieces both.
+const tones: Record<string, string> = { All: "all", Boys: "boys", Girls: "girls", Baby: "unisex" };
 type Filter = (typeof filters)[number];
 
 // The homepage's featured products. The filters are one pill bar with a highlight that slides
@@ -89,10 +91,10 @@ export default function Favorites() {
         <span aria-hidden="true" />
       </div>
       <h2 id="favorites-heading">{t("Their next favorites")}</h2>
-      <div className="favorites-filters" ref={barRef} role="group" aria-label={t("Filter featured products")}>
-        <span className="favorites-pill" aria-hidden="true" />
+      <div className={`favorites-filters tone-${tones[filter]}`} ref={barRef} role="group" aria-label={t("Filter featured products")}>
+        <span className="favorites-pill tone-pill" aria-hidden="true"><span className="tone-burst" key={filter} /></span>
         {filters.map((item) => (
-          <button key={item} type="button" className={filter === item ? "active" : ""} aria-pressed={filter === item} onClick={() => choose(item)}>{t(item)}</button>
+          <button key={item} type="button" data-tone={tones[item]} className={filter === item ? "active" : ""} aria-pressed={filter === item} onClick={() => choose(item)}>{t(item)}</button>
         ))}
       </div>
     </div>

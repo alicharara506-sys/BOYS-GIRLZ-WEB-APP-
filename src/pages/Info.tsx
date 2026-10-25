@@ -6,6 +6,9 @@ import {
   ArrowRight,
   Heart,
   MapPin,
+  Mail,
+  PenLine,
+  UserRound,
   Baby,
   Banknote,
   Clock,
@@ -17,41 +20,25 @@ import {
   Store,
   Phone,
   Check,
-  Leaf,
   Truck,
 } from "lucide-react";
 import { business } from "../config/business";
-import { sizeOptions } from "../data/products";
+import { sizeHeights, sizeOptions } from "../data/products";
 import { whatsAppUrl } from "../components/WhatsAppLink";
 import { socials, WhatsAppIcon } from "../components/SocialIcons";
 import { useLocale } from "../i18n/Locale";
 import { AnimatedLine, SplitTitle } from "../components/HeroSection";
 import PromiseCards, { type PromiseCardItem } from "../components/PromiseCards";
 import { useReducedMotion } from "../hooks/useExperience";
+import GrowingSteps from "../components/GrowingSteps";
 
 gsap.registerPlugin(ScrollTrigger);
-// Tilts the photo frame toward the cursor; only for a mouse.
-function tiltFrame(event: PointerEvent<HTMLDivElement>) {
-  if (event.pointerType !== "mouse") return;
-  const box = event.currentTarget.getBoundingClientRect();
-  event.currentTarget.style.setProperty("--rx", `${(0.5 - (event.clientY - box.top) / box.height) * 8}deg`);
-  event.currentTarget.style.setProperty("--ry", `${((event.clientX - box.left) / box.width - 0.5) * 10}deg`);
-}
-function settleFrame(event: PointerEvent<HTMLDivElement>) {
-  event.currentTarget.style.setProperty("--rx", "0deg");
-  event.currentTarget.style.setProperty("--ry", "0deg");
-}
 function spotlight(event: PointerEvent<HTMLAnchorElement>) {
   const box = event.currentTarget.getBoundingClientRect();
   event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`);
   event.currentTarget.style.setProperty("--my", `${event.clientY - box.top}px`);
 }
 
-const values: PromiseCardItem[] = [
-  { key: "heart", Icon: Heart, title: "Chosen with love", body: "Thoughtful details for the everyday." },
-  { key: "leaf", Icon: Leaf, title: "Comfort comes first", body: "Softness for their little adventures." },
-  { key: "truck", Icon: Truck, title: "A little closer", body: "Lovely things, delivered to your door." },
-];
 
 // The story of the shop: a springing headline beside a tilting photo frame, the story as a
 // timeline that lights up as it scrolls, the shop's values as cards, then the way into the shop.
@@ -97,13 +84,7 @@ export function About() {
           </h1>
           <p className="about-lead">{t("First smiles. First steps. The first time they insist on dressing themselves.")}</p>
         </div>
-        <div className="about-frame" onPointerMove={tiltFrame} onPointerLeave={settleFrame}>
-          <div className="about-frame-inner">
-            <div className="story-image" role="img" aria-label={t("Happy babies in soft blue and pink outfits")} />
-          </div>
-          <span className="home-mascot home-mascot-boy about-mascot about-mascot-boy" aria-hidden="true" />
-          <span className="home-mascot home-mascot-girl about-mascot about-mascot-girl" aria-hidden="true" />
-        </div>
+        <GrowingSteps />
       </section>
 
       <section className="about-story page-width" aria-label={t("A little about us")}>
@@ -126,15 +107,12 @@ export function About() {
             <span className="about-dot" aria-hidden="true"><MapPin size={16} /></span>
             <div className="about-step-body about-question">
               <h2>{t("Where do you ship?")}</h2>
-              <p>{t("We ship within Lebanon only. Every order is prepared locally with care.")}</p>
+              <p>{t("We deliver all over Lebanon. Every order is prepared locally with care.")}</p>
             </div>
           </li>
         </ol>
       </section>
 
-      <section className="about-values page-width">
-        <PromiseCards items={values} label="A little about us" />
-      </section>
 
       <section className="about-cta">
         <div className="about-fields" aria-hidden="true">
@@ -174,6 +152,13 @@ function ContactCard({ href, icon, title, value, tint, external = true }: { href
 export function Contact() {
   const { language, t } = useLocale();
   const [noteLength, setNoteLength] = useState(0);
+  // The boy and girl watch the form: which field is in focus, a hop with each keystroke, a cheer
+  // when the note is long enough, and a big jump when it is sent.
+  const [field, setField] = useState<"" | "name" | "email" | "note">("");
+  const [hop, setHop] = useState(0);
+  const [sent, setSent] = useState(0);
+  const lastHop = useRef(0);
+  const typed = () => { const now = Date.now(); if (now - lastHop.current > 260) { lastHop.current = now; setHop((n) => n + 1); } };
   // The note goes to the shop on WhatsApp, written out with the name and email.
   const sendToWhatsApp = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -183,6 +168,7 @@ export function Contact() {
       ? `مرحباً بويز آند غيرلز!\n${note}\n\nالاسم: ${name}\nالبريد الإلكتروني: ${email}`
       : `Hello Boys & Girlz!\n${note}\n\nName: ${name}\nEmail: ${email}`;
     const url = whatsAppUrl(message);
+    setSent((n) => n + 1);
     if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
   const heading = t("A little hello goes a long way.");
@@ -213,22 +199,34 @@ export function Contact() {
             {business.address && <ContactCard href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} icon={<MapPin size={22} />} title={t("Visit us:").replace(/[:：]$/, "")} value={<>{business.address}{business.hours && <small className="contact-card-hours">{t("Opening hours:")} {business.hours}</small>}</>} tint="#e7a400" />}
           </div>
         </div>
-        <div className="contact-form-wrap">
-          <span className="home-mascot home-mascot-boy contact-mascot contact-mascot-boy" aria-hidden="true" />
-          <span className="home-mascot home-mascot-girl contact-mascot contact-mascot-girl" aria-hidden="true" />
+        <div className={`contact-form-wrap buddies-on-${field || "idle"} ${noteLength >= 10 ? "buddies-cheer" : ""}`}>
+          <div className="buddies" aria-hidden="true">
+            <span className="buddies-bubble" key={`${field}-${sent}`}>
+              {sent ? <WhatsAppIcon size={20} /> : field === "name" ? <UserRound size={19} /> : field === "email" ? <Mail size={19} /> : field === "note" ? <PenLine size={19} /> : <Heart size={18} />}
+            </span>
+            {(["boy", "girl"] as const).map((kid) => <span className={`buddy buddy-${kid}`} key={kid}>
+              <span className="buddy-lean">
+                <span className="buddy-hop" key={`${kid}-${(kid === "boy" ? field !== "email" : field !== "name") ? hop : 0}-${sent}`} data-sent={sent ? "1" : undefined}>
+                  <span className={`home-mascot home-mascot-${kid} buddy-sprite`} />
+                </span>
+              </span>
+              <span className="buddy-shadow" />
+            </span>)}
+            <span className="buddies-hearts" key={`h-${noteLength >= 10}-${sent}`}>{[0, 1, 2, 3, 4, 5].map((i) => <i key={i} style={{ "--i": i } as CSSProperties}>♥</i>)}</span>
+          </div>
           <form className="contact-form contact-glass" onSubmit={sendToWhatsApp}>
             <div className="float-field">
-              <input id="contact-name" required name="fullName" autoComplete="name" minLength={2} placeholder=" " />
+              <input id="contact-name" required name="fullName" autoComplete="name" minLength={2} placeholder=" " onFocus={() => setField("name")} onBlur={() => setField("")} onInput={typed} />
               <label htmlFor="contact-name">{t("Your name")}</label>
               <Check className="float-ok" size={16} aria-hidden="true" />
             </div>
             <div className="float-field">
-              <input id="contact-email" required type="email" name="email" autoComplete="email" placeholder=" " />
+              <input id="contact-email" required type="email" name="email" autoComplete="email" placeholder=" " onFocus={() => setField("email")} onBlur={() => setField("")} onInput={typed} />
               <label htmlFor="contact-email">{t("Email address")}</label>
               <Check className="float-ok" size={16} aria-hidden="true" />
             </div>
             <div className="float-field float-field-note">
-              <textarea id="contact-note" required name="message" rows={5} minLength={10} placeholder=" " onChange={(event) => setNoteLength(event.target.value.length)} />
+              <textarea id="contact-note" required name="message" rows={5} minLength={10} placeholder=" " onChange={(event) => { setNoteLength(event.target.value.length); typed(); }} onFocus={() => setField("note")} onBlur={() => setField("")} />
               <label htmlFor="contact-note">{t("Your little note")}</label>
               <Check className="float-ok" size={16} aria-hidden="true" />
               <span className={`float-count ${noteLength >= 10 ? "is-enough" : ""}`} aria-hidden="true" dir="ltr">{noteLength} / 10+</span>
@@ -250,11 +248,11 @@ const help: Record<
 > = {
   shipping: {
     title: "Delivery in Lebanon",
-    intro: "Boys & Girlz delivers within Lebanon only.",
+    intro: "Boys & Girlz delivers all over Lebanon.",
     sections: [
       [
-        "Shipping within Lebanon",
-        "Delivery is available within Lebanon only. It is free on orders over $99, before promo discounts.",
+        "Delivery all over Lebanon",
+        "We deliver all over Lebanon. Delivery is free on orders over $99, before promo discounts.",
       ],
       [
         "Delivery timing",
@@ -317,6 +315,7 @@ function SizeRuler({ title, sizes, mascot }: { title: string; sizes: readonly st
   }, [reduceMotion]);
   return <div className="ruler" ref={ref} style={{ "--count": sizes.length, "--active": active } as CSSProperties}>
     <h2 className="ruler-title">{t(title)}</h2>
+    {sizes.some((s) => sizeHeights[s]) && <p className="ruler-note">{t("Approximate child height. Sizes can vary a little by brand.")}</p>}
     <div className="ruler-track">
       <span className="ruler-line" aria-hidden="true"><span className="ruler-fill" /></span>
       <span className={`home-mascot home-mascot-${mascot} ruler-mascot`} aria-hidden="true" />
@@ -325,6 +324,7 @@ function SizeRuler({ title, sizes, mascot }: { title: string; sizes: readonly st
           <Link to={`/shop?size=${encodeURIComponent(size)}`} onPointerEnter={() => setActive(index)} onFocus={() => setActive(index)}>
             <span className="ruler-dot" aria-hidden="true" />
             <span className="ruler-label">{t(size)}</span>
+            {sizeHeights[size] && <span className="ruler-cm"><bdi>{t(sizeHeights[size])}</bdi> {t("cm")}</span>}
           </Link>
         </li>)}
       </ol>

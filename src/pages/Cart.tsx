@@ -271,7 +271,7 @@ export default function Cart() {
               <FreeDeliveryBar subtotal={totals.subtotal}>
                 {totals.subtotal > 99
                   ? t("Your order qualifies for FREE delivery all over Lebanon.")
-                  : t("FREE delivery within Lebanon on orders over $99.")}
+                  : t("FREE delivery all over Lebanon on orders over $99.")}
               </FreeDeliveryBar>
               {cart.map((i) => (
                 <CartLine key={itemKey(i)} item={i} />

@@ -3,7 +3,7 @@ import HeroSection from "../components/HeroSection";
 import CornerTiles from "../components/CornerTiles";
 import SectionGlow from "../components/SectionGlow";
 import Favorites from "../components/Favorites";
-import OutletFeature from "../components/OutletFeature";
+import HelpCTA from "../components/HelpCTA";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
 
       <Favorites />
 
-      <OutletFeature />
+      <HelpCTA />
 
     </div>
   );

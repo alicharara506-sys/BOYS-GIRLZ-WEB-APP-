@@ -6,7 +6,7 @@ import { createOrder, OrderValidationError } from "../server/orderService";
 import { postgresOrderRepository, resolveVariantSelection } from "../server/postgres.server";
 import type { Route } from "./+types/checkout";
 
-export const meta = localizedMeta("Checkout", "Complete a Boys & Girlz order for delivery within Lebanon.", "/checkout");
+export const meta = localizedMeta("Checkout", "Complete a Boys & Girlz order for delivery all over Lebanon.", "/checkout");
 
 const selectionSchema = z.object({
   fullName: z.string(), mobile: z.string(), email: z.string(),

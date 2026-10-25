@@ -93,7 +93,7 @@ function highlightMatch(text: string, query: string): ReactNode {
 const shopMenu: { category: Category; Icon: typeof Shirt; tint: string }[] = [
   { category: "Boys", Icon: Shirt, tint: "#00b3fc" },
   { category: "Girls", Icon: Sparkles, tint: "#fc538e" },
-  { category: "Unisex", Icon: Baby, tint: "#9b7be0" },
+  { category: "Unisex", Icon: Baby, tint: "#0898d6" },
   { category: "Accessories", Icon: Gem, tint: "#e7a400" },
   { category: "Maternity", Icon: HandHeart, tint: "#f07a9a" },
   { category: "Toys", Icon: ToyBrick, tint: "#2f9e6a" },

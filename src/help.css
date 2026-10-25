@@ -14,8 +14,8 @@
 .ruler-title { margin: 0 0 4px; color: #1f2633; font-family: Quicksand, sans-serif; font-size: 18px; font-weight: 700; }
 .ruler-track { position: relative; padding-top: 74px; }
 .ruler-line { position: absolute; top: 89px; inset-inline: calc(50% / var(--count)); height: 4px; border-radius: 4px; background: #eadfe4; overflow: hidden; }
-.ruler-fill { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(90deg, #fc538e, #b36be0, #00b3fc); }
-html[dir="rtl"] .ruler-fill { transform-origin: 100% 50%; background: linear-gradient(270deg, #fc538e, #b36be0, #00b3fc); }
+.ruler-fill { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(90deg, #fc538e, #00b3fc); }
+html[dir="rtl"] .ruler-fill { transform-origin: 100% 50%; background: linear-gradient(270deg, #fc538e, #00b3fc); }
 /* The mascot slides along above the size under the pointer. */
 .ruler-mascot {
   position: absolute; top: 0; inset-inline-start: calc((var(--active) + .5) * 100% / var(--count)); width: 46px; height: 64px; margin-inline-start: -23px;
@@ -44,7 +44,7 @@ html[dir="rtl"] .ruler-fill { transform-origin: 100% 50%; background: linear-gra
 .help-cards .promise-card small { font-size: 14px; line-height: 1.6; }
 .promise-card-help-0 { --accent: #e83f7b; --accent-2: #ffa3c4; --tint: #ffe5ee; }
 .promise-card-help-1 { --accent: #0898d6; --accent-2: #8fd9ff; --tint: #e3f6ff; animation-delay: -2s; }
-.promise-card-help-2 { --accent: #9b7be0; --accent-2: #d4c4ff; --tint: #f0eaff; animation-delay: -4s; }
+.promise-card-help-2 { --accent: #e83f7b; --accent-2: #ffa3c4; --tint: #ffe5ee; animation-delay: -4s; }
 
 @media (max-width: 900px) {
   .help-cards .promise { grid-template-columns: 1fr; }
@@ -61,3 +61,7 @@ html[dir="rtl"] .ruler-fill { transform-origin: 100% 50%; background: linear-gra
   .help-v2 *, .help-v2 *::before { animation: none !important; transition: none !important; }
 }
 .ruler { min-width: 0; }
+.ruler-cm { color: #8a95a8; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.ruler-step a:hover .ruler-cm { color: #00b3fc; }
+.ruler-note { margin: 0 0 2px; color: #6f7d92; font-size: 13px; }
+@media (max-width: 900px) { .ruler-step a { display: grid; justify-items: center; gap: 0; } }

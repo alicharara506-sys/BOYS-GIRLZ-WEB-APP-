@@ -13,7 +13,7 @@ try {
 
 const base = process.env.VITE_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
 const paths = [
-  "/", "/shop", "/about", "/contact", "/faq",
+  "/", "/shop", "/about", "/brands", "/contact", "/faq",
   "/help/shipping", "/help/returns", "/help/sizing",
   ...categories.map((category) => `/category/${category.toLowerCase()}`),
   ...products.map((product) => `/product/${product.id}`),

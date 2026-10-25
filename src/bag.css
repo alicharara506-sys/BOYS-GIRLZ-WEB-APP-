@@ -22,10 +22,10 @@ html[dir="rtl"] .glass-button svg { scale: -1 1; }
 .delivery-track { position: relative; height: 8px; border-radius: 999px; background: #eee6ea; }
 .delivery-fill {
   position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--progress); border-radius: inherit;
-  background: linear-gradient(90deg, #fc538e, #b36be0, #00b3fc); box-shadow: 0 0 12px #fc538e66;
+  background: linear-gradient(90deg, #fc538e, #00b3fc); box-shadow: 0 0 12px #fc538e66;
   transition: width .9s cubic-bezier(.23, 1, .32, 1);
 }
-html[dir="rtl"] .delivery-fill { background: linear-gradient(270deg, #fc538e, #b36be0, #00b3fc); }
+html[dir="rtl"] .delivery-fill { background: linear-gradient(270deg, #fc538e, #00b3fc); }
 .delivery-truck {
   position: absolute; top: 50%; inset-inline-start: var(--progress); display: grid; place-items: center; width: 30px; height: 30px; margin-inline-start: -15px;
   border-radius: 50%; background: #fff; color: #0898d6; box-shadow: 0 0 0 2px #00b3fc, 0 6px 14px -4px #00b3fc88;
