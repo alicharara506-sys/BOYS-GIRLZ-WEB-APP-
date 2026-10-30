@@ -9,11 +9,10 @@ import { useLocale } from "../i18n/Locale";
 gsap.registerPlugin(ScrollTrigger);
 
 const corners = [
-  { key: "boys", eyebrow: "The boys' corner", lines: ["Ready, set,", "play."], body: "Everyday outfits and layers for little adventures.", path: "/category/boys", action: "Shop Boys", image: "/assets/editorial-boy-baby.jpg" },
-  { key: "girls", eyebrow: "The girls' corner", lines: ["Made to", "shine."], body: "Sweet details and comfortable pieces for every day.", path: "/category/girls", action: "Shop Girls", image: "/assets/editorial-lilac-baby.jpg" },
-  { key: "baby", eyebrow: "The baby nursery", lines: ["Hello, little", "one."], body: "Soft essentials for newborns and babies.", path: "/category/unisex", action: "Shop Unisex", image: "/assets/editorial-pink-baby.jpg" },
-  // The toy photo is the plush bunny cell of the product contact sheet.
-  { key: "toys", eyebrow: "The toy shelf", lines: ["Small toys,", "big smiles."], body: "Playtime companions and thoughtful gifts.", path: "/category/toys", action: "Shop Toys", image: "" },
+  { key: "boys", eyebrow: "The boys' corner", lines: ["Ready, set,", "play."], body: "Everyday outfits and layers for little adventures.", path: "/category/boys", action: "Shop Boys", image: "/assets/corners/boys-editorial.webp" },
+  { key: "girls", eyebrow: "The girls' corner", lines: ["Made to", "shine."], body: "Sweet details and comfortable pieces for every day.", path: "/category/girls", action: "Shop Girls", image: "/assets/corners/girls-editorial.webp" },
+  { key: "baby", eyebrow: "The baby nursery", lines: ["Hello, little", "one."], body: "Soft essentials for newborns and babies.", path: "/category/unisex", action: "Shop Unisex", image: "/assets/corners/nursery-editorial.webp" },
+  { key: "toys", eyebrow: "The toy shelf", lines: ["Small toys,", "big smiles."], body: "Playtime companions and thoughtful gifts.", path: "/category/toys", action: "Shop Toys", image: "/assets/corners/toys-editorial.webp" },
 ];
 
 const spotlight = (event: PointerEvent<HTMLAnchorElement>) => {
@@ -64,9 +63,7 @@ export default function CornerTiles() {
     <div className="corners-grid">
       {corners.map((corner) => <Link className={`corner-tile corner-tile-${corner.key}`} to={corner.path} key={corner.key} onPointerMove={spotlight}>
         <span className="corner-media" aria-hidden="true">
-          {corner.image
-            ? <img src={corner.image} alt="" loading="lazy" decoding="async" />
-            : <span className="corner-sprite" />}
+          <img src={corner.image} alt="" width={1024} height={1536} loading="lazy" decoding="async" />
         </span>
         <span className="corner-copy">
           <span className="corner-eyebrow">{t(corner.eyebrow)}</span>
