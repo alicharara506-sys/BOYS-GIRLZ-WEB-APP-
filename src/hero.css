@@ -285,8 +285,8 @@ html[dir="rtl"] .section-glow-line::after { animation-name: section-beam-rtl; }
 }
 .corner-tile:hover::after { opacity: 1; }
 
-.corner-media { position: absolute; inset: 0; z-index: -1; }
-.corner-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s cubic-bezier(.16, 1, .3, 1); }
+.corner-media { position: absolute; inset: 0; z-index: -1; background: #fffcf5; }
+.corner-media img { width: 100%; height: 100%; object-fit: contain; object-position: center top; transition: transform 1.1s cubic-bezier(.16, 1, .3, 1); }
 .corner-tile:hover .corner-media img { transform: scale(1.07); }
 .corner-media::before { content: ""; position: absolute; inset: 0; z-index: 1; opacity: 0; background: radial-gradient(380px circle at var(--mx) var(--my), #ffffff2e, transparent 60%); transition: opacity .35s ease; }
 .corner-tile:hover .corner-media::before { opacity: 1; }

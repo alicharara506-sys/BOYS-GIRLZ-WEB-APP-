@@ -9,10 +9,10 @@ import { useLocale } from "../i18n/Locale";
 gsap.registerPlugin(ScrollTrigger);
 
 const corners = [
-  { key: "boys", eyebrow: "The boys' corner", lines: ["Ready, set,", "play."], body: "Everyday outfits and layers for little adventures.", path: "/category/boys", action: "Shop Boys", image: "/assets/corners/boys-editorial.webp" },
-  { key: "girls", eyebrow: "The girls' corner", lines: ["Made to", "shine."], body: "Sweet details and comfortable pieces for every day.", path: "/category/girls", action: "Shop Girls", image: "/assets/corners/girls-editorial.webp" },
-  { key: "baby", eyebrow: "The baby nursery", lines: ["Hello, little", "one."], body: "Soft essentials for newborns and babies.", path: "/category/unisex", action: "Shop Unisex", image: "/assets/corners/nursery-editorial.webp" },
-  { key: "toys", eyebrow: "The toy shelf", lines: ["Small toys,", "big smiles."], body: "Playtime companions and thoughtful gifts.", path: "/category/toys", action: "Shop Toys", image: "/assets/corners/toys-editorial.webp" },
+  { key: "boys", eyebrow: "The boys' corner", lines: ["Ready, set,", "play."], body: "Everyday outfits and layers for little adventures.", path: "/category/boys", action: "Shop Boys", image: "/assets/corners/boys-doodle.webp" },
+  { key: "girls", eyebrow: "The girls' corner", lines: ["Made to", "shine."], body: "Sweet details and comfortable pieces for every day.", path: "/category/girls", action: "Shop Girls", image: "/assets/corners/girls-doodle.webp" },
+  { key: "baby", eyebrow: "The baby nursery", lines: ["Hello, little", "one."], body: "Soft essentials for newborns and babies.", path: "/category/unisex", action: "Shop Unisex", image: "/assets/corners/nursery-doodle.webp" },
+  { key: "toys", eyebrow: "The toy shelf", lines: ["Small toys,", "big smiles."], body: "Playtime companions and thoughtful gifts.", path: "/category/toys", action: "Shop Toys", image: "/assets/corners/toys-doodle.webp" },
 ];
 
 const spotlight = (event: PointerEvent<HTMLAnchorElement>) => {

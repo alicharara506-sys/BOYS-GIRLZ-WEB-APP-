@@ -1,52 +1,48 @@
-# Category photography prompts
+# Approved category doodle prompts
 
-Generated with ChatGPT’s built-in image generation tool. Final website assets are lossily encoded WebP files at their original 1024 × 1536 resolution.
+Generated with ChatGPT’s built-in image generation tool using `public/assets/brand-characters.png` as the visual style reference. This is the approved set matching the logo's simple doodle characters. Final website files are 1024 × 1536 WebP images.
 
-## boys
+## 1. Boys’ corner
 
-Website asset: public/assets/corners/boys-editorial.webp
+Website asset: public/assets/corners/boys-doodle.webp
 
-Use case: photorealistic-natural.
-Asset type: professional portrait 2:3 photograph for the Boys' Corner category card on a premium children's clothing shop, Boys & Girlz.
-Primary request: cheerful boy aged about five in stylish, comfortable everyday clothes for little adventures: a sky-blue cotton overshirt over an ivory t-shirt, sand-colored trousers, clean casual sneakers. Natural candid relaxed standing pose, warm genuine smile, anatomically natural hands.
-Scene: tasteful airy children's boutique corner, warm ivory plaster and pale oak, very subtle blue accent, uncluttered.
-Composition: one boy, full body, centered with head well below top edge, face and clothing predominantly in upper two-thirds. Keep bottom quarter simple and low-detail for website text overlay. Portrait 2:3, comfortable crop margins.
-Style: premium children's fashion editorial photography, lifelike skin and fine woven cotton texture, soft window daylight, neutral warm white balance, gentle shadows, 50mm lens. Welcoming and polished, no excessive retouching.
-Constraints: no text, no letters, no logos, no watermarks, no UI, no collage, no borders. No pajamas. Generate one single photograph.
+Use case: illustration-story.
+Asset type: ONE portrait 2:3 category illustration, approval preview for Boys & Girlz.
+Reference image role: exact visual STYLE reference, supplied brand mascots. Study the reference and reproduce its extremely simple flat doodle vocabulary: very thick BLACK rounded outlines of consistent weight, peach circular heads, tiny solid black DOT eyes, a single curved black smile, round pink cheeks, tiny simple hair tufts, flat saturated cyan blue #00b3fc and bubblegum pink #fc538e, cream white accents. Cute and uncomplicated like a children's logo. Edges smooth but hand-drawn in spirit.
+MANDATORY: very flat and minimal. NO realistic details, NO large shiny eyes, NO storybook painting, NO rendering, NO fabric texture, NO fur texture, NO shadows, NO gradients, NO lighting effects, NO 3D. Each shape filled with one solid color, except simple solid cheek circles. Plain warm off-white background. Same drawing style and boldness as the supplied B and G mascots, not merely similar colors.
+Composition: simple centered scene, large clear subject in top 70%, generous breathing room, bottom 25% blank cream for eventual website copy. Professional clean brand illustration, no visual clutter. No written words, no watermarks, no headings, no UI, no border, no collage. Do not reproduce the whole logo or wordmark.
+Subject: the BOY from the supplied logo imagined as a full simple doodle child: same round peach face, dot eyes, tiny cheerful curved smile, pink cheek circles and two little black hair tufts. Very simple cyan blue t-shirt and shorts, little white shoes, tiny rounded arms and legs with thick black outlines. One arm waves. Beside him a tiny simplified blue shirt on a little black-outlined clothing rail, conveying the boys' clothing corner. Keep the scene as simple as a logo mascot, no detailed boutique background. Main blue accent, one tiny pink accent at most.
 
-## girls
+## 2. Girls’ corner
 
-Website asset: public/assets/corners/girls-editorial.webp
+Website asset: public/assets/corners/girls-doodle.webp
 
-Use case: photorealistic-natural.
-Asset type: professional portrait 2:3 photograph for the Girls' Corner category card on a premium children's clothing shop, Boys & Girlz.
-Primary request: cheerful girl aged about five wearing sweet comfortable everyday clothing: a dusty rose cotton dress with subtle embroidered details, light ivory cardigan, simple comfortable shoes. Natural relaxed standing pose, warm genuine smile, anatomically natural hands. Age-appropriate children's clothing.
-Scene: tasteful airy children's boutique corner, warm ivory plaster and pale oak, very subtle soft pink accent, uncluttered.
-Composition: one girl, full body, centered with head well below top edge, face and clothing predominantly in upper two-thirds. Keep bottom quarter simple and low-detail for website text overlay. Portrait 2:3, comfortable crop margins.
-Style: premium children's fashion editorial photography, lifelike skin and fine fabric texture, soft window daylight, neutral warm white balance, gentle shadows, 50mm lens. Welcoming and polished, no excessive retouching. Coordinate visually with a boys' fashion card with ivory background and pale oak.
-Constraints: no text, no letters, no logos, no watermarks, no UI, no collage, no borders. No pajamas. Generate one single photograph.
+Use case: illustration-story.
+Asset type: ONE portrait 2:3 category illustration, approval preview for Boys & Girlz.
+Reference image role: exact visual STYLE reference, supplied brand mascots. Study the reference and reproduce its extremely simple flat doodle vocabulary: very thick BLACK rounded outlines of consistent weight, peach circular heads, tiny solid black DOT eyes, a single curved black smile, round pink cheeks, tiny simple hair tufts, flat saturated cyan blue #00b3fc and bubblegum pink #fc538e, cream white accents. Cute and uncomplicated like a children's logo. Edges smooth but hand-drawn in spirit.
+MANDATORY: very flat and minimal. NO realistic details, NO large shiny eyes, NO storybook painting, NO rendering, NO fabric texture, NO fur texture, NO shadows, NO gradients, NO lighting effects, NO 3D. Each shape filled with one solid color, except simple solid cheek circles. Plain warm off-white background. Same drawing style and boldness as the supplied B and G mascots, not merely similar colors.
+Composition: simple centered scene, large clear subject in top 70%, generous breathing room, bottom 25% blank cream for eventual website copy. Professional clean brand illustration, no visual clutter. No written words, no watermarks, no headings, no UI, no border, no collage. Do not reproduce the whole logo or wordmark.
+Subject: the GIRL from the supplied logo imagined as a full simple doodle child: same round peach face, dot eyes, tiny cheerful curved smile, pink cheek circles, simple black curved hair strokes and big flat pink hair bow. Simple bubblegum-pink dress with the same white scalloped collar as the logo girl, little white shoes, tiny rounded arms and legs with thick black outlines. One arm waves. Beside her a tiny simplified pink dress on a little black-outlined clothing rail, conveying the girls' clothing corner. Keep the scene as simple as a logo mascot, no detailed boutique background. Main pink accent, one tiny cyan accent at most.
 
-## nursery
+## 3. Baby nursery
 
-Website asset: public/assets/corners/nursery-editorial.webp
+Website asset: public/assets/corners/nursery-doodle.webp
 
-Use case: photorealistic-natural.
-Asset type: professional portrait 2:3 photograph for The Baby Nursery category card on a premium children's shop, Boys & Girlz.
-Primary request: a serene beautifully styled baby nursery showing a pale oak crib against warm ivory plaster, soft light through sheer curtains, and neatly folded cream cotton baby essentials on a low oak dresser beside it. The crib has only a fitted ivory sheet, empty and safe, no pillows, blankets or toys inside. No people.
-Scene: elegant real nursery with quiet pale blue and blush details, tactile natural materials and simple thoughtful styling.
-Composition: intimate portrait view of crib and dresser in the upper two-thirds, clear silhouettes, no visual clutter, bottom quarter simple and low-detail for website text overlay. Portrait 2:3 with crop margins.
-Style: premium interiors and baby essentials editorial photography, realistic oak grain and cotton texture, soft window daylight, neutral warm white balance, gentle shadows, 50mm lens. Warm and welcoming, coordinate with an ivory and pale-oak children's fashion photo series.
-Constraints: no text, no letters, no logos, no watermarks, no UI, no collage, no borders. No baby in crib. Generate one single photograph.
+Use case: illustration-story.
+Asset type: ONE portrait 2:3 category illustration, approval preview for Boys & Girlz.
+Reference image role: exact visual STYLE reference, supplied brand mascots. Study the reference and reproduce its extremely simple flat doodle vocabulary: very thick BLACK rounded outlines of consistent weight, peach circular heads, tiny solid black DOT eyes, a single curved black smile, round pink cheeks, tiny simple hair tufts, flat saturated cyan blue #00b3fc and bubblegum pink #fc538e, cream white accents. Cute and uncomplicated like a children's logo. Edges smooth but hand-drawn in spirit.
+MANDATORY: very flat and minimal. NO realistic details, NO large shiny eyes, NO storybook painting, NO rendering, NO fabric texture, NO fur texture, NO shadows, NO gradients, NO lighting effects, NO 3D. Each shape filled with one solid color, except simple solid cheek circles. Plain warm off-white background. Same drawing style and boldness as the supplied B and G mascots, not merely similar colors.
+Composition: simple centered scene, large clear subject in top 70%, generous breathing room, bottom 25% blank cream for eventual website copy. Professional clean brand illustration, no visual clutter. No written words, no watermarks, no headings, no UI, no border, no collage. Do not reproduce the whole logo or wordmark.
+Subject: a little baby in exactly the same doodle family as the supplied logo: circular peach face, tiny curved CLOSED black eyes, small curved smiling mouth, pink circle cheeks and one simple tiny black hair curl. Simple cyan onesie, rounded tiny hands. Baby lying on their back on a plain fitted white mattress inside a very simple rounded cream crib with thick black outlines and just a few widely spaced graphic rails. Keep baby's face clearly visible, no loose bedding, no pillows, no toys in the crib. A tiny neatly folded pink baby garment beside the crib suggests baby essentials. Quiet minimal composition with large uncomplicated shapes, no room background.
 
-## toys
+## 4. Toy shelf
 
-Website asset: public/assets/corners/toys-editorial.webp
+Website asset: public/assets/corners/toys-doodle.webp
 
-Use case: product-mockup.
-Asset type: professional portrait 2:3 photograph for The Toy Shelf category card on a premium children's shop, Boys & Girlz.
-Primary request: a beautifully curated pale oak toy shelf with an inviting, uncluttered arrangement of a soft cream plush rabbit, pastel wooden stacking rings, a small sky-blue wooden toy car, and a few simple wooden building blocks. Show a small considered collection, each toy clearly recognizable, believable crafted details and proportions.
-Scene: warm ivory plaster wall behind a real pale oak children's shelf, soft pink and sky-blue accents balanced with natural wood, tasteful children's boutique styling.
-Composition: toys and shelf occupy upper two-thirds, plush rabbit hero object balanced by colorful wooden toys, bottom quarter simple and low-detail for website text overlay. Portrait 2:3, generous crop margins. No people.
-Style: premium toy catalog editorial photography with soft window daylight, neutral warm white balance, gentle shadows, realistic plush fibers and wood grain, 50mm lens, welcoming and polished. Coordinate with ivory and pale-oak children's fashion and nursery photography.
-Constraints: no text, no letters, no labels, no logos, no watermarks, no UI, no collage, no borders. Generate one single photograph.
+Use case: illustration-story.
+Asset type: ONE portrait 2:3 category illustration, approval preview for Boys & Girlz.
+Reference image role: exact visual STYLE reference, supplied brand mascots. Study the reference and reproduce its extremely simple flat doodle vocabulary: very thick BLACK rounded outlines of consistent weight, peach circular heads, tiny solid black DOT eyes, a single curved black smile, round pink cheeks, tiny simple hair tufts, flat saturated cyan blue #00b3fc and bubblegum pink #fc538e, cream white accents. Cute and uncomplicated like a children's logo. Edges smooth but hand-drawn in spirit.
+MANDATORY: very flat and minimal. NO realistic details, NO large shiny eyes, NO storybook painting, NO rendering, NO fabric texture, NO fur texture, NO shadows, NO gradients, NO lighting effects, NO 3D. Each shape filled with one solid color, except simple solid cheek circles. Plain warm off-white background. Same drawing style and boldness as the supplied B and G mascots, not merely similar colors.
+Composition: simple centered scene, large clear subject in top 70%, generous breathing room, bottom 25% blank cream for eventual website copy. Professional clean brand illustration, no visual clutter. No written words, no watermarks, no headings, no UI, no border, no collage. Do not reproduce the whole logo or wordmark.
+Subject: a very simple cheerful doodle toy shelf with only two rounded cream shelves and thick black outlines. A large cute WHITE rabbit plush drawn with the logo's exact face language: tiny black dot eyes, small curved smile, pink circle cheeks, long uncomplicated rounded ears with flat pink centers, cyan bow, no fur texture. Beside it a simple flat pink-and-blue stacking ring toy. On the lower shelf one cyan toy car with simple black circular wheels and three rounded pink/blue/cream building blocks. Every object reduced to a few bold simple shapes, generous gaps. No people. No realistic wood grain or material shading. Looks like a family of simple toy icons drawn by the same person who drew the B and G logo mascots.
 
