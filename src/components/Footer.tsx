@@ -82,15 +82,11 @@ export default function Footer() {
       <span className="footer-glow footer-glow-top" />
       <span className="footer-glow footer-glow-pink" />
       <span className="footer-glow footer-glow-blue" />
-      <span className="footer-dots" />
     </div>
 
     <div className="footer-inner page-width">
       <div className="footer-grid">
         <div className="footer-brand">
-          <Link to="/" className="footer-logo" aria-label="Boys and Girlz home">
-            <img src="/assets/boys-girlz-logo-on-dark.webp" alt="Boys & Girlz" width="480" height="161" />
-          </Link>
           <p>{t("A children's shop in Lebanon")}</p>
           <div className="footer-signup">
             <h2>{t("Join our little circle")}</h2>

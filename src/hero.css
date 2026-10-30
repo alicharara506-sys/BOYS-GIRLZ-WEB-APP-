@@ -30,10 +30,6 @@
 .bh-blob-pink { width: 46vw; height: 46vw; max-width: 680px; max-height: 680px; inset-inline-end: -6%; top: -4%; background: #ffc2d7; }
 .bh-blob-blue { width: 40vw; height: 40vw; max-width: 600px; max-height: 600px; inset-inline-end: 26%; top: 34%; background: #bfe9ff; animation-duration: 22s; animation-delay: -6s; }
 .bh-blob-peach { width: 34vw; height: 34vw; max-width: 520px; max-height: 520px; inset-inline-start: -8%; top: 8%; background: #ffe6d4; animation-duration: 26s; animation-delay: -11s; }
-.bh-grain {
-  position: absolute; inset: 0; opacity: .06; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 @keyframes bh-drift {
   0% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(4vw, -3vw, 0) scale(1.12); }
@@ -159,42 +155,6 @@
 .play.is-boy .play-glow-boy, .play.is-girl .play-glow-girl { opacity: 1; }
 @keyframes play-glow-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.6); } }
 
-/* Two glowing orbits drawn as tilted ellipses: a pink-to-blue line that draws itself in, with
-   a comet of light running round it. */
-.play-rings { position: absolute; inset: 0; z-index: 1; overflow: visible; pointer-events: none; }
-.play-rings-front { z-index: 4; }
-.play-ring-front { opacity: .8; stroke-width: 2.6; }
-.play-ring-line { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 50; stroke-dashoffset: 50; opacity: .55; animation: play-draw 1.4s cubic-bezier(.65, 0, .35, 1) 1.2s forwards; }
-.play-ring-1 .play-ring-line { stroke-width: 1.8; animation-delay: 1.35s; }
-.play-ring-comet { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 9 91; filter: drop-shadow(0 0 6px #fc538e) drop-shadow(0 0 10px #00b3fc); opacity: 0; animation: play-comet 6s linear 2.4s infinite, play-fade-in .8s ease 2.4s forwards; }
-.play-ring-1 .play-ring-comet { animation-duration: 4.4s, .8s; animation-direction: reverse, normal; stroke-dasharray: 7 93; }
-@keyframes play-draw { to { stroke-dashoffset: 0; } }
-@keyframes play-comet { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-@keyframes play-fade-in { to { opacity: 1; } }
-.play-rings.is-boy .play-ring-line, .play-rings.is-girl .play-ring-line { opacity: .85; transition: opacity .4s ease; }
-
-/* Dotted callout lines from each card to the stand, with a dot travelling down them. */
-.play-link-line { fill: none; stroke: #c4a9bb; stroke-width: 1.5; stroke-dasharray: 1.2 2.2; stroke-linecap: round; opacity: 0; animation: play-fade-in .8s ease 1.9s forwards; }
-.play-link-dot { fill: none; stroke: #fc538e; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0.01 99.99; filter: drop-shadow(0 0 4px #fc538e); opacity: 0; animation: play-comet 2.4s ease-in-out infinite reverse, play-fade-in .6s ease 2.2s forwards; }
-.play-link + .play-link .play-link-dot { stroke: #00b3fc; filter: drop-shadow(0 0 4px #00b3fc); }
-
-/* Constellation lines from the hovered character to its nearest chips. */
-.play-constellation { stroke: #00b3fc; stroke-width: 1.5; stroke-dasharray: 3 4; opacity: 0; transition: opacity .35s ease; }
-.play-rings.is-girl .play-constellation { stroke: #fc538e; }
-.play-rings.is-boy .play-constellation, .play-rings.is-girl .play-constellation { opacity: .8; animation: play-march 1s linear infinite; }
-@keyframes play-march { to { stroke-dashoffset: -14; } }
-
-/* The orbiting chips: colourful, filled, glowing when they pass the front. */
-.play-chip {
-  position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; opacity: 0;
-  background: radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--c) 55%, white), var(--c));
-  color: #fff; box-shadow: 0 0 0 3px #ffffffcc, 0 12px 22px -8px var(--c);
-  will-change: transform, opacity; pointer-events: none;
-  transition: box-shadow .4s ease;
-}
-.play-chip svg { filter: drop-shadow(0 1px 1px #0000002a); }
-.play-chip.is-front { box-shadow: 0 0 0 3px #fff, 0 0 22px 2px color-mix(in oklab, var(--c) 70%, transparent), 0 16px 26px -8px var(--c); }
-
 /* The glass stand they land on, with a ripple and sparkles when they arrive. */
 .play-disc {
   position: absolute; left: 50%; bottom: 17%; width: min(66%, 440px); height: clamp(54px, 5vw, 76px); border-radius: 50%; translate: -50% 50%;
@@ -282,9 +242,6 @@
 .section-glow-line { position: relative; overflow: hidden; width: min(1100px, 80%); height: 1px; background: linear-gradient(90deg, transparent, #e7d6dd, transparent); }
 .section-glow-line::after { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 30%; background: linear-gradient(90deg, transparent, #fc538e, #00b3fc, transparent); box-shadow: 0 0 18px #fc538e99; animation: section-beam 5s ease-in-out infinite; }
 @keyframes section-beam { from { translate: -100% 0; } to { translate: 340% 0; } }
-.section-glow-specks { position: absolute; inset-block: 0; width: min(1000px, 90%); }
-.section-glow-specks span { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #1f263340; animation: section-twinkle 4.5s ease-in-out infinite; }
-@keyframes section-twinkle { 0%, 100% { opacity: .15; scale: .6; } 50% { opacity: 1; scale: 1.2; } }
 html[dir="rtl"] .section-glow-line::after { animation-name: section-beam-rtl; }
 @keyframes section-beam-rtl { from { translate: 100% 0; } to { translate: -340% 0; } }
 .corners-heading { display: grid; justify-items: center; gap: 14px; margin-bottom: clamp(26px, 3vw, 42px); text-align: center; }
@@ -422,8 +379,6 @@ html[dir="rtl"] .corner-tile:hover .corner-action svg { transform: translateX(-5
   .bh-badge small { font-size: 10px; }
   .bh-badge-icon { width: 30px; height: 30px; border-radius: 10px; }
   .bh-check { width: 18px; height: 18px; }
-  .play-chip { width: 34px; height: 34px; }
-  .play-chip svg { width: 15px; height: 15px; }
   .play .bh-badge { gap: 8px; padding: 8px 10px 8px 8px; }
   .play .bh-badge small { display: none; }
   .play .bh-check { display: none; }
