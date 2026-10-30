@@ -1,4 +1,5 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Link } from "../components/LocalizedLink";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -31,6 +32,7 @@ import { AnimatedLine, SplitTitle } from "../components/HeroSection";
 import PromiseCards, { type PromiseCardItem } from "../components/PromiseCards";
 import { useReducedMotion } from "../hooks/useExperience";
 import GrowingSteps from "../components/GrowingSteps";
+import { returnsPolicy } from "../data/faqs";
 
 gsap.registerPlugin(ScrollTrigger);
 function spotlight(event: PointerEvent<HTMLAnchorElement>) {
@@ -48,6 +50,7 @@ export function About() {
   const timelineRef = useRef<HTMLOListElement>(null);
   const lineOne = t("For their firsts.");
   const lineTwo = t("And everything after.");
+  const whatsapp = whatsAppUrl(language === "ar" ? "مرحباً بويز آند غيرلز! لدي سؤال عن المتجر." : "Hello Boys & Girlz! I have a question about your shop.");
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -94,20 +97,25 @@ export function About() {
             <span className="about-dot" aria-hidden="true"><Sparkles size={16} /></span>
             <div className="about-step-body">
               <p>{t("Boys & Girlz is a children's clothing shop in Lebanon offering kids clothes, toys, accessories, maternity pieces, and Like New outlet finds for growing families.")}</p>
+              {business.founded && <p>{language === "ar" ? `تأسّس المتجر في ${business.founded}.` : `Established in ${business.founded}.`}</p>}
             </div>
           </li>
           <li className="about-step">
             <span className="about-dot" aria-hidden="true"><Store size={16} /></span>
             <div className="about-step-body about-question">
-              <h2>{t("What is Boys & Girlz?")}</h2>
-              <p>{t("We are an online baby shop in Lebanon and a family-friendly retail destination where comfort, practical value, and cheerful design come first.")}</p>
+              <h2>{t("Our online collections")}</h2>
+              <p>{t("Browse our online collections, then contact Boys & Girlz on WhatsApp for current product photos, measurements and availability.")}</p>
+              <p><Link to="/shop">{t("Shop all")}</Link> · <Link to="/help/sizing">{t("Size Guide")}</Link></p>
             </div>
           </li>
           <li className="about-step">
             <span className="about-dot" aria-hidden="true"><MapPin size={16} /></span>
             <div className="about-step-body about-question">
-              <h2>{t("Where do you ship?")}</h2>
-              <p>{t("We deliver all over Lebanon. Every order is prepared locally with care.")}</p>
+              <h2>{t("Delivery and contact")}</h2>
+              <p>{t("Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders over $99.")}</p>
+              {whatsapp && <p>{t("WhatsApp")}: <a href={whatsapp} target="_blank" rel="noopener noreferrer"><bdi>{business.phoneDisplay}</bdi></a></p>}
+              {business.email && <p><a href={`mailto:${business.email}`}>{business.email}</a></p>}
+              <p><Link to="/help/shipping">{t("Delivery in Lebanon")}</Link> · <Link to="/contact">{t("Contact us")}</Link></p>
             </div>
           </li>
         </ol>
@@ -193,7 +201,7 @@ export function Contact() {
           <h2>{t("Let’s talk.")}</h2>
           <p>{t("For sizing, delivery, or a little advice, send a note below.")}</p>
           <div className="contact-cards" aria-label={t("Follow us")}>
-            {whatsapp && <ContactCard href={whatsapp} icon={<WhatsAppIcon size={22} />} title={t("Chat with us")} value="WhatsApp" tint="#16a36d" />}
+            {whatsapp && <ContactCard href={whatsapp} icon={<WhatsAppIcon size={22} />} title={t("Chat with us")} value={<span dir="ltr">WhatsApp · {business.phoneDisplay}</span>} tint="#16a36d" />}
             {socials.map(({ name, handle, href, Icon, tint }) => <ContactCard key={name} href={href} icon={<Icon size={22} />} title={name} value={<span dir="ltr">{handle}</span>} tint={tint} />)}
             {business.phone && <ContactCard href={`tel:${business.phone}`} external={false} icon={<Phone size={22} />} title={t("Contact us")} value={<span dir="ltr">{business.phone}</span>} tint="#0898d6" />}
             {business.address && <ContactCard href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} icon={<MapPin size={22} />} title={t("Visit us:").replace(/[:：]$/, "")} value={<>{business.address}{business.hours && <small className="contact-card-hours">{t("Opening hours:")} {business.hours}</small>}</>} tint="#e7a400" />}
@@ -260,7 +268,7 @@ const help: Record<
       ],
       [
         "Your order",
-        "Cash on Delivery is available. Delivery charges and order availability are confirmed at checkout.",
+        "Cash on Delivery is available. Contact the shop to confirm availability, delivery charges and the final total for a WhatsApp order request.",
       ],
     ],
   },
@@ -270,7 +278,7 @@ const help: Record<
     sections: [
       [
         "Current policy",
-        business.returnsPolicy || "The returns policy has not been confirmed yet. Contact the shop before ordering if you need return or exchange details.",
+        returnsPolicy,
       ],
     ],
   },
@@ -359,7 +367,7 @@ export function Help() {
       </section>}
 
       <section className="help-cards page-width" style={{ "--n": cards.length } as CSSProperties}>
-        <PromiseCards items={cards} label={content.title} />
+        <PromiseCards items={cards} label={content.title} headingTag="h2" />
       </section>
 
       <section className="about-cta">
@@ -373,6 +381,7 @@ export function Help() {
           <span className="bh-cta-label">{t("A little more help")}</span>
           <span className="bh-cta-arrow" aria-hidden="true"><ArrowRight size={18} /></span>
         </Link>
+        <p><Link to="/faq">{t("Frequently asked questions")}</Link></p>
       </section>
     </div>
   );

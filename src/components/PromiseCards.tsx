@@ -36,7 +36,7 @@ function settle(event: PointerEvent<HTMLDivElement>) {
 // cards rise in, a soft shade of its colour glowing in the corner, a dot texture and a bar of colour along the foot. A
 // shiny arc always runs round each border and widens on hover, while the card lifts and tilts
 // toward the cursor. The middle card sits lower and the three drift at different speeds on scroll.
-export default function PromiseCards({ items = promises, label = "Why shop with us" }: { items?: PromiseCardItem[]; label?: string }) {
+export default function PromiseCards({ items = promises, label = "Why shop with us", headingTag: Heading = "strong" }: { items?: PromiseCardItem[]; label?: string; headingTag?: "strong" | "h2" }) {
   const { t } = useLocale();
   const reduceMotion = useReducedMotion();
   const rowRef = useRef<HTMLElement>(null);
@@ -71,7 +71,7 @@ export default function PromiseCards({ items = promises, label = "Why shop with 
         <span className="promise-dots" aria-hidden="true" />
         <span className="promise-shade" aria-hidden="true" />
         <span className="promise-icon" aria-hidden="true"><Icon size={24} strokeWidth={1.7} /></span>
-        <strong>{t(title)}</strong>
+        <Heading>{t(title)}</Heading>
         <small>{t(body)}</small>
         <span className="promise-bar" aria-hidden="true" />
       </div>

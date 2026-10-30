@@ -1,5 +1,5 @@
 import { useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../components/LocalizedLink";
 import { ArrowRight, HelpCircle, LayoutGrid, Sparkles, Tag, Truck } from "lucide-react";
 import { whatsAppUrl } from "./WhatsAppLink";
 import { socials, WhatsAppIcon } from "./SocialIcons";
@@ -8,6 +8,7 @@ import { categories, matchesCategory, products } from "../data/products";
 import { useLocale } from "../i18n/Locale";
 import { brandColors } from "./BrandRibbon";
 import Newsletter from "./Newsletter";
+import { business } from "../config/business";
 
 const FOOTER_BRANDS = 6;
 const categoryCounts = Object.fromEntries(categories.map((category) => [category, products.filter((product) => matchesCategory(product, category)).length]));
@@ -97,7 +98,7 @@ export default function Footer() {
             {socials.map(({ name, handle, href, Icon }) => <ContactRow key={name} icon={<Icon size={16} />} label={name} href={href}>
               <span dir="ltr">{handle}</span>
             </ContactRow>)}
-            {whatsapp && <ContactRow icon={<WhatsAppIcon size={16} />} label="WhatsApp" href={whatsapp}><span dir="ltr">+961 81 061 731</span></ContactRow>}
+            {whatsapp && <ContactRow icon={<WhatsAppIcon size={16} />} label="WhatsApp" href={whatsapp}><span dir="ltr">{business.phoneDisplay}</span></ContactRow>}
           </div>
         </div>
 
@@ -125,6 +126,8 @@ export default function Footer() {
             <FooterLinkList>
               <FooterLink to="/about">{t("About Us")}</FooterLink>
               <FooterLink to="/help/sizing">{t("Size Guide")}</FooterLink>
+              <FooterLink to="/help/shipping">{t("Delivery in Lebanon")}</FooterLink>
+              <FooterLink to="/help/returns">{t("Returns and exchanges")}</FooterLink>
               <FooterLink to="/faq">{t("Help & FAQs")}</FooterLink>
               <FooterLink to="/contact">{t("Contact")}</FooterLink>
             </FooterLinkList>

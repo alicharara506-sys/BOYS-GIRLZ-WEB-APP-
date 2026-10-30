@@ -1,18 +1,19 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
-import { Link } from "react-router";
+import { Link } from "../components/LocalizedLink";
 import { ArrowRight, Banknote, Plus, Recycle, RotateCcw, Ruler, Search, Truck, X, type LucideIcon } from "lucide-react";
 import { business } from "../config/business";
 import { localizedMeta } from "../config/meta";
 import { useLocale } from "../i18n/Locale";
 import { SplitTitle } from "../components/HeroSection";
+import { faqs } from "../data/faqs";
 
-const faqs: { id: string; topic: string; Icon: LucideIcon; tint: string; question: string; answer: string }[] = [
-  { id: "delivery", topic: "Delivery", Icon: Truck, tint: "#0898d6", question: "Where does Boys & Girlz deliver?", answer: "We deliver all over Lebanon. Delivery is free on orders over $99." },
-  { id: "payment", topic: "Payment", Icon: Banknote, tint: "#16a36d", question: "Can I pay on delivery?", answer: "Cash on Delivery is available all over Lebanon." },
-  { id: "returns", topic: "Returns", Icon: RotateCcw, tint: "#e7a400", question: "What is the returns policy?", answer: "Our returns policy is being confirmed. Please contact the shop before ordering if you need return or exchange details." },
-  { id: "sizes", topic: "Sizes", Icon: Ruler, tint: "#0898d6", question: "How do I choose a size?", answer: "Children's clothes use New Born through 5–6 Years. Maternity uses S through XXL. Check each product's available sizes and contact us for fit details." },
-  { id: "outlet", topic: "Outlet", Icon: Recycle, tint: "#fc538e", question: "What does Like New mean?", answer: "Like New outlet items are pre-owned pieces in excellent condition at reduced prices." },
-];
+const presentation: Record<(typeof faqs)[number]["id"], { Icon: LucideIcon; tint: string }> = {
+  delivery: { Icon: Truck, tint: "#0898d6" },
+  payment: { Icon: Banknote, tint: "#16a36d" },
+  returns: { Icon: RotateCcw, tint: "#e7a400" },
+  sizes: { Icon: Ruler, tint: "#0898d6" },
+  outlet: { Icon: Recycle, tint: "#fc538e" },
+};
 
 export const meta = localizedMeta("Frequently asked questions", "Answers about Boys & Girlz delivery in Lebanon, Cash on Delivery, returns, sizes and Like New outlet items.", "/faq");
 
@@ -37,7 +38,7 @@ export default function FAQ() {
   const { language, t } = useLocale();
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState("all");
-  const [open, setOpen] = useState(faqs[0].id);
+  const [open, setOpen] = useState<string>(faqs[0].id);
   const chipsRef = useRef<HTMLDivElement>(null);
   const heading = t("Frequently asked questions");
 
@@ -68,7 +69,7 @@ export default function FAQ() {
   const toggle = (id: string) => {
     const next = open === id ? "" : id;
     setOpen(next);
-    window.history.replaceState(null, "", next ? `#${next}` : window.location.pathname);
+    window.history.replaceState(null, "", next ? `#${next}` : `${window.location.pathname}${window.location.search}`);
   };
   const q = query.trim().toLowerCase();
   const visible = faqs.filter((faq) => (topic === "all" || faq.id === topic) &&
@@ -77,7 +78,7 @@ export default function FAQ() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map(({ question, answer }) => ({
+    mainEntity: visible.map(({ question, answer }) => ({
       "@type": "Question",
       name: t(question),
       acceptedAnswer: { "@type": "Answer", text: t(answer) },
@@ -85,7 +86,7 @@ export default function FAQ() {
   };
   return (
     <div className="faq-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {visible.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
       <section className="contact-hero page-width">
         <div className="about-fields" aria-hidden="true">
           <span className="about-field about-field-pink" />
@@ -112,7 +113,8 @@ export default function FAQ() {
         </div>
 
         <div className="faq-list">
-          {visible.map(({ id, Icon, tint, question, answer }, index) => {
+          {visible.map(({ id, question, answer, relatedPath, relatedLabel }, index) => {
+            const { Icon, tint } = presentation[id];
             const isOpen = open === id || Boolean(q);
             return <section id={id} key={id} className={`faq-item ${isOpen ? "is-open" : ""}`} style={{ "--tint": tint, "--i": index } as CSSProperties} onPointerMove={spotlight}>
               <h2>
@@ -123,7 +125,7 @@ export default function FAQ() {
                 </button>
               </h2>
               <div className="faq-answer" id={`${id}-answer`} role="region" aria-label={t(question)}>
-                <div><p>{highlight(t(answer), query)}</p></div>
+                <div><p>{highlight(t(answer), query)}</p><p><Link className="inline-flex items-center gap-1 font-semibold" to={relatedPath}>{t(relatedLabel)} <ArrowRight size={14} aria-hidden="true" /></Link></p></div>
               </div>
             </section>;
           })}

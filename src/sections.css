@@ -121,7 +121,7 @@ html[dir="rtl"] .promise-dots { -webkit-mask-image: radial-gradient(circle at 0%
 @keyframes promise-turn { to { transform: rotate(360deg); } }
 @keyframes promise-swing { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-4deg); } }
 
-.promise-card strong { color: #1f2633; font-family: Quicksand, sans-serif; font-size: clamp(19px, 1.6vw, 22px); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+.promise-card strong, .promise-card h2 { margin: 0; color: #1f2633; font-family: Quicksand, sans-serif; font-size: clamp(19px, 1.6vw, 22px); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
 .promise-card small { color: #6f7d92; font-size: 14px; line-height: 1.5; }
 
 /* A bar of colour along the foot that runs out to full width on hover. */
