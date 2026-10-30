@@ -10,7 +10,7 @@ export default function ProductGallery({ product, color }: { product: Product; c
     <div className="photo-stage">
       <span className="photo-glow" aria-hidden="true" />
       <div className="photo-viewer">
-        <ProductImage product={product} />
+        <ProductImage product={product} priority />
       </div>
     </div>
     <p className="small-muted">{t("Verified product photography is being prepared. Please contact the shop for current photos before ordering.")}</p>

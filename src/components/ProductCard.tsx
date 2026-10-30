@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type PointerEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "./LocalizedLink";
 import { Heart, Plus } from "lucide-react";
 import { colorHex, money, type Product } from "../data/products";
 import { useStore } from "../state/Store";
@@ -8,10 +8,12 @@ export function ProductImage({
   product,
   className = "",
   style,
+  priority = false,
 }: {
   product: Pick<Product, "image" | "name" | "model">;
   className?: string;
   style?: CSSProperties;
+  priority?: boolean;
 }) {
   const { t } = useLocale();
   if (product.model === "duck")
@@ -26,18 +28,16 @@ export function ProductImage({
       </div>
     );
   return (
-    <div
-      role="img"
-      aria-label={t(product.name)}
+    <img
+      src={`/assets/catalog-previews/${product.image}.webp`}
+      alt={t(product.name)}
+      width={[444, 443, 443, 444, 444, 443, 443, 444, 656, 656, 656, 656][product.image]}
+      height={[444, 444, 444, 444, 443, 443, 443, 443, 600, 600, 599, 599][product.image]}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      decoding="async"
       className={`product-photo ${className}`}
-      style={{
-        backgroundImage: product.image >= 8 ? 'url("/assets/featured-products.png")' : undefined,
-        backgroundSize: product.image >= 8 ? "200% 200%" : undefined,
-        backgroundPosition: product.image >= 8
-          ? `${((product.image - 8) % 2) * 100}% ${Math.floor((product.image - 8) / 2) * 100}%`
-          : `${((product.image % 4) * 100) / 3}% ${Math.floor(product.image / 4) * 100}%`,
-        ...style,
-      }}
+      style={style}
     />
   );
 }

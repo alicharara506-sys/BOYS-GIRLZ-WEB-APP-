@@ -60,11 +60,9 @@ export function FlyToBag() {
       item.style.top = `${startY - 36}px`;
       item.style.width = "72px";
       item.style.height = "72px";
-      item.style.backgroundImage = detail.image >= 8 ? 'url("/assets/featured-products.png")' : 'url("/assets/product-contact-sheet.png")';
-      item.style.backgroundSize = detail.image >= 8 ? "200% 200%" : "400% 200%";
-      item.style.backgroundPosition = detail.image >= 8
-        ? `${((detail.image - 8) % 2) * 100}% ${Math.floor((detail.image - 8) / 2) * 100}%`
-        : `${((detail.image % 4) * 100) / 3}% ${Math.floor(detail.image / 4) * 100}%`;
+      item.style.backgroundImage = `url("/assets/catalog-previews/${detail.image}.webp")`;
+      item.style.backgroundSize = "100% 100%";
+      item.style.backgroundPosition = "center";
       document.body.appendChild(item);
       const animation = item.animate([
         { transform: "translate3d(0,0,0) rotateY(0) scale(1)", opacity: 1, offset: 0 },

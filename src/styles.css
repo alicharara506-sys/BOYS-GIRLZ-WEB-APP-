@@ -764,9 +764,9 @@ input[type="checkbox"] {
 .product-photo {
   width: 100%;
   aspect-ratio: 1;
-  background-image: url("/assets/product-contact-sheet.png");
-  background-size: 400% 200%;
-  background-repeat: no-repeat;
+  height: auto;
+  object-fit: fill;
+  display: block;
   background-color: #f8f3eb;
 }
 .product-image-button .product-photo {

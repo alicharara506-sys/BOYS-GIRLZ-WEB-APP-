@@ -101,7 +101,7 @@ test("the desktop hero shows the exact B and G logo characters", async ({ page }
   await expect(page.locator(".bh-stage .home-mascot-girl")).toBeVisible();
   await expect(page.locator(".bh canvas")).toHaveCount(0);
   const artwork = await page.locator(".bh-stage .home-mascot-boy").evaluate((element) => getComputedStyle(element).backgroundImage);
-  expect(artwork).toContain("brand-characters.png");
+  expect(artwork).toContain("brand-characters.webp");
   await expect(page.locator(".bh-line-accent .bh-letter").first()).toHaveCSS("color", "rgb(252, 83, 142)");
   await page.screenshot({ path: "test-results/logo-hero-desktop.png", fullPage: false });
   expect(errors).toEqual([]);
