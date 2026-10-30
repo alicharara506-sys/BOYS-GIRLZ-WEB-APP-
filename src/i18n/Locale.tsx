@@ -1,3 +1,5 @@
+import { useLocation, useNavigate } from "react-router";
+import { localizeTo } from "../config/locale-url";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Language = "en" | "ar";
@@ -194,6 +196,17 @@ const arabic: Record<string, string> = {
   "Please wait before trying again.": "يرجى الانتظار قليلاً قبل المحاولة مجدداً.",
   "Contact form is not available yet. Please use Instagram for now.": "نموذج التواصل غير متاح حالياً. يرجى التواصل عبر إنستغرام.",
   "Please check your name, email and message.": "يرجى التحقق من الاسم والبريد الإلكتروني والرسالة.",
+  "Our online collections": "مجموعاتنا عبر الإنترنت",
+  "Browse our online collections, then contact Boys & Girlz on WhatsApp for current product photos, measurements and availability.": "تصفّح مجموعاتنا عبر الإنترنت، ثم تواصل مع بويز آند غيرلز عبر واتساب للحصول على صور المنتجات الحالية وقياساتها والتأكّد من توفّرها.",
+  "Delivery and contact": "التوصيل والتواصل",
+  "Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders over $99.": "التوصيل داخل لبنان فقط. الدفع نقداً عند الاستلام متاح، والتوصيل مجاني للطلبات التي تتجاوز 99$.",
+  "WhatsApp": "واتساب",
+  "Cash on Delivery is available. Contact the shop to confirm availability, delivery charges and the final total for a WhatsApp order request.": "الدفع نقداً عند الاستلام متاح. تواصل مع المتجر لتأكيد توفّر المنتجات ورسوم التوصيل والمجموع النهائي عند طلب الشراء عبر واتساب.",
+  "Boys & Girlz delivers within Lebanon only, with free delivery on orders over $99 before promo discounts. For the current delivery estimate or charges on a smaller order, contact the shop before ordering; availability, delivery charges and the final total are confirmed with the shop.": "توصّل بويز آند غيرلز داخل لبنان فقط، والتوصيل مجاني للطلبات التي تتجاوز 99$ قبل الخصومات الترويجية. لمعرفة موعد التوصيل المتوقع حالياً أو رسوم الطلبات الأصغر، تواصل مع المتجر قبل الطلب؛ إذ يؤكّد المتجر توفّر المنتجات ورسوم التوصيل والمجموع النهائي.",
+  "Yes, Cash on Delivery is available for Boys & Girlz orders within Lebanon. If you request an order through WhatsApp, the shop confirms product availability, the delivery charge and the final total before the order is placed, so check those details in the conversation.": "نعم، الدفع نقداً عند الاستلام متاح لطلبات بويز آند غيرلز داخل لبنان. إذا طلبت الشراء عبر واتساب، يؤكّد المتجر توفّر المنتجات ورسوم التوصيل والمجموع النهائي قبل تثبيت الطلب، لذا راجع هذه التفاصيل في المحادثة.",
+  "The Boys & Girlz returns and exchanges policy has not been confirmed for publication yet. Contact the shop before ordering to ask about eligibility, time limits and any conditions for the items you want; the website does not currently publish a confirmed return window.": "لم تُؤكَّد سياسة الإرجاع والاستبدال لدى بويز آند غيرلز للنشر بعد. تواصل مع المتجر قبل الطلب للاستفسار عن أهلية الإرجاع والمهلة وأي شروط تتعلّق بالمنتجات التي تريدها؛ فالموقع لا ينشر حالياً مهلة مؤكّدة للإرجاع.",
+  "Check the available sizes for each item and ask Boys & Girlz for garment measurements before ordering. The children's size filters run from New Born to 5–6 Years, while maternity filters use S to XXL; availability and fit depend on the individual product and brand.": "راجع المقاسات المتاحة لكل منتج واطلب قياسات القطعة من بويز آند غيرلز قبل الطلب. تشمل خيارات تصفية مقاسات الأطفال حديث الولادة حتى 5–6 سنوات، بينما تشمل مقاسات الأمومة S إلى XXL؛ ويعتمد التوفّر والملاءمة على المنتج والعلامة التجارية.",
+  "Like New outlet items are pre-owned pieces in excellent condition offered at reduced prices by Boys & Girlz. Before ordering, ask the shop for current photos, condition details and availability for the particular item, along with any measurements you need to check its fit.": "منتجات الأوتليت شبه الجديدة هي قطع مستعملة بحالة ممتازة تقدّمها بويز آند غيرلز بأسعار مخفّضة. قبل الطلب، اطلب من المتجر صوراً حالية وتفاصيل عن حالة القطعة المطلوبة وتوفّرها، بالإضافة إلى أي قياسات تحتاجها للتحقّق من ملاءمتها.",
 };
 
 const productNames: Record<string, string> = {
@@ -227,14 +240,16 @@ const LocaleContext = createContext<{ language: Language; setLanguage: (language
 
 export function LocaleProvider({ initialLanguage, children }: { initialLanguage: Language; children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(initialLanguage);
+  const location = useLocation();
+  const navigate = useNavigate();
   const setLanguage = (next: Language) => {
     setLanguageState(next);
     document.cookie = `bg-language=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    void navigate(localizeTo(`${location.pathname}${location.search}${location.hash}`, next), { preventScrollReset: true });
   };
   useEffect(() => {
-    // Static prerendered pages cannot read cookies on the server; restore the choice after hydration.
-    const saved: Language = /(?:^|;\s*)bg-language=ar(?:;|$)/.test(document.cookie) ? "ar" : "en";
-    if (saved !== initialLanguage) setLanguageState(saved);
+    // URL-specific HTML is identical for visitors and crawlers, independent of saved cookies.
+    setLanguageState(initialLanguage);
   }, [initialLanguage]);
   useEffect(() => {
     document.documentElement.lang = language;

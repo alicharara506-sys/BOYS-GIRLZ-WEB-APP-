@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link } from "../components/LocalizedLink";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ArrowUpDown,
@@ -153,7 +154,7 @@ export default function Shop() {
     );
   })();
   const reset = () => {
-    setParams({}, { replace: true, preventScrollReset: true });
+    setParams(language === "ar" ? { lang: "ar" } : {}, { replace: true, preventScrollReset: true });
   };
   const filterCount =
     selected.length +

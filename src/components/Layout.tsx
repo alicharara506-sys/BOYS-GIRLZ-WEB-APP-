@@ -1,4 +1,5 @@
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "./LocalizedLink";
+import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   Search,

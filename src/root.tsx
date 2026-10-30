@@ -1,4 +1,8 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useRouteError, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, redirect, useLocation, useRouteError, useRouteLoaderData } from "react-router";
+import { globalStructuredData } from "./config/seo";
+import { buildPageMeta } from "./config/meta";
+import Analytics from "./components/Analytics";
+import { Link } from "./components/LocalizedLink";
 import { StoreProvider, useStore } from "./state/Store";
 import { Header } from "./components/Layout";
 import Footer from "./components/Footer";
@@ -8,6 +12,7 @@ import { FloatingWhatsApp } from "./components/WhatsAppLink";
 import { business } from "./config/business";
 import { LocaleProvider, useLocale, type Language } from "./i18n/Locale";
 import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from "react-router";
+import type { Route } from "./+types/root";
 import "@fontsource/quicksand/500.css";
 import "@fontsource/quicksand/600.css";
 import "@fontsource/quicksand/700.css";
@@ -35,39 +40,34 @@ import "./product.css";
 import "./tones.css";
 import "./brands.css";
 
+export const meta: Route.MetaFunction = ({ location }) => buildPageMeta(location.pathname, new URLSearchParams(location.search).get("lang") === "ar" ? "ar" : "en");
+
 export function loader({ request }: LoaderFunctionArgs) {
-  const cookie = request.headers.get("cookie") || "";
-  const language: Language = /(?:^|;\s*)bg-language=ar(?:;|$)/.test(cookie) ? "ar" : "en";
+  const url = new URL(request.url);
+  const canonical = new URL(business.siteUrl);
+  const next = new URL(url);
+  next.pathname = url.pathname.replace(/\/{2,}/g, "/").replace(/\/$/, "") || "/";
+  if (url.searchParams.has("lang") && url.searchParams.get("lang") !== "ar") next.searchParams.delete("lang");
+  const isPublicHost = url.hostname === canonical.hostname || url.hostname === `www.${canonical.hostname}`;
+  const forwardedHttps = request.headers.get("x-forwarded-proto")?.split(",")[0].trim() === "https";
+  if (isPublicHost && (url.hostname !== canonical.hostname || (url.protocol !== "https:" && !forwardedHttps))) {
+    next.host = canonical.host;
+    next.protocol = "https:";
+  }
+  if (next.href !== url.href && request.method === "GET") throw redirect(next.href, 308);
+  const language: Language = url.searchParams.get("lang") === "ar" ? "ar" : "en";
   return { language };
 }
 
-// The language is read once from the cookie and then switched in the browser, so following a
-// link never needs it reloaded; only a form submission does.
-export function shouldRevalidate({ formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+// Language variants have stable URLs; filter changes do not reload root data.
+export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+  if (currentUrl.searchParams.get("lang") !== nextUrl.searchParams.get("lang")) return true;
   return formMethod ? defaultShouldRevalidate : false;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const language = useRouteLoaderData<typeof loader>("root")?.language || "en";
-  const organization = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        name: business.name,
-        ...(business.siteUrl ? { url: business.siteUrl } : {}),
-        sameAs: [business.instagram, business.facebook, business.tiktok],
-      },
-      {
-        "@type": "ClothingStore",
-        name: business.name,
-        ...(business.siteUrl ? { url: business.siteUrl } : {}),
-        ...(business.phone ? { telephone: business.phone } : {}),
-        ...(business.address ? { address: business.address } : {}),
-        areaServed: { "@type": "Country", name: "Lebanon" },
-      },
-    ],
-  };
+  const organization = globalStructuredData({ ...business, language, sameAs: [business.instagram, business.facebook, business.tiktok] });
   return (
     <html lang={language} dir={language === "ar" ? "rtl" : "ltr"}>
       <head>
@@ -75,10 +75,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
+        {import.meta.env.VITE_GOOGLE_SITE_VERIFICATION && <meta name="google-site-verification" content={import.meta.env.VITE_GOOGLE_SITE_VERIFICATION} />}
+        {import.meta.env.VITE_BING_SITE_VERIFICATION && <meta name="msvalidate.01" content={import.meta.env.VITE_BING_SITE_VERIFICATION} />}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, "\\u003c") }} />
       </head>
       <body>
-        <LocaleProvider initialLanguage={language}>{children}</LocaleProvider>
+        <LocaleProvider initialLanguage={language}>{children}<Analytics /></LocaleProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -117,7 +119,8 @@ export function ErrorBoundary() {
     <main className="page-width page-heading" id="main">
       <h1>{t(missing ? "Page not found" : "Something went wrong")}</h1>
       <p>{t(missing ? "That page or product is no longer available." : "Please try again in a moment.")}</p>
-      <a className="btn btn-blue" href="/">{t("Back to the shop")}</a>
+      <Link className="btn btn-blue" to="/">{t("Back to the shop")}</Link>
+      <p><Link to="/shop">{t("Shop all")}</Link> · <Link to="/faq">{t("Help & FAQs")}</Link> · <Link to="/contact">{t("Contact")}</Link></p>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import { useRef, type CSSProperties, type PointerEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../components/LocalizedLink";
 import { ChevronRight } from "lucide-react";
 import { approvedBrands } from "../data/brands";
 import { SplitTitle } from "../components/HeroSection";

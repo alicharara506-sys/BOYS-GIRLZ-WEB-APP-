@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "../components/LocalizedLink";
+import { useParams } from "react-router-dom";
 import {
   ArrowRight,
   ChevronRight,

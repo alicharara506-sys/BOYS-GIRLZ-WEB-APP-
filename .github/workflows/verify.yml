@@ -2,7 +2,7 @@ name: Verify storefront
 
 on:
   push:
-    branches: [launch-ready]
+    branches: [launch-ready, website-cleanup]
   pull_request:
 
 jobs:

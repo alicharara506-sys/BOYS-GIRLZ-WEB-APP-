@@ -8,13 +8,13 @@ export default defineConfig({
   expect: { timeout: 10000 },
   reporter: "list",
   webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:5173/",
-    reuseExistingServer: !process.env.CI,
+    command: "npm run dev -- --port 5481 --strictPort",
+    url: "http://127.0.0.1:5481/",
+    reuseExistingServer: false,
     timeout: 120000,
   },
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: "http://127.0.0.1:5481",
     channel: process.env.CI ? undefined : "chrome",
     headless: true,
     viewport: { width: 1440, height: 1000 },

@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties, type FormEvent, type PointerEvent } from "react";
-import { Link, useFetcher } from "react-router";
+import { Link } from "../components/LocalizedLink";
+import { useFetcher } from "react-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, LoaderCircle, Package, ShoppingBag, Truck } from "lucide-react";
 import { useStore } from "../state/Store";
 import { money, productById } from "../data/products";
