@@ -1,9 +1,34 @@
 # Boys & Girlz
 
-Boys & Girlz is a Lebanon-based shop for children's clothing, baby items, toys, accessories and maternity wear. It also has a Like New outlet for pre-owned items in excellent condition at reduced prices.
+> Boys & Girlz is a Lebanon-based shop for children's clothing, baby items, toys, accessories and maternity wear.
 
-Delivery is within Lebanon only. Cash on Delivery is available. Free delivery applies to orders over $99.
+The shop also has a Like New outlet for pre-owned items in excellent condition at reduced prices. Delivery is within Lebanon. Cash on Delivery is available.
 
-Browse: /shop, /category/boys, /category/girls, /category/unisex, /category/accessories, /category/maternity, /category/toys, /category/outlet.
+The website currently contains a preview catalog. Product listings, prices and availability must be confirmed with the shop before ordering.
 
-Contact: /contact. FAQs: /faq.
+## Main pages
+
+- [About Boys & Girlz](https://boysandgirlz.com/about)
+- [Browse the shop](https://boysandgirlz.com/shop)
+- [Boys' clothing](https://boysandgirlz.com/category/boys)
+- [Girls' clothing](https://boysandgirlz.com/category/girls)
+- [Baby and unisex clothing](https://boysandgirlz.com/category/unisex)
+- [Accessories](https://boysandgirlz.com/category/accessories)
+- [Maternity clothing](https://boysandgirlz.com/category/maternity)
+- [Toys](https://boysandgirlz.com/category/toys)
+- [Like New outlet](https://boysandgirlz.com/category/outlet)
+- [Brands](https://boysandgirlz.com/brands)
+- [Delivery information](https://boysandgirlz.com/help/shipping)
+- [Returns information](https://boysandgirlz.com/help/returns)
+- [Sizing information](https://boysandgirlz.com/help/sizing)
+- [Frequently asked questions](https://boysandgirlz.com/faq)
+- [Contact the shop](https://boysandgirlz.com/contact)
+
+## Arabic
+
+- [Arabic storefront](https://boysandgirlz.com/?lang=ar)
+- [Arabic frequently asked questions](https://boysandgirlz.com/faq?lang=ar)
+
+## Verified information
+
+For current delivery timing, returns terms, product measurements and availability, use the contact page. No founding date, physical shop address or opening hours are stated here without confirmation.
