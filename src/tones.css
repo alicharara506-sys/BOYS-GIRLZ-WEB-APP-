@@ -1,0 +1,48 @@
+/* ---------- Gender tones: boys blue, girls pink, unisex both ---------- */
+@property --tone-a { syntax: "<color>"; inherits: true; initial-value: #fc538e; }
+@property --tone-b { syntax: "<color>"; inherits: true; initial-value: #4cc4ff; }
+@property --tone-glow { syntax: "<color>"; inherits: true; initial-value: #fc538e99; }
+
+.tone-all, [data-tone="all"] { --tone-a: #fc538e; --tone-b: #4cc4ff; --tone-glow: #e45fb099; }
+.tone-boys, [data-tone="boys"] { --tone-a: #0a8fe0; --tone-b: #5fd0ff; --tone-glow: #1aa3ffaa; }
+.tone-girls, [data-tone="girls"] { --tone-a: #f0347a; --tone-b: #ff8fbc; --tone-glow: #fc538eaa; }
+.tone-unisex, [data-tone="unisex"] { --tone-a: #fc538e; --tone-b: #1aa3ff; --tone-glow: #fc538e99; }
+.favorites-filters, .shop-cats a { transition: --tone-a .6s ease, --tone-b .6s ease, --tone-glow .6s ease; }
+
+/* The highlight: the tone as a gradient that slowly flows, a glossy top light, a sheen that
+   sweeps across, and a soft glow beneath in the tone's colour. Unisex flows pink into blue
+   and back, and its glow pulses between the two. */
+.tone-pill {
+  background: linear-gradient(110deg, var(--tone-a), var(--tone-b) 50%, var(--tone-a)) 0 0 / 220% 100% !important;
+  box-shadow: 0 1px 0 #ffffff66 inset, 0 12px 26px -10px var(--tone-glow), 0 0 0 4px color-mix(in oklab, var(--tone-a) 14%, transparent) !important;
+  animation: tone-flow 6s linear infinite;
+  overflow: hidden; isolation: isolate;
+}
+.tone-pill::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, #ffffff40, transparent 55%), linear-gradient(105deg, transparent 35%, #ffffff70 50%, transparent 65%) -150% 0 / 60% 100% no-repeat;
+  animation: tone-sheen 3.4s ease-in-out infinite;
+}
+.tone-unisex .tone-pill, .tone-pill[data-tone="unisex"] { animation: tone-flow 3.2s linear infinite, tone-pulse 3.2s ease-in-out infinite; }
+@keyframes tone-flow { to { background-position: -220% 0; } }
+@keyframes tone-sheen { 0%, 45% { background-position: 0 0, -150% 0; } 80%, 100% { background-position: 0 0, 250% 0; } }
+@keyframes tone-pulse {
+  0%, 100% { box-shadow: 0 1px 0 #ffffff66 inset, 0 12px 26px -10px #fc538eaa, 0 0 0 4px #fc538e22; }
+  50% { box-shadow: 0 1px 0 #ffffff66 inset, 0 12px 26px -10px #1aa3ffaa, 0 0 0 4px #1aa3ff22; }
+}
+html[dir="rtl"] .tone-pill { animation-direction: reverse; }
+
+/* A ring of light that bursts out from the highlight each time the choice changes. */
+.tone-burst { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: 0 0 0 0 var(--tone-a); animation: tone-burst .7s cubic-bezier(.16, 1, .3, 1) forwards; }
+@keyframes tone-burst { from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--tone-a) 70%, transparent); } to { box-shadow: 0 0 0 16px transparent; } }
+
+/* Before they're chosen, each option hints at its tone on hover. */
+.favorites-filters button[data-tone]:not(.active):hover, .shop-cats a[data-tone]:not(.active):hover { color: var(--tone-a); }
+.shop-cats a[data-tone]:not(.active):hover { box-shadow: 0 0 0 1px color-mix(in oklab, var(--tone-a) 45%, transparent) inset; }
+.shop-cats a.tone-pill { position: relative; color: #fff; animation: tone-flow 6s linear infinite, chip-pop .45s cubic-bezier(.34, 1.56, .64, 1); }
+.shop-cats a.tone-pill[data-tone="unisex"] { animation: tone-flow 3.2s linear infinite, tone-pulse 3.2s ease-in-out infinite, chip-pop .45s cubic-bezier(.34, 1.56, .64, 1); }
+.favorites-pill.tone-pill { transition: transform .55s cubic-bezier(.34, 1.4, .64, 1), width .55s cubic-bezier(.34, 1.4, .64, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tone-pill, .tone-pill::before, .tone-burst { animation: none !important; }
+}

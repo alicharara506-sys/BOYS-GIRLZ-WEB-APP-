@@ -11,16 +11,16 @@ test("Arabic switch persists, server renders RTL, and core shopping remains usab
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await page.getByRole("link", { name: "أولاد" }).first().click();
   await expect(page.getByText("الأولاد الصغار")).toBeVisible();
-  await page.goto("/product/fleece-bear-overall");
+  await page.goto("/product/fleece-bear-overall?lang=ar");
   await page.getByRole("button", { name: /أضف إلى السلة/ }).click();
-  await page.goto("/checkout");
+  await page.goto("/checkout?lang=ar");
   await expect(page.getByRole("heading", { name: "إتمام الطلب" })).toBeVisible();
   await expect(page.getByLabel("المحافظة")).toBeVisible();
   await page.getByRole("button", { name: "التبديل إلى الإنجليزية" }).click();
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await expect(page.getByRole("heading", { name: "Checkout" })).toBeVisible();
 
-  const response = await request.get("/category/boys", { headers: { Cookie: "bg-language=ar" } });
+  const response = await request.get("/category/boys?lang=ar");
   expect(response.status()).toBe(200);
   const html = await response.text();
   expect(html).toContain('<html lang="ar" dir="rtl"');
@@ -33,7 +33,7 @@ test("Arabic mobile layout has no horizontal overflow", async ({ page }) => {
   await page.getByRole("button", { name: "Switch to Arabic" }).click();
   await page.getByRole("button", { name: "افتح القائمة" }).click();
   await expect(page.getByRole("navigation", { name: "قائمة الهاتف" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "ملابس الأمومة" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "قائمة الهاتف" }).getByRole("link", { name: "ملابس الأمومة" })).toBeVisible();
   await page.keyboard.press("Escape");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);

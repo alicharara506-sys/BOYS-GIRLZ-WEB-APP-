@@ -17,4 +17,4 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export function loader() { throw new Response("Not found", { status: 404 }); }
+export function loader() { throw new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, nofollow" } }); }

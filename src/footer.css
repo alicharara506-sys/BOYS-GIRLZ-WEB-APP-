@@ -1,0 +1,178 @@
+/* ---------- Site footer ---------- */
+.site-footer-v2 {
+  --ink: #151b33;
+  position: relative; isolation: isolate; overflow: hidden;
+  margin-top: clamp(24px, 4vw, 56px);
+  /* The brand's blue blending smoothly into its pink. */
+  background: linear-gradient(118deg, #0a3a8f 0%, #0f63c9 30%, #3d7fd6 46%, #e0478a 64%, #e8326f 82%, #d4245f 100%);
+  color: #ffffffe0;
+}
+/* A light travelling slowly along the top edge. */
+.footer-beam { position: absolute; inset-inline: 0; top: 0; height: 1px; overflow: hidden; background: #ffffff1a; }
+.footer-beam span {
+  position: absolute; inset-block: 0; width: 220px;
+  background: linear-gradient(90deg, transparent, #fc538e, #00b3fc, transparent); box-shadow: 0 0 20px #00b3fc99;
+  animation: footer-packet 7s linear infinite;
+}
+@keyframes footer-packet { from { left: -220px; } to { left: 100%; } }
+html[dir="rtl"] .footer-beam span { animation-direction: reverse; }
+
+/* A light falling from the top, pink and blue glows drifting, and edges sinking deeper. */
+.footer-glows { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* A slow aurora of blue and pink light turning across the blend. */
+.footer-glows::before {
+  content: ""; position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg at 50% 50%, #00b3fc00, #00b3fc55 20%, #00b3fc00 36%, #fc538e55 56%, #fc538e00 72%, #00b3fc40 88%, #00b3fc00);
+  filter: blur(80px); animation: footer-aurora 38s linear infinite;
+}
+@keyframes footer-aurora { to { transform: rotate(360deg); } }
+.footer-glow { position: absolute; border-radius: 50%; filter: blur(110px); }
+.footer-glow-top { inset-inline: 15%; top: -55%; height: 90%; background: #ffffff; opacity: .1; }
+.footer-glow-pink { inset-inline-end: -10%; top: -10%; width: 50%; height: 80%; background: #ff6fa5; opacity: .35; animation: bh-drift 22s ease-in-out infinite alternate; }
+.footer-glow-blue { inset-inline-start: -12%; bottom: -30%; width: 55%; height: 90%; background: #1ab8ff; opacity: .35; animation: bh-drift 26s ease-in-out -12s infinite alternate; }
+/* Edges sink a little deeper so the white text always reads clearly. */
+.footer-glows::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #00000014, transparent 30%, transparent 70%, #00000033); }
+
+.footer-inner { margin: 0 auto; padding-top: clamp(40px, 5vw, 64px); }
+
+/* ---------- Newsletter, as a compact field in the brand column ---------- */
+.footer-signup { display: grid; gap: 6px; max-width: 380px; margin-top: 6px; }
+.footer-signup h2 { margin: 0; color: #fff; font-family: Quicksand, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.footer-signup > p { margin: 0 0 6px; color: #ffffff99; font-size: 13px; line-height: 1.5; }
+.footer-signup .newsletter.compact { display: block; padding: 0; border-radius: 0; background: none; box-shadow: none; transform: none; }
+.footer-signup .newsletter form {
+  display: flex; min-width: 0; padding: 4px; border-radius: 999px; overflow: hidden;
+  background: #ffffff12; box-shadow: 0 0 0 1px #ffffff26 inset;
+  transition: box-shadow .3s ease, background-color .3s ease;
+}
+.footer-signup .newsletter form:focus-within { background: #ffffff1c; box-shadow: 0 0 0 1px #00b3fc inset, 0 0 0 4px #00b3fc26; }
+.footer-signup .newsletter input { flex: 1; min-width: 0; width: auto; padding: 10px 14px; border: 0; background: transparent; color: #fff; font-size: 13px; }
+.footer-signup .newsletter input::placeholder { color: #ffffff80; }
+.footer-signup .newsletter input:focus { outline: none; background: transparent; box-shadow: none; }
+/* Browsers paint autofilled fields light; keep the field dark glass with white text. */
+.footer-signup .newsletter input:-webkit-autofill,
+.footer-signup .newsletter input:-webkit-autofill:hover,
+.footer-signup .newsletter input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff; caret-color: #fff;
+  -webkit-box-shadow: 0 0 0 40px #2a2f4f inset; box-shadow: 0 0 0 40px #2a2f4f inset;
+  border-radius: 999px; transition: background-color 9999s ease-out 0s;
+}
+.footer-signup .newsletter .btn {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 38px; padding: 8px 16px; border-radius: 999px; font-size: 12px;
+  background: linear-gradient(120deg, #f2477f, #fc6a9e 60%, #ff8fb5); color: #fff; box-shadow: 0 8px 18px -10px #f2477fcc;
+  transition: box-shadow .35s ease, filter .35s ease;
+}
+.footer-signup .newsletter .btn:hover { filter: brightness(1.06); box-shadow: 0 0 0 3px #fc538e33, 0 10px 22px -10px #f2477fee; }
+.footer-signup .form-error { margin-top: 6px; color: #ffb3c9; font-size: 12px; }
+
+/* ---------- Brand and contacts | panels ---------- */
+.footer-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(32px, 4vw, 56px); }
+.footer-brand { display: grid; align-content: start; gap: 18px; }
+.footer-brand > p { max-width: 300px; margin: 0; color: #ffffffa6; font-size: 14px; line-height: 1.6; }
+.footer-contacts { display: grid; gap: 14px; margin-top: 6px; }
+.footer-contact { display: flex; align-items: center; gap: 12px; color: inherit; }
+.footer-contact-icon {
+  display: grid; flex: none; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+  background: #ffffff1a; color: #ffffffcc; box-shadow: 0 0 0 1px #ffffff26 inset;
+  transition: background-color .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.footer-contact:hover .footer-contact-icon { background: #fff; color: #fc538e; box-shadow: 0 0 0 1px #fff inset, 0 0 22px -4px #fc538e; }
+.footer-contact-copy { display: grid; gap: 1px; }
+.footer-contact-copy small { color: #ffffff80; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.footer-contact-copy > span { color: #ffffffd9; font-size: 14px; transition: color .3s ease; }
+a.footer-contact:hover .footer-contact-copy > span { color: #fff; }
+
+.footer-panels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.footer-panel {
+  --x: 50%; --y: 0%;
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; padding: 8px; border-radius: 20px;
+  background: #ffffff0a; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px #ffffff1a inset;
+  transition: background-color .5s ease;
+}
+.footer-panel:hover { background: #ffffff0f; }
+/* The torch light on the surface, and the same light catching the border. */
+.footer-panel::before, .footer-panel::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+.footer-panel::before { z-index: -1; background: radial-gradient(260px circle at var(--x) var(--y), #ffffff17, transparent 70%); }
+.footer-panel::after {
+  padding: 1px;
+  background: radial-gradient(180px circle at var(--x) var(--y), #00b3fc, #fc538e99 45%, transparent 75%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.footer-panel:hover::before, .footer-panel:hover::after { opacity: 1; }
+.footer-panel h2 { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 12px 8px; }
+.footer-panel-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: #ffffff1a; color: #7fd6ff; box-shadow: 0 0 0 1px #ffffff26 inset; }
+.footer-panel-title { color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.footer-panel-count { margin-inline-start: auto; padding: 2px 8px; border-radius: 999px; background: #ffffff1a; color: #ffffffb3; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Links with a glass highlight gliding to the one under the pointer. */
+.footer-links { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
+.footer-links-pill {
+  position: absolute; inset-inline: 0; top: 0; height: var(--pill-h, 0px); border-radius: 12px; pointer-events: none;
+  background: #ffffff14; box-shadow: 0 0 0 1px #ffffff1f inset;
+  transform: translateY(var(--pill-y, 0px)); opacity: 0;
+  transition: transform .35s cubic-bezier(.23, 1, .32, 1), height .35s cubic-bezier(.23, 1, .32, 1), opacity .3s ease;
+}
+.footer-links-pill.is-visible { opacity: 1; }
+.footer-links a { position: relative; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; color: #ffffffcc; font-size: 14px; transition: color .3s ease; }
+.footer-links a:hover, .footer-links a:focus-visible { color: #fff; outline: none; }
+.footer-links strong { color: #fff; font-weight: 700; }
+.footer-link-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.footer-link-count { color: #ffffff66; font-size: 11px; font-variant-numeric: tabular-nums; }
+.footer-link-arrow { flex: none; color: #ffffff4d; transition: color .3s ease; }
+.footer-links a:hover .footer-link-arrow, .footer-links a:focus-visible .footer-link-arrow { color: #7fd6ff; }
+html[dir="rtl"] .footer-link-arrow { scale: -1 1; }
+
+/* Brand names on glass tiles that turn white and take the brand's colour on hover. */
+.footer-brands { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; padding: 4px; list-style: none; }
+.footer-brands a, .footer-brand-tile {
+  display: grid; place-items: center; min-height: 52px; padding: 6px 10px; border-radius: 14px; text-align: center;
+  background: #ffffff0a; box-shadow: 0 0 0 1px #ffffff1a inset;
+  color: #ffffffbf; font-family: Quicksand, sans-serif; font-size: 13px; font-weight: 700;
+  transition: background-color .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.footer-brands a:hover, .footer-brands a:focus-visible, .footer-brand-tile:hover { background: #fff; color: var(--brand); box-shadow: 0 0 0 1px #fff inset, 0 12px 26px -12px #000a; outline: none; }
+
+/* ---------- Copyright line ---------- */
+.footer-bottom-v2 { margin-top: clamp(40px, 5vw, 56px); border-top: 1px solid #ffffff1a; }
+.footer-bottom-v2 > div { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin: 0 auto; padding: 22px 0; color: #ffffff80; font-size: 12px; }
+.footer-bottom-v2 span { display: inline-flex; align-items: center; gap: 6px; }
+.footer-bottom-v2 a { color: #ffffffb3; transition: color .3s ease; }
+.footer-bottom-v2 a:hover { color: #fff; }
+
+html[dir="rtl"] .footer-panel-title, html[dir="rtl"] .footer-contact-copy small { letter-spacing: 0; }
+
+@media (max-width: 1100px) {
+  .footer-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .footer-panels { grid-template-columns: 1fr; }
+  .footer-bottom-v2 > div { flex-direction: column; align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-footer-v2 *, .site-footer-v2 *::before { animation: none !important; transition: none !important; }
+}
+
+/* Phones: Shop and Help side by side, Brands beneath, so the footer stays short. */
+@media (max-width: 760px) {
+  .footer-panels { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .footer-panels > .footer-panel:nth-child(2) { grid-column: 1 / -1; order: 3; }
+  .footer-panel h2 { padding: 10px 8px 6px; }
+  .footer-panel-title { font-size: 11px; letter-spacing: .12em; }
+  .footer-links a { padding: 7px 8px; font-size: 13px; }
+  .footer-link-count { display: none; }
+  .footer-brands { grid-template-columns: repeat(3, 1fr); }
+  .footer-brands a, .footer-brand-tile { min-height: 44px; font-size: 12px; }
+}
+
+/* ---------- Powered by ---------- */
+.footer-credit { display: inline-flex; align-items: center; gap: 6px; color: #ffffffa6; }
+.footer-credit svg { color: #ffd36e; animation: outlet-twinkle 3s ease-in-out infinite; }
+.footer-credit b {
+  background: linear-gradient(90deg, #8fdcff, #ffffff 45%, #ffb0cf) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 800; letter-spacing: .01em; animation: footer-credit 5s linear infinite;
+}
+@keyframes footer-credit { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .footer-glows::before, .footer-credit * { animation: none !important; transition: none !important; } }

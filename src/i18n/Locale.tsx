@@ -1,3 +1,5 @@
+import { useLocation, useNavigate } from "react-router";
+import { localizeTo } from "../config/locale-url";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Language = "en" | "ar";
@@ -19,7 +21,7 @@ const arabic: Record<string, string> = {
   "Main navigation": "القائمة الرئيسية", "Mobile navigation": "قائمة الهاتف", "Footer navigation": "روابط التذييل",
   "Open navigation": "افتح القائمة", "Skip to content": "انتقل إلى المحتوى", "Chat with us": "تحدث معنا",
   "Chat with Boys & Girlz on WhatsApp": "تحدث مع بويز آند غيرلز عبر واتساب",
-  "A children's shop in Lebanon": "متجر أطفال في لبنان", "Delivery within Lebanon only": "التوصيل داخل لبنان فقط",
+  "A children's shop in Lebanon": "متجر أطفال في لبنان", "Delivery all over Lebanon": "توصيل إلى جميع أنحاء لبنان",
   "Made for little moments": "صُنع للحظات الصغيرة", "The boys' corner": "ركن الأولاد", "The girls' corner": "ركن البنات",
   "The baby nursery": "ركن الرضّع", "The toy shelf": "ركن الألعاب", "Little clothes,": "ملابس صغيرة،",
   "for big smiles.": "لفرحة كبيرة.", "Ready, set,": "استعدّوا،",
@@ -38,7 +40,7 @@ const arabic: Record<string, string> = {
   "All": "الكل", "Baby": "رضّع", "View all": "عرض الكل", "A little more to love": "المزيد من الأشياء الجميلة",
   "Lovely finds. Lighter prices.": "قطع جميلة بأسعار ألطف.",
   "Explore our Like New outlet favorites, carefully chosen for their next little chapter.": "اكتشف قطع الأوتليت شبه الجديدة، المختارة بعناية لقصص صغيرة جديدة.",
-  "Shop the outlet": "تسوّق الأوتليت", "Why shop with us": "لماذا تتسوّق معنا",
+  "Shop the outlet": "تسوّق الأوتليت", "Brands": "العلامات التجارية", "Why shop with us": "لماذا تتسوّق معنا",
   "Soft on little skin": "لطيفة على بشرة الصغار", "Gentle, breathable fabrics": "أقمشة ناعمة تسمح بالتهوية",
   "Made for everyday play": "مناسبة للّعب اليومي", "Comfortable and durable": "مريحة ومتينة",
   "Easy size guide": "دليل مقاسات سهل", "Find the perfect fit": "اختر المقاس المناسب",
@@ -67,7 +69,7 @@ const arabic: Record<string, string> = {
   "Featured": "المميزة", "Newest first": "الأحدث أولاً", "Price: low to high": "السعر: من الأقل إلى الأعلى",
   "Price: high to low": "السعر: من الأعلى إلى الأقل", "Filters": "الفلاتر",
   "No little matches just yet.": "لا توجد نتائج حالياً.", "Try a different size, color, or search.": "جرّب مقاساً أو لوناً أو عبارة بحث أخرى.",
-  "Clear filters": "مسح الفلاتر", "Find your favorites": "ابحث عن مفضّلاتك", "Show": "عرض",
+  "Clear filters": "مسح الفلاتر", "Clear all": "مسح الكل", "Chat with us on WhatsApp": "تحدث معنا عبر واتساب", "Order on WhatsApp": "اطلب عبر واتساب", "Ask on WhatsApp": "اسأل عبر واتساب", "Tell us who you are and where to deliver. We'll write it all into the WhatsApp message.": "أخبرنا باسمك ومكان التوصيل، وسنكتب كل شيء في رسالة واتساب.", "Share my location": "شارك موقعي", "Location added": "تمت إضافة الموقع", "Finding you…": "جارٍ تحديد موقعك…", "We couldn't get your location. Please type your area below.": "تعذّر تحديد موقعك. يرجى كتابة منطقتك أدناه.", "or": "أو", "Type your area and street": "اكتب منطقتك والشارع", "Send on WhatsApp": "أرسل عبر واتساب", "Free delivery over $99": "توصيل مجاني فوق 99$",  "Pay when it arrives": "ادفع عند الاستلام", "Ask us before ordering": "اسألنا قبل الطلب", "Delivery & returns details": "تفاصيل التوصيل والإرجاع", "cm": "سم", "up to 56": "حتى 56", "Approximate child height. Sizes can vary a little by brand.": "الطول التقريبي للطفل. قد تختلف المقاسات قليلاً حسب العلامة التجارية.", "All brands": "كل العلامات التجارية", "The brands we trust.": "العلامات التي نثق بها.", "Choose a brand to see everything we carry from it.": "اختر علامة تجارية لترى كل ما نوفّره منها.", "View products": "عرض المنتجات", "Show less": "عرض أقل", "Powered by": "بدعم من", "We're here to help": "نحن هنا لمساعدتك", "Not sure which size is right for them?": "لست متأكداً من المقاس المناسب لطفلك؟", "Send us a message. We'll reply with honest advice on sizes, availability and prices.": "راسلنا وسنرد عليك بنصيحة صادقة حول المقاسات والتوفّر والأسعار.", "Hello Boys & Girlz! I need help choosing a size.": "مرحباً بويز آند غيرلز! أحتاج مساعدة في اختيار المقاس.", "Close": "إغلاق", "Follow us": "تابعنا", "Delivery": "التوصيل", "Payment": "الدفع", "Returns": "الإرجاع", "Sizes": "المقاسات", "Still have a question?": "لديك سؤال آخر؟", "Search the questions": "ابحث في الأسئلة", "Find your favorites": "ابحث عن مفضّلاتك", "Show": "عرض",
   "favorites": "منتجات", "favorite": "منتج", "Kept close to your heart": "احتفظ بما تحب",
   "Your little wishlist.": "قائمة المفضّلة.", "Some things are too lovely to forget.": "بعض الأشياء جميلة لدرجة يصعب نسيانها.",
   "A little room for love.": "مكان للمفضّلات.", "Tap a heart on anything you love. We’ll keep it here.": "اضغط على القلب لأي منتج يعجبك وسنحتفظ به هنا.",
@@ -105,10 +107,10 @@ const arabic: Record<string, string> = {
   "Your next favorite is waiting.": "منتجك المفضّل التالي بانتظارك.", "Let’s explore": "هيا نتسوّق",
   "A few lovely little things": "قطع صغيرة جميلة", "Your shopping bag.": "سلّة التسوّق.",
   "Your order qualifies for FREE delivery all over Lebanon.": "طلبك مؤهّل للتوصيل المجاني في جميع أنحاء لبنان.",
-  "FREE delivery within Lebanon on orders over $99.": "توصيل مجاني داخل لبنان للطلبات التي تتجاوز 99$.",
+  "FREE delivery all over Lebanon on orders over $99.": "توصيل مجاني إلى جميع أنحاء لبنان للطلبات التي تتجاوز 99$.",
   "Keep exploring": "واصل التصفّح", "Good things are on their way.": "أشياء جميلة بانتظارك.",
   "Start with one little favorite.": "ابدأ بمنتج يعجبك.", "Shop the collection": "تسوّق المجموعة",
-  "Delivery within Lebanon": "التوصيل داخل لبنان", "Checkout": "إتمام الطلب",
+   "Checkout": "إتمام الطلب",
   "Cash on Delivery. Your total and item availability are verified when you place the order.": "الدفع نقداً عند الاستلام. نؤكد المجموع وتوفّر المنتجات عند تقديم الطلب.",
   "Delivery details": "بيانات التوصيل", "Review and order": "مراجعة الطلب وتأكيده",
   "Review your details": "راجع بياناتك", "Where should we deliver?": "إلى أين نوصّل طلبك؟",
@@ -142,7 +144,7 @@ const arabic: Record<string, string> = {
   "Boys & Girlz is a children's clothing shop in Lebanon offering kids clothes, toys, accessories, maternity pieces, and Like New outlet finds for growing families.": "بويز آند غيرلز متجر ملابس أطفال في لبنان يقدّم ملابس الصغار والألعاب والإكسسوارات وملابس الأمومة وقطع الأوتليت شبه الجديدة للعائلات.",
   "What is Boys & Girlz?": "ما هو بويز آند غيرلز؟",
   "We are an online baby shop in Lebanon and a family-friendly retail destination where comfort, practical value, and cheerful design come first.": "نحن متجر إلكتروني للأطفال في لبنان، نختار المنتجات المريحة والعملية والجميلة للعائلة.",
-  "Where do you ship?": "إلى أين توصلون؟", "We ship within Lebanon only. Every order is prepared locally with care.": "نوصّل داخل لبنان فقط. نجهّز كل طلب بعناية.",
+  "Where do you ship?": "إلى أين توصلون؟", "We deliver all over Lebanon. Every order is prepared locally with care.": "نوصّل إلى جميع أنحاء لبنان. نجهّز كل طلب بعناية.",
   "Meet your next favorite": "اكتشف منتجك المفضّل", "Happy babies in soft blue and pink outfits": "أطفال سعداء بملابس زرقاء ووردية ناعمة",
   "Thoughtful details for the everyday.": "تفاصيل مدروسة لكل يوم.",
   "Comfort comes first": "الراحة أولاً", "Softness for their little adventures.": "نعومة لمغامراتهم الصغيرة.",
@@ -155,8 +157,8 @@ const arabic: Record<string, string> = {
   "Your name": "اسمك", "Email address": "البريد الإلكتروني", "Your little note": "رسالتك",
   "Sending…": "جارٍ الإرسال…", "Send message": "إرسال الرسالة",
   "Here for the little things": "نحن هنا لمساعدتك", "A little more help": "هل تحتاج للمزيد من المساعدة؟",
-  "Boys & Girlz delivers within Lebanon only.": "توصّل بويز آند غيرلز داخل لبنان فقط.",
-  "Shipping within Lebanon": "التوصيل داخل لبنان", "Delivery is available within Lebanon only. It is free on orders over $99, before promo discounts.": "التوصيل متاح داخل لبنان فقط، وهو مجاني للطلبات التي تتجاوز 99$ قبل الخصومات.",
+  "Boys & Girlz delivers all over Lebanon.": "توصّل بويز آند غيرلز إلى جميع أنحاء لبنان.",
+   "We deliver all over Lebanon. Delivery is free on orders over $99, before promo discounts.": "نوصّل إلى جميع أنحاء لبنان، والتوصيل مجاني للطلبات التي تتجاوز 99$ قبل الخصومات.",
   "Delivery timing": "موعد التوصيل", "Please contact the shop for the current delivery estimate.": "تواصل مع المتجر لمعرفة موعد التوصيل المتوقع.",
   "Your order": "طلبك", "Cash on Delivery is available. Delivery charges and order availability are confirmed at checkout.": "الدفع نقداً عند الاستلام متاح. نؤكد رسوم التوصيل وتوفّر المنتجات عند إتمام الطلب.",
   "Returns and exchanges": "الإرجاع والاستبدال", "Please review the current returns policy before ordering.": "يُرجى مراجعة سياسة الإرجاع الحالية قبل الطلب.",
@@ -167,8 +169,8 @@ const arabic: Record<string, string> = {
   "A little note": "ملاحظة صغيرة", "Measurements depend on the item. Contact us if a product does not yet list the details you need.": "تختلف القياسات حسب المنتج. تواصل معنا إذا لم تجد التفاصيل التي تحتاجها.",
   "Here to help": "هنا للمساعدة", "Frequently asked questions": "الأسئلة الشائعة",
   "Where does Boys & Girlz deliver?": "إلى أين توصل بويز آند غيرلز؟",
-  "We deliver within Lebanon only. Delivery is free on orders over $99.": "نوصّل داخل لبنان فقط. التوصيل مجاني للطلبات التي تتجاوز 99$.",
-  "Can I pay on delivery?": "هل يمكنني الدفع عند الاستلام؟", "Cash on Delivery is available for orders within Lebanon.": "نعم، الدفع نقداً عند الاستلام متاح للطلبات داخل لبنان.",
+  "We deliver all over Lebanon. Delivery is free on orders over $99.": "نوصّل إلى جميع أنحاء لبنان. التوصيل مجاني للطلبات التي تتجاوز 99$.",
+  "Can I pay on delivery?": "هل يمكنني الدفع عند الاستلام؟", "Cash on Delivery is available all over Lebanon.": "نعم، الدفع نقداً عند الاستلام متاح في جميع أنحاء لبنان.",
   "What is the returns policy?": "ما هي سياسة الإرجاع؟",
   "Our returns policy is being confirmed. Please contact the shop before ordering if you need return or exchange details.": "سياسة الإرجاع قيد التأكيد. يرجى التواصل مع المتجر قبل الطلب لمعرفة تفاصيل الإرجاع أو الاستبدال.",
   "How do I choose a size?": "كيف أختار المقاس؟",
@@ -194,6 +196,17 @@ const arabic: Record<string, string> = {
   "Please wait before trying again.": "يرجى الانتظار قليلاً قبل المحاولة مجدداً.",
   "Contact form is not available yet. Please use Instagram for now.": "نموذج التواصل غير متاح حالياً. يرجى التواصل عبر إنستغرام.",
   "Please check your name, email and message.": "يرجى التحقق من الاسم والبريد الإلكتروني والرسالة.",
+  "Our online collections": "مجموعاتنا عبر الإنترنت",
+  "Browse our online collections, then contact Boys & Girlz on WhatsApp for current product photos, measurements and availability.": "تصفّح مجموعاتنا عبر الإنترنت، ثم تواصل مع بويز آند غيرلز عبر واتساب للحصول على صور المنتجات الحالية وقياساتها والتأكّد من توفّرها.",
+  "Delivery and contact": "التوصيل والتواصل",
+  "Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders over $99.": "التوصيل داخل لبنان فقط. الدفع نقداً عند الاستلام متاح، والتوصيل مجاني للطلبات التي تتجاوز 99$.",
+  "WhatsApp": "واتساب",
+  "Cash on Delivery is available. Contact the shop to confirm availability, delivery charges and the final total for a WhatsApp order request.": "الدفع نقداً عند الاستلام متاح. تواصل مع المتجر لتأكيد توفّر المنتجات ورسوم التوصيل والمجموع النهائي عند طلب الشراء عبر واتساب.",
+  "Boys & Girlz delivers within Lebanon only, with free delivery on orders over $99 before promo discounts. For the current delivery estimate or charges on a smaller order, contact the shop before ordering; availability, delivery charges and the final total are confirmed with the shop.": "توصّل بويز آند غيرلز داخل لبنان فقط، والتوصيل مجاني للطلبات التي تتجاوز 99$ قبل الخصومات الترويجية. لمعرفة موعد التوصيل المتوقع حالياً أو رسوم الطلبات الأصغر، تواصل مع المتجر قبل الطلب؛ إذ يؤكّد المتجر توفّر المنتجات ورسوم التوصيل والمجموع النهائي.",
+  "Yes, Cash on Delivery is available for Boys & Girlz orders within Lebanon. If you request an order through WhatsApp, the shop confirms product availability, the delivery charge and the final total before the order is placed, so check those details in the conversation.": "نعم، الدفع نقداً عند الاستلام متاح لطلبات بويز آند غيرلز داخل لبنان. إذا طلبت الشراء عبر واتساب، يؤكّد المتجر توفّر المنتجات ورسوم التوصيل والمجموع النهائي قبل تثبيت الطلب، لذا راجع هذه التفاصيل في المحادثة.",
+  "The Boys & Girlz returns and exchanges policy has not been confirmed for publication yet. Contact the shop before ordering to ask about eligibility, time limits and any conditions for the items you want; the website does not currently publish a confirmed return window.": "لم تُؤكَّد سياسة الإرجاع والاستبدال لدى بويز آند غيرلز للنشر بعد. تواصل مع المتجر قبل الطلب للاستفسار عن أهلية الإرجاع والمهلة وأي شروط تتعلّق بالمنتجات التي تريدها؛ فالموقع لا ينشر حالياً مهلة مؤكّدة للإرجاع.",
+  "Check the available sizes for each item and ask Boys & Girlz for garment measurements before ordering. The children's size filters run from New Born to 5–6 Years, while maternity filters use S to XXL; availability and fit depend on the individual product and brand.": "راجع المقاسات المتاحة لكل منتج واطلب قياسات القطعة من بويز آند غيرلز قبل الطلب. تشمل خيارات تصفية مقاسات الأطفال حديث الولادة حتى 5–6 سنوات، بينما تشمل مقاسات الأمومة S إلى XXL؛ ويعتمد التوفّر والملاءمة على المنتج والعلامة التجارية.",
+  "Like New outlet items are pre-owned pieces in excellent condition offered at reduced prices by Boys & Girlz. Before ordering, ask the shop for current photos, condition details and availability for the particular item, along with any measurements you need to check its fit.": "منتجات الأوتليت شبه الجديدة هي قطع مستعملة بحالة ممتازة تقدّمها بويز آند غيرلز بأسعار مخفّضة. قبل الطلب، اطلب من المتجر صوراً حالية وتفاصيل عن حالة القطعة المطلوبة وتوفّرها، بالإضافة إلى أي قياسات تحتاجها للتحقّق من ملاءمتها.",
 };
 
 const productNames: Record<string, string> = {
@@ -217,6 +230,7 @@ const productNames: Record<string, string> = {
 
 export function translate(text: string, language: Language) {
   if (language === "en") return text;
+  if (arabic[text]) return arabic[text];
   if (text.startsWith("Shop ")) return `تسوّق ${arabic[text.slice(5)] || text.slice(5)}`;
   if (text.startsWith("Help: ")) return `المساعدة: ${arabic[text.slice(6)] || text.slice(6)}`;
   return arabic[text] || productNames[text] || text;
@@ -226,14 +240,16 @@ const LocaleContext = createContext<{ language: Language; setLanguage: (language
 
 export function LocaleProvider({ initialLanguage, children }: { initialLanguage: Language; children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(initialLanguage);
+  const location = useLocation();
+  const navigate = useNavigate();
   const setLanguage = (next: Language) => {
     setLanguageState(next);
     document.cookie = `bg-language=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    void navigate(localizeTo(`${location.pathname}${location.search}${location.hash}`, next), { preventScrollReset: true });
   };
   useEffect(() => {
-    // Static prerendered pages cannot read cookies on the server; restore the choice after hydration.
-    const saved: Language = /(?:^|;\s*)bg-language=ar(?:;|$)/.test(document.cookie) ? "ar" : "en";
-    if (saved !== initialLanguage) setLanguageState(saved);
+    // URL-specific HTML is identical for visitors and crawlers, independent of saved cookies.
+    setLanguageState(initialLanguage);
   }, [initialLanguage]);
   useEffect(() => {
     document.documentElement.lang = language;

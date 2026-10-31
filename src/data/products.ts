@@ -19,11 +19,15 @@ export interface Product {
   condition: "new" | "like-new";
   productType: string;
   image: number;
+  imageUrl?: string | null;
+  available?: boolean;
   sizes: string[];
   colors: string[];
   model: ModelKind;
   isNew: boolean;
   description: string;
+  // The product's brand, from the approved list in brands.ts; not yet assigned for any product.
+  brand?: string;
 }
 export const categories: Category[] = [
   "Boys",
@@ -55,6 +59,12 @@ export const sizeOptions = [
   "4–5 Years",
   "5–6 Years",
 ] as const;
+// Approximate child height for each size, in cm (standard height-based sizing; brands vary a little).
+export const sizeHeights: Record<string, string> = {
+  "New Born": "up to 56", "0–3 Months": "56–62", "3–6 Months": "62–68", "6–9 Months": "68–74",
+  "9–12 Months": "74–80", "12–18 Months": "80–86", "18–24 Months": "86–92", "2–3 Years": "92–98",
+  "3–4 Years": "98–104", "4–5 Years": "104–110", "5–6 Years": "110–116",
+};
 const baby = [...sizeOptions];
 const maternitySizes = ["S", "M", "L", "XL", "XXL"];
 const rows: [string, number, Category, number, ModelKind, string[], number?][] =
@@ -188,3 +198,9 @@ export const money = (n: number) =>
     n,
   );
 export const productById = (id: string) => products.find((p) => p.id === id);
+export const matchesCategory = (product: Product, category: Category) =>
+  category === "Sale" ? product.condition === "new" && Boolean(product.originalPrice)
+    : category === "Outlet" ? product.condition === "like-new"
+      : category === "Boys" || category === "Girls" || category === "Unisex"
+        ? product.gender === category
+        : product.category === category;

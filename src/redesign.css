@@ -111,7 +111,7 @@ body { background: #f8f6f3; color: #101832; }
 .home-shape { position: absolute; display: block; width: 57%; height: 82%; top: 8%; border-radius: 55% 45% 40% 60% / 45% 50% 50% 55%; }
 .home-shape-blue { left: 0; background: #dff1fc; transform: rotate(-14deg); }
 .home-shape-pink { right: -4%; top: 15%; background: #ffe4ea; transform: rotate(12deg); }
-.home-mascot { display: block; flex: none; background-image: url('/assets/brand-characters.png'); background-repeat: no-repeat; background-size: 370% auto; }
+.home-mascot { display: block; flex: none; background-image: url('/assets/brand-characters.webp'); background-repeat: no-repeat; background-size: 370% auto; }
 .home-mascot-boy { background-position: 22% 52%; }
 .home-mascot-girl { background-position: 74% 52%; }
 .home-hero-art .home-mascot { position: absolute; z-index: 2; bottom: 0; width: clamp(155px, 15.4vw, 214px); height: clamp(225px, 21vw, 300px); }
