@@ -19,7 +19,8 @@ import {
   ToyBrick,
 } from "lucide-react";
 import { useStore } from "../state/Store";
-import { categories, matchesCategory, products, money, type Category } from "../data/products";
+import { categories, matchesCategory, money, type Category } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "./ProductCard";
 import { useLocale } from "../i18n/Locale";
 export function Logo() {
@@ -101,9 +102,10 @@ const shopMenu: { category: Category; Icon: typeof Shirt; tint: string }[] = [
   { category: "Outlet", Icon: Recycle, tint: "#0898d6" },
   { category: "Sale", Icon: Percent, tint: "#fc538e" },
 ];
-const menuCounts = Object.fromEntries(categories.map((c) => [c, products.filter((p) => matchesCategory(p, c)).length]));
 
 export function Header() {
+  const { products } = useCatalog();
+  const menuCounts = Object.fromEntries(categories.map((c) => [c, products.filter((p) => matchesCategory(p, c)).length]));
   const { language, setLanguage, t } = useLocale();
   const { count, wishlist, setCartOpen } = useStore();
   const [searchOpen, setSearchOpen] = useState(false);

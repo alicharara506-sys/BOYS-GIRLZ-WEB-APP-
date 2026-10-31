@@ -13,6 +13,6 @@ export default function ProductGallery({ product, color }: { product: Product; c
         <ProductImage product={product} priority />
       </div>
     </div>
-    <p className="small-muted">{t("Verified product photography is being prepared. Please contact the shop for current photos before ordering.")}</p>
+    {!product.imageUrl && <p className="small-muted">{t("Verified product photography is being prepared. Please contact the shop for current photos before ordering.")}</p>}
   </div>;
 }

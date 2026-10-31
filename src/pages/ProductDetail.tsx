@@ -19,11 +19,10 @@ import {
 import {
   colorHex,
   money,
-  productById,
   sizeHeights,
-  products,
   type Product,
 } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import { useStore } from "../state/Store";
 import ProductCard, { WishButton } from "../components/ProductCard";
 import ProductGallery from "../components/ProductGallery";
@@ -44,6 +43,7 @@ import { NotFound } from "./Shop";
 import WhatsAppLink from "../components/WhatsAppLink";
 import { useLocale } from "../i18n/Locale";
 export default function ProductDetail() {
+  const { productById } = useCatalog();
   const { id } = useParams();
   const product = productById(id || "");
   return product ? (
@@ -53,6 +53,7 @@ export default function ProductDetail() {
   );
 }
 function ProductContent({ product: p }: { product: Product }) {
+  const { products } = useCatalog();
   const { language, t } = useLocale();
   const [size, setSize] = useState(p.sizes[0] || "");
   const [color, setColor] = useState(p.colors[0]);
@@ -65,7 +66,10 @@ function ProductContent({ product: p }: { product: Product }) {
   const [showBar, setShowBar] = useState(false);
   const purchaseRef = useRef<HTMLDivElement>(null);
   const relatedRef = useRef<HTMLElement>(null);
-  const soldOut = p.productType === "shoes" && p.sizes.length === 0;
+  const soldOut = p.available === false || (p.productType === "shoes" && p.sizes.length === 0);
+  const unavailableLabel = p.available === false
+    ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
+    : t("Sizes coming soon");
   // Adds to the bag and briefly shows a drawn check on the button.
   const addToBag = (target: HTMLElement) => {
     add(p, size, color, quantity, target);
@@ -170,7 +174,7 @@ function ProductContent({ product: p }: { product: Product }) {
             >
               <span className="bh-cta-spot" aria-hidden="true" />
               <span className="bh-cta-shine" aria-hidden="true" />
-              <span className="bh-cta-label">{soldOut ? t("Sizes coming soon") : <>{t("Add to bag")} — <CountingMoney value={p.price * quantity} /></>}</span>
+              <span className="bh-cta-label">{soldOut ? unavailableLabel : <>{t("Add to bag")} — <CountingMoney value={p.price * quantity} /></>}</span>
               <span className="bh-cta-arrow" aria-hidden="true">{added ? <svg className="add-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" /></svg> : <Plus size={17} />}</span>
             </button>
             <div className="detail-wish">
@@ -242,7 +246,7 @@ function ProductContent({ product: p }: { product: Product }) {
           <span className="buy-bar-price">{money(p.price * quantity)}</span>
           <button className={`bh-cta buy-bar-add ${added ? "is-added" : ""}`} disabled={soldOut} tabIndex={showBar ? 0 : -1} onClick={(e) => addToBag(e.currentTarget)}>
             <span className="bh-cta-shine" aria-hidden="true" />
-            <span className="bh-cta-label">{soldOut ? t("Sizes coming soon") : t("Add to bag")}</span>
+            <span className="bh-cta-label">{soldOut ? unavailableLabel : t("Add to bag")}</span>
             <span className="bh-cta-arrow" aria-hidden="true">{added ? <Check size={16} /> : <ShoppingBag size={16} />}</span>
           </button>
         </div>

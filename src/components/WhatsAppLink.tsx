@@ -6,6 +6,7 @@ import { business } from "../config/business";
 import type { CartItem } from "../state/storeCore";
 import { whatsAppOrderMessage } from "../utils/whatsappOrder";
 import { useLocale } from "../i18n/Locale";
+import { useCatalog } from "../state/Catalog";
 
 export function whatsAppUrl(message: string) {
   const phone = business.whatsappPhone.replace(/\D/g, "");
@@ -41,6 +42,7 @@ export function FloatingWhatsApp() {
 // (their location shared from the phone as a map link, or their area typed in), then opens
 // WhatsApp to the shop with the bag, the name and the location written out, ready to send.
 export function WhatsAppOrderOption({ cart, onClick }: { cart: CartItem[]; onClick?: () => void }) {
+  const { productById } = useCatalog();
   const { language, t } = useLocale();
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ export function WhatsAppOrderOption({ cart, onClick }: { cart: CartItem[]; onCli
   const [area, setArea] = useState("");
   const [spot, setSpot] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState<"" | "busy" | "denied">("");
-  const base = whatsAppOrderMessage(cart, language, t);
+  const base = whatsAppOrderMessage(cart, language, t, productById);
   if (!base || !whatsAppUrl(base)) return null;
 
   const locate = () => {

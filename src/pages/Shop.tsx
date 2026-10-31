@@ -18,10 +18,10 @@ import {
   categories,
   colorHex,
   money,
-  products,
   matchesCategory,
   type Category,
 } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import ProductCard, { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import CategoryScene from "../components/CategoryScene";
@@ -33,7 +33,6 @@ import { useReducedMotion } from "../hooks/useExperience";
 import { useCountUp } from "../hooks/useCountUp";
 
 gsap.registerPlugin(ScrollTrigger);
-const priceCeiling = Math.ceil(Math.max(...products.map((product) => product.price)) / 5) * 5;
 function GenderIcon({ kind }: { kind: "boys" | "girls" }) {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="10" cy="10" r="5" />
@@ -105,6 +104,8 @@ function SortMenu({ value, onChange }: { value: string; onChange: (value: string
 }
 
 export default function Shop() {
+  const { products } = useCatalog();
+  const priceCeiling = Math.max(15, Math.ceil(Math.max(0, ...products.map((product) => product.price)) / 5) * 5);
   const { language, t } = useLocale();
   const { pathname } = useLocation();
   const category = pathname.match(/^\/category\/([^/]+)/)?.[1];
@@ -167,7 +168,7 @@ export default function Shop() {
   const chipParams = new URLSearchParams(params);
   chipParams.delete("category");
   const chipSearch = chipParams.toString() ? `?${chipParams}` : "";
-  const priceFill = ((max - 10) / (priceCeiling - 10)) * 100;
+  const priceFill = Math.max(0, Math.min(100, ((max - 10) / (priceCeiling - 10)) * 100));
   const filters = (
     <div className="filter-content">
       <div className="filter-title">
@@ -421,6 +422,7 @@ export default function Shop() {
 // The wishlist: a springing title over drifting light, the saved pieces rising in one after
 // another, and an empty state with the mascots and floating hearts.
 export function Wishlist() {
+  const { products } = useCatalog();
   const { language, t } = useLocale();
   const { wishlist } = useStore();
   const reduceMotion = useReducedMotion();
@@ -485,7 +487,8 @@ export function Wishlist() {
   );
 }
 function ProductImageThumb({ id }: { id: string }) {
-  const product = products.find((p) => p.id === id);
+  const { productById } = useCatalog();
+  const product = productById(id);
   return product ? <ProductImage product={product} /> : null;
 }
 export function NotFound() {

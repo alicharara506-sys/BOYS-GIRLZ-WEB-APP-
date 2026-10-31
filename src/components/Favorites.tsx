@@ -3,14 +3,13 @@ import { Link } from "./LocalizedLink";
 import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { products } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import ProductCard from "./ProductCard";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useLocale } from "../i18n/Locale";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const featured = products.slice(0, 4);
 const filters = ["All", "Boys", "Girls", "Baby"] as const;
 // Boys take the blue, girls the pink, and baby (unisex) pieces both.
 const tones: Record<string, string> = { All: "all", Boys: "boys", Girls: "girls", Baby: "unisex" };
@@ -19,6 +18,8 @@ type Filter = (typeof filters)[number];
 // The homepage's featured products. The filters are one pill bar with a highlight that slides
 // to the chosen one; switching lets the cards bow out and the new set rise in, one after another.
 export default function Favorites() {
+  const { products } = useCatalog();
+  const featured = products.slice(0, 4);
   const { t, language } = useLocale();
   const reduceMotion = useReducedMotion();
   const [filter, setFilter] = useState<Filter>("All");

@@ -1,5 +1,6 @@
 import type { MetaDescriptor } from "react-router";
 import { business } from "./business";
+import type { Product } from "../data/products";
 import { breadcrumbStructuredData, canonicalUrl, getPageSeo, pageStructuredData, type SeoLanguage } from "./seo";
 
 export function languageFromMatches(matches: readonly ({ id: string; data?: unknown } | undefined)[]): SeoLanguage {
@@ -46,5 +47,27 @@ export function buildPageMeta(path: string, language: SeoLanguage = "en"): MetaD
     { name: "twitter:image:alt", content: "Boys & Girlz children's shop logo" },
     ...(breadcrumbs ? [{ "script:ld+json": breadcrumbs }] : []),
     ...(schema ? [{ "script:ld+json": schema }] : []),
+  ];
+}
+
+export function managedProductMeta(product: Pick<Product, "id" | "name" | "description" | "category">, language: SeoLanguage = "en"): MetaDescriptor[] {
+  const path = `/product/${product.id}`;
+  const title = `${product.name.slice(0, 44)} | Boys & Girlz`;
+  const description = (product.description || `${product.name} from Boys & Girlz.`).slice(0, 155);
+  const canonical = canonicalUrl(path, language, business.siteUrl);
+  const breadcrumbs = breadcrumbStructuredData({ ...getPageSeo(path, language), breadcrumbs: [
+    { path: "/", name: language === "ar" ? "الرئيسية" : "Home" },
+    { path: `/category/${product.category.toLowerCase()}`, name: product.category },
+    { path, name: product.name },
+  ] }, language, business.siteUrl);
+  return [
+    { title }, { name: "description", content: description },
+    { name: "robots", content: "noindex, follow" },
+    { tagName: "link", rel: "canonical", href: canonical },
+    ...(["en", "ar", "x-default"] as const).map(locale => ({ tagName: "link" as const, rel: "alternate", hrefLang: locale, href: canonicalUrl(path, locale === "ar" ? "ar" : "en", business.siteUrl) })),
+    { property: "og:title", content: title }, { property: "og:description", content: description },
+    { property: "og:url", content: canonical }, { property: "og:image", content: `${business.siteUrl}/assets/boys-girlz-logo.jpg` },
+    { name: "twitter:card", content: "summary_large_image" },
+    ...(breadcrumbs ? [{ "script:ld+json": breadcrumbs }] : []),
   ];
 }

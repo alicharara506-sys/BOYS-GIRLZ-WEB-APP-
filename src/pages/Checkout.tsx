@@ -3,7 +3,8 @@ import { Link } from "../components/LocalizedLink";
 import { useFetcher } from "react-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, LoaderCircle, Package, ShoppingBag, Truck } from "lucide-react";
 import { useStore } from "../state/Store";
-import { money, productById } from "../data/products";
+import { money } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "../components/ProductCard";
 import { itemKey } from "../state/storeCore";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
@@ -39,6 +40,7 @@ const fields: { key: keyof Shipping; label: string; required?: boolean; type?: s
   { key: "promoCode", label: "Promo code (optional)" },
 ];
 export default function Checkout() {
+  const { productById } = useCatalog();
   const { language, t } = useLocale();
   const { cart, totals, dispatch } = useStore();
   const fetcher = useFetcher<OrderReply>();

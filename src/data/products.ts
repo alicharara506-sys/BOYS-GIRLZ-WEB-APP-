@@ -19,6 +19,8 @@ export interface Product {
   condition: "new" | "like-new";
   productType: string;
   image: number;
+  imageUrl?: string | null;
+  available?: boolean;
   sizes: string[];
   colors: string[];
   model: ModelKind;

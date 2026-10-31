@@ -10,12 +10,26 @@ export function ProductImage({
   style,
   priority = false,
 }: {
-  product: Pick<Product, "image" | "name" | "model">;
+  product: Pick<Product, "image" | "name" | "model" | "imageUrl">;
   className?: string;
   style?: CSSProperties;
   priority?: boolean;
 }) {
   const { t } = useLocale();
+  const imageUrl = product.imageUrl && (/^\/(?:media|assets)\/[a-zA-Z0-9_./-]+$/.test(product.imageUrl) || /^https:\/\//i.test(product.imageUrl))
+    ? product.imageUrl
+    : "";
+  if (imageUrl) return <img
+    src={imageUrl}
+    alt={t(product.name)}
+    width="800"
+    height="800"
+    loading={priority ? "eager" : "lazy"}
+    fetchPriority={priority ? "high" : "auto"}
+    decoding="async"
+    className={`product-photo ${className}`}
+    style={style}
+  />;
   if (product.model === "duck")
     return (
       <div
@@ -96,6 +110,10 @@ export default function ProductCard({ product, showRange = false }: { product: P
   const [size, setSize] = useState(product.sizes[0] || "");
   const [color, setColor] = useState(product.colors[0]);
   const { add } = useStore();
+  const unavailable = product.available === false || (product.productType === "shoes" && product.sizes.length === 0);
+  const unavailableLabel = product.available === false
+    ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
+    : t("Sizes coming soon");
   return (
     <article className={`product-card pc ${quickOpen ? "pc-open" : ""}`} style={{ "--pc-glow": colorHex[color] || "#f3c6d6" } as CSSProperties}>
       <div className="pc-tilt" onPointerMove={follow} onPointerLeave={settle}>
@@ -132,10 +150,10 @@ export default function ProductCard({ product, showRange = false }: { product: P
                     className={color === option ? "active" : ""} style={{ "--swatch": colorHex[option] } as CSSProperties} onClick={() => setColor(option)} />)}
                 </div>
               </div>}
-              <button type="button" className="pc-add" disabled={product.productType === "shoes" && product.sizes.length === 0} onClick={(event) => {
+              <button type="button" className="pc-add" disabled={unavailable} onClick={(event) => {
                 add(product, size, color, 1, event.currentTarget);
                 setQuickOpen(false);
-              }}>{t(product.productType === "shoes" && product.sizes.length === 0 ? "Sizes coming soon" : "Add to bag")} <Plus size={15} /></button>
+              }}>{unavailable ? unavailableLabel : t("Add to bag")} <Plus size={15} /></button>
             </div>}
             <button className="pc-quick-button" type="button" aria-expanded={quickOpen} onClick={() => setQuickOpen((open) => !open)}>
               {t(quickOpen ? "Close options" : "Quick add")} <Plus size={15} aria-hidden="true" />

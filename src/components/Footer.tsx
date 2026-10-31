@@ -4,14 +4,14 @@ import { ArrowRight, HelpCircle, LayoutGrid, Sparkles, Tag, Truck } from "lucide
 import { whatsAppUrl } from "./WhatsAppLink";
 import { socials, WhatsAppIcon } from "./SocialIcons";
 import { approvedBrands } from "../data/brands";
-import { categories, matchesCategory, products } from "../data/products";
+import { categories, matchesCategory } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import { useLocale } from "../i18n/Locale";
 import { brandColors } from "./BrandRibbon";
 import Newsletter from "./Newsletter";
 import { business } from "../config/business";
 
 const FOOTER_BRANDS = 6;
-const categoryCounts = Object.fromEntries(categories.map((category) => [category, products.filter((product) => matchesCategory(product, category)).length]));
 
 // A list of footer links with a glass highlight that glides to whichever link is under the
 // pointer or has keyboard focus.
@@ -75,6 +75,8 @@ function ContactRow({ icon, label, children, href }: { icon: ReactNode; label: s
 // way to reach the shop on one side, its categories, brands and help pages on the other, then
 // the copyright line.
 export default function Footer() {
+  const { products } = useCatalog();
+  const categoryCounts = Object.fromEntries(categories.map((category) => [category, products.filter((product) => matchesCategory(product, category)).length]));
   const { t, language } = useLocale();
   const whatsapp = whatsAppUrl(language === "ar" ? "مرحباً بويز آند غيرلز! لدي سؤال عن المتجر." : "Hello Boys & Girlz! I have a question about your shop.");
   return <footer className="site-footer-v2">

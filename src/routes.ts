@@ -1,6 +1,8 @@
 import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
 
 export default [
+  route("admin/*", "routes/admin.tsx"),
+  route("media/:filename", "routes/media.tsx"),
   index("routes/home.tsx"),
   // The shop and every category are one page: the layout keeps it on screen while the category changes.
   layout("routes/shop-layout.tsx", [

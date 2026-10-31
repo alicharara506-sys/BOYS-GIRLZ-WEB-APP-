@@ -3,6 +3,9 @@ import { globalStructuredData } from "./config/seo";
 import { buildPageMeta } from "./config/meta";
 import Analytics from "./components/Analytics";
 import { Link } from "./components/LocalizedLink";
+import { CatalogProvider } from "./state/Catalog";
+import { products as previewProducts } from "./data/products";
+import { getStorefrontCatalog } from "./server/admin-data.server";
 import { StoreProvider, useStore } from "./state/Store";
 import { Header } from "./components/Layout";
 import Footer from "./components/Footer";
@@ -56,7 +59,9 @@ export function loader({ request }: LoaderFunctionArgs) {
   }
   if (next.href !== url.href && request.method === "GET") throw redirect(next.href, 308);
   const language: Language = url.searchParams.get("lang") === "ar" ? "ar" : "en";
-  return { language };
+  const isLocal = ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
+  const managed = isLocal ? getStorefrontCatalog() : { enabled: false, products: [] };
+  return { language, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled };
 }
 
 // Language variants have stable URLs; filter changes do not reload root data.
@@ -92,12 +97,17 @@ function Shell() {
   const { notice } = useStore();
   const { t } = useLocale();
   const { pathname } = useLocation();
+  const root = useRouteLoaderData<typeof loader>("root");
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return <Outlet />;
   return (
     <>
       <a className="skip-link" href="#main">{t("Skip to content")}</a>
       <Header />
       <RouteEffects />
-      <main id="main"><Outlet /></main>
+      <main id="main">
+        {root?.managedCatalog && <p className="local-store-notice">{t("Local store preview")} · {t("Orders are saved on this computer. No payment is taken.")}</p>}
+        <Outlet />
+      </main>
       <Footer />
       <CartDrawer />
       {!["/cart", "/checkout"].includes(pathname) && <FloatingWhatsApp />}
@@ -108,7 +118,8 @@ function Shell() {
 }
 
 export default function Root() {
-  return <StoreProvider><Shell /></StoreProvider>;
+  const root = useRouteLoaderData<typeof loader>("root");
+  return <CatalogProvider products={root?.catalog || previewProducts}><StoreProvider><Shell /></StoreProvider></CatalogProvider>;
 }
 
 export function ErrorBoundary() {

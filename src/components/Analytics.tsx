@@ -14,6 +14,7 @@ export default function Analytics() {
   const { language } = useLocale();
   const initialized = useRef(false);
   useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
     if (!/^G-[A-Z0-9]+$/.test(measurementId)) return;
     if (!initialized.current) {
       initialized.current = true;

@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { useStore } from "../state/Store";
 import { itemKey, type CartItem } from "../state/storeCore";
-import { money, productById } from "../data/products";
+import { money } from "../data/products";
+import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "../components/ProductCard";
 import { Modal } from "../components/Layout";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
@@ -88,6 +89,7 @@ export function CartLine({
   item: CartItem;
   compact?: boolean;
 }) {
+  const { productById } = useCatalog();
   const { language, t } = useLocale();
   const { dispatch, setCartOpen } = useStore();
   const reduceMotion = useReducedMotion();

@@ -1,9 +1,9 @@
-import { money, productById } from "../data/products.ts";
+import { money, productById, type Product } from "../data/products.ts";
 import type { CartItem } from "../state/storeCore.ts";
 
-export function whatsAppOrderMessage(cart: CartItem[], language: "en" | "ar" = "en", translate: (text: string) => string = (text) => text) {
+export function whatsAppOrderMessage(cart: CartItem[], language: "en" | "ar" = "en", translate: (text: string) => string = (text) => text, lookup: (id: string) => Product | undefined = productById) {
   const items = cart.flatMap((item) => {
-    const product = productById(item.productId);
+    const product = lookup(item.productId);
     if (!product) return [];
     const details = [item.size && translate(item.size), item.color && translate(item.color), product.condition === "like-new" ? language === "ar" ? "شبه جديد" : "Like New" : ""].filter(Boolean).join(language === "ar" ? "، " : ", ");
     return [{
