@@ -7,3 +7,5 @@ export const approvedBrands = [
   "Sweet & Soft", "Rabbit+Bear", "Eddie Bauer", "Wonder Nation",
   "Tahari", "Chickpea", "Burt's Bees", "DuckDuckGoose", "Calvin Klein",
 ] as const;
+
+export const brandSlug = (brand: string) => brand.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

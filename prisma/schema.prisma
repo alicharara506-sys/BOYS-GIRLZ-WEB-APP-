@@ -1,0 +1,507 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  slug           String      @unique
+  name           String
+  description    String      @default("")
+  category       String
+  gender         String      @default("Unisex")
+  brand          String      @default("Boys & Girlz")
+  season         String      @default("All season")
+  imageUrl       String      @default("") @map("image_url")
+  imageIndex     Int         @default(0) @map("image_index")
+  price          Int         @map("price_cents")
+  onlinePrice    Int         @map("online_price_cents")
+  cost           Int         @map("cost_cents")
+  threshold      Int         @default(5)
+  visibility     String      @default("website_and_pos")
+  discountType   String?     @map("discount_type")
+  discountValue  Int         @default(0) @map("discount_value")
+  shopId         String?     @map("shop_id")
+  shop           Shop?       @relation(fields: [shopId], references: [id])
+  categoryId     String?     @map("category_id")
+  categoryRecord Category?   @relation(fields: [categoryId], references: [id])
+  orderLines     OrderLine[]
+  published      Boolean     @default(true)
+  featured       Boolean     @default(false)
+  onlineOnly     Boolean     @default(false) @map("online_only")
+  archived       Boolean     @default(false)
+  demo           Boolean     @default(false)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  variants       Variant[]
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Variant {
+  id            String          @id @default(cuid())
+  productId     String          @map("product_id")
+  product       Product         @relation(fields: [productId], references: [id])
+  size          String
+  color         String
+  sku           String          @unique
+  barcode       String          @unique
+  stock         Int             @default(0)
+  averageCost   Int             @default(0) @map("average_cost_cents")
+  active        Boolean         @default(true)
+  movements     StockMovement[]
+  orderLines    OrderLine[]
+  purchaseLines PurchaseLine[]
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  @@unique([productId, size, color])
+  @@map("product_variants")
+}
+
+model Customer {
+  id              String              @id @default(cuid())
+  name            String
+  phone           String              @unique
+  email           String              @default("")
+  address         String              @default("")
+  tags            String[]            @default([])
+  points          Int                 @default(0)
+  credit          Int                 @default(0) @map("credit_cents")
+  consentWhatsapp Boolean             @default(true) @map("consent_whatsapp")
+  recipients      CampaignRecipient[]
+  demo            Boolean             @default(false)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  children        Child[]
+  orders          Order[]
+  loyalty         LoyaltyEntry[]
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  @@map("customers")
+}
+
+model Child {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  customer   Customer @relation(fields: [customerId], references: [id])
+  name       String
+  birthdate  DateTime
+  gender     String
+  size       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("children")
+}
+
+model Order {
+  paymentMethod String @default("cash") @map("payment_method")
+  shopId String? @map("shop_id")
+  id           String      @id @default(cuid())
+  number       Int         @unique @default(autoincrement())
+  requestKey   String      @unique @map("request_key")
+  channel      String
+  status       String
+  customerId   String?     @map("customer_id")
+  customer     Customer?   @relation(fields: [customerId], references: [id])
+  customerName String      @default("Walk-in customer") @map("customer_name")
+  address      String      @default("")
+  phone        String      @default("")
+  subtotal     Int         @map("subtotal_cents")
+  discount     Int         @map("discount_cents")
+  shipping     Int         @default(0) @map("shipping_cents")
+  tax          Int         @default(0) @map("tax_cents")
+  total        Int         @map("total_cents")
+  cost         Int         @map("cost_cents")
+  pointsEarned Int         @default(0) @map("points_earned")
+  pointsUsed   Int         @default(0) @map("points_used")
+  loyaltyValue Int         @default(0) @map("loyalty_value_cents")
+  promoCode    String      @default("") @map("promo_code")
+  tracking     String      @default("")
+  carrier      String      @default("")
+  note         String      @default("")
+  demo         Boolean     @default(false)
+  createdAt    DateTime    @default(now()) @map("created_at")
+  items        OrderLine[]
+  payments     Payment[]
+  returns      Return[]
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+model OrderLine {
+  id          String       @id @default(cuid())
+  orderId     String       @map("order_id")
+  order       Order        @relation(fields: [orderId], references: [id])
+  variantId   String?      @map("variant_id")
+  productId   String?      @map("product_id")
+  product     Product?     @relation(fields: [productId], references: [id])
+  isQuickSale Boolean      @default(false) @map("is_quick_sale")
+  variant     Variant?     @relation(fields: [variantId], references: [id])
+  name        String
+  sku         String
+  size        String
+  color       String
+  category    String
+  quantity    Int
+  unitPrice   Int          @map("unit_price_cents")
+  discount    Int          @default(0) @map("discount_cents")
+  net         Int          @map("net_cents")
+  unitCost    Int?         @map("unit_cost_cents")
+  returned    Int          @default(0)
+  returnLines ReturnLine[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("order_lines")
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id])
+  method    String
+  amount    Int      @map("amount_cents")
+  reference String   @default("")
+  drawerId  String?  @map("drawer_id")
+  drawer    Drawer?  @relation(fields: [drawerId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
+}
+
+model Return {
+  id         String       @id @default(cuid())
+  requestKey String       @unique @default(cuid()) @map("request_key")
+  orderId    String       @map("order_id")
+  order      Order        @relation(fields: [orderId], references: [id])
+  reason     String
+  amount     Int          @map("amount_cents")
+  method     String
+  createdAt  DateTime     @default(now()) @map("created_at")
+  lines      ReturnLine[]
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  @@map("returns")
+}
+
+model ReturnLine {
+  id        String    @id @default(cuid())
+  returnId  String    @map("return_id")
+  return    Return    @relation(fields: [returnId], references: [id])
+  lineId    String    @map("line_id")
+  line      OrderLine @relation(fields: [lineId], references: [id])
+  quantity  Int
+  amount    Int       @map("amount_cents")
+  restock   Boolean   @default(true)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("return_lines")
+}
+
+model Drawer {
+  id         String      @id @default(cuid())
+  openedAt   DateTime    @default(now()) @map("opened_at")
+  closedAt   DateTime?   @map("closed_at")
+  opening    Int         @map("opening_cents")
+  counted    Int?        @map("counted_cents")
+  expected   Int?        @map("expected_cents")
+  variance   Int?        @map("variance_cents")
+  note       String      @default("")
+  payments   Payment[]
+  cashEvents CashEvent[]
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  @@map("drawers")
+}
+
+model CashEvent {
+  id        String   @id @default(cuid())
+  drawerId  String   @map("drawer_id")
+  drawer    Drawer   @relation(fields: [drawerId], references: [id])
+  amount    Int      @map("amount_cents")
+  reason    String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cash_events")
+}
+
+model ParkedSale {
+  id        String   @id @default(cuid())
+  name      String
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("parked_sales")
+}
+
+model StockMovement {
+  id        String   @id @default(cuid())
+  variantId String   @map("variant_id")
+  variant   Variant  @relation(fields: [variantId], references: [id])
+  quantity  Int
+  reason    String
+  reference String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("stock_movements")
+}
+
+model Supplier {
+  id        String     @id @default(cuid())
+  name      String
+  phone     String     @default("")
+  email     String     @default("")
+  address   String     @default("")
+  purchases Purchase[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@map("suppliers")
+}
+
+model Purchase {
+  id            String            @id @default(cuid())
+  number        Int               @unique @default(autoincrement())
+  supplierId    String            @map("supplier_id")
+  supplier      Supplier          @relation(fields: [supplierId], references: [id])
+  status        String            @default("ordered")
+  invoiceNumber String            @default("") @map("invoice_number")
+  dueDate       DateTime?         @map("due_date")
+  total         Int               @map("total_cents")
+  paid          Int               @default(0) @map("paid_cents")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  receivedAt    DateTime?         @map("received_at")
+  items         PurchaseLine[]
+  payments      SupplierPayment[]
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  @@map("purchases")
+}
+
+model PurchaseLine {
+  id         String   @id @default(cuid())
+  purchaseId String   @map("purchase_id")
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  variantId  String   @map("variant_id")
+  variant    Variant  @relation(fields: [variantId], references: [id])
+  quantity   Int
+  cost       Int      @map("cost_cents")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("purchase_lines")
+}
+
+model SupplierPayment {
+  id         String   @id @default(cuid())
+  purchaseId String   @map("purchase_id")
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  amount     Int      @map("amount_cents")
+  method     String
+  reference  String   @default("")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("supplier_payments")
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  category  String
+  amount    Int      @map("amount_cents")
+  method    String
+  note      String
+  date      DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("expenses")
+}
+
+model Account {
+  code      String        @id
+  name      String
+  type      String
+  entries   JournalLine[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model Journal {
+  id        String        @id @default(cuid())
+  reference String        @unique
+  memo      String
+  date      DateTime      @default(now())
+  lines     JournalLine[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("journals")
+}
+
+model JournalLine {
+  id        String   @id @default(cuid())
+  journalId String   @map("journal_id")
+  journal   Journal  @relation(fields: [journalId], references: [id])
+  accountId String   @map("account_id")
+  account   Account  @relation(fields: [accountId], references: [code])
+  debit     Int      @default(0) @map("debit_cents")
+  credit    Int      @default(0) @map("credit_cents")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("journal_lines")
+}
+
+model GiftCard {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  balance   Int      @map("balance_cents")
+  issued    Int      @map("issued_cents")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("gift_cards")
+}
+
+model LoyaltyEntry {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  customer   Customer @relation(fields: [customerId], references: [id])
+  points     Int
+  credit     Int      @default(0) @map("credit_cents")
+  reason     String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("loyalty_entries")
+}
+
+model Promo {
+  code      String    @id
+  kind      String
+  amount    Int       @map("amount_cents")
+  minimum   Int       @default(0) @map("minimum_cents")
+  active    Boolean   @default(true)
+  expiresAt DateTime? @map("expires_at")
+  limit     Int       @default(0)
+  used      Int       @default(0)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("promos")
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model Campaign {
+  id          String              @id @default(cuid())
+  name        String
+  audience    String
+  channel     String              @default("whatsapp")
+  imageUrl    String              @default("") @map("image_url")
+  sentAt      DateTime?           @map("sent_at")
+  sentCount   Int                 @default(0) @map("sent_count")
+  failedCount Int                 @default(0) @map("failed_count")
+  recipients  CampaignRecipient[]
+  message     String
+  count       Int
+  status      String              @default("draft")
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+
+  @@map("campaigns")
+}
+
+model Shop {
+  id         String     @id @default(uuid())
+  name       String     @unique
+  products   Product[]
+  categories Category[]
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  @@map("shops")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  shopId    String    @map("shop_id")
+  shop      Shop      @relation(fields: [shopId], references: [id])
+  products  Product[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@unique([name, shopId])
+  @@map("categories")
+}
+
+model Liability {
+  id        String   @id @default(uuid())
+  creditor  String
+  amount    Int      @map("amount_cents")
+  settled   Int      @default(0) @map("settled_cents")
+  note      String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("liabilities")
+}
+
+model CampaignRecipient {
+  id         String    @id @default(uuid())
+  campaignId String    @map("campaign_id")
+  campaign   Campaign  @relation(fields: [campaignId], references: [id])
+  customerId String    @map("customer_id")
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  status     String    @default("pending")
+  attempts   Int       @default(0)
+  error      String    @default("")
+  messageId  String?   @map("message_id")
+  claimUntil DateTime? @map("claim_until")
+  sentAt     DateTime? @map("sent_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@unique([campaignId, customerId])
+  @@map("campaign_recipients")
+}
+
+model Owner {
+  id        String   @id @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("owners")
+}
+
+model WhatsAppKey {
+  id        String   @id
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("whatsapp_keys")
+}

@@ -1,60 +1,19 @@
 # Boys & Girlz
 
-A mobile-first merchandising shop frontend for kids' clothing, accessories, maternity wear, toys, and Like New outlet finds. The visual system follows the approved Boys & Girlz homepage mockup: the illustrated B and G characters, sky blue and pink feature panels, warm cream surfaces, lighter product cards, and compact mobile navigation.
+Existing React / TypeScript storefront and single-owner POS, inventory, customer and accounting app, extended in place. Supabase is the only backend: Auth, PostgreSQL with RLS, Storage, and Realtime. Cash, Whish, store credit and gift balances are supported. WhatsApp uses a self-hosted QR connection.
 
-The visible catalog still uses mock product data and local cart/wishlist state. This branch also includes an unconfigured Supabase order and contact draft; no live orders are accepted without approved credentials, inventory, delivery fees, and notifications. There is no real payment processing.
+## Setup
 
-## Run locally
+Node.js 24 is required. Create a free Supabase project, copy .env.example to .env and set SUPABASE_URL, SUPABASE_ANON_KEY (public publishable key), SUPABASE_SERVICE_ROLE_KEY (server only), and DATABASE_URL (the same project's direct/session-pooler connection).
 
-Requirements: Node.js 20 or newer and npm.
+Run npm install, then npm run setup. In Supabase Auth create the owner's account, then insert its UUID into public.owners using the SQL editor. Only that owner can access administration. No public sign-up flow is provided.
 
-```bash
-npm install
-npm run dev
-```
+After setup, npm start runs the complete app at http://127.0.0.1:5181/admin. For a production build use npm run build and npm run start:production. The server binds to loopback for local review.
 
-Open the local URL printed by Vite. Other useful commands:
+The previous local demo's credentials and database are retained privately in .data as backup; they are not used by this Supabase version. No business records or images fall back to a local database. A missing Supabase connection fails explicitly.
 
-```bash
-npm run build
-npm test
-npm run test:e2e
-```
+See docs/commerce-admin.md for operations and docs/spec-implementation.md for implementation mapping and verification status.
 
-## Included experience
+## Checks
 
-- Responsive home, shop, eight category pages, product detail, cart, checkout, wishlist, about, contact, shipping, returns, and size-guide routes
-- English and Arabic storefront with a persistent header language switch, server-rendered `lang`/`dir`, Arabic product and policy copy, and full RTL desktop/mobile layout
-- Mock products with size, color, price, sale, review, and category data, including four featured products styled after the approved mockup
-- Search suggestions, category/price/size/color/sale filters, and sorting
-- Persistent variant-aware cart and wishlist with validated `localStorage` recovery
-- Optional WhatsApp chat and order-request handoff from products, bag, and checkout when the confirmed shop number is configured
-- Three-step shipping → payment → review Cash on Delivery interface with an explicit unconfigured state
-- Original illustrated B and G artwork in the hero; the corresponding original letter appears on each Boys/Girls category page
-- Logo entrance, product image reveals, fly-to-bag motion, animated outlet banner, button and newsletter interactions, branded route transitions, and GSAP scroll reveals
-- Continuous, pause-on-hover ribbon featuring the shop's carried brands
-- Reduced-motion fallbacks and responsive image presentation
-- Semantic controls, keyboard-accessible dialogs, focus styles, status announcements, and alt text
-
-The demo promo code is `LITTLELOVE10`.
-
-## Project structure
-
-```text
-src/
-  components/       Shared navigation, cards, drawers, logo-art scenes, and motion
-  data/             Typed mock product catalog
-  hooks/            Motion and device capability helpers
-  i18n/             Arabic translations and persisted language setting
-  pages/            Route-level storefront screens
-  state/            Cart/wishlist context and pure reducer logic
-public/
-  assets/            Local logo artwork, featured product imagery, and catalog photography
-tests/
-  browser/           End-to-end storefront journeys
-  store.test.mjs     Cart persistence and pricing tests
-```
-
-## Production notes
-
-Product specifications, stock, photos, shipping and returns terms, and toy age guidance must be verified before launch. See [SETUP.md](SETUP.md) and [CHANGES.md](CHANGES.md) for the unfinished backend and business inputs.
+npm test runs the local pricing, financial, SQL syntax, cart and SEO checks. npm run lint and npm run build validate the full source. Live checks require a dedicated Supabase test project: set BNG_TEST_SUPABASE=1 and owner login variables BNG_TEST_ADMIN_EMAIL / BNG_TEST_ADMIN_PASSWORD, then run npm run test:commerce and npm run test:e2e. Without those settings, external verification is explicitly skipped.

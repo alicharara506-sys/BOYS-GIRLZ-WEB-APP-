@@ -1,0 +1,2 @@
+import test from'node:test';import assert from'node:assert/strict';import{parse}from'pgsql-parser';import{readFileSync}from'node:fs';import{URL}from'node:url';
+test('Supabase schema and access migrations parse with the PostgreSQL parser',async()=>{for(const file of ['202611040001_shared_shop.sql','202611040002_access_and_storage.sql']){const result=await parse(readFileSync(new URL(`../supabase/migrations/${file}`,import.meta.url),'utf8'));assert.ok(result.stmts.length>0);}});

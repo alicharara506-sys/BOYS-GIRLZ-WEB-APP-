@@ -1,0 +1,214 @@
+/* ---------- Product page ---------- */
+.product-detail-layout { gap: clamp(28px, 4vw, 64px); align-items: start; }
+
+/* Photo: a glass frame over a glow in the chosen colour, tilting toward the cursor and zooming where it points. */
+@property --glow { syntax: "<color>"; inherits: true; initial-value: var(--bng-tone-390); }
+.product-gallery { position: sticky; top: calc(var(--hdr-offset, 80px) + 18px); transition: --glow .7s ease, top .45s cubic-bezier(.23, 1, .32, 1); }
+.photo-stage { position: relative; isolation: isolate; perspective: 1200px; }
+.photo-glow { position: absolute; inset: -8%; z-index: -1; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--glow) 85%, white), transparent 70%); filter: blur(40px); opacity: .85; }
+.photo-viewer {
+  border: 8px solid var(--bng-tone-7); border-radius: 32px; background: color-mix(in oklab, var(--glow) 18%, var(--bng-tone-536));
+  box-shadow: 0 40px 70px -34px var(--bng-tone-327), 0 0 0 1px var(--bng-tone-328); transition: background-color .7s ease;
+}
+.photo-viewer .product-photo { mix-blend-mode: multiply; }
+.product-gallery > .small-muted { margin-top: 14px; color: var(--bng-tone-370); }
+
+/* Title, price and the save chip. */
+/* The label above the title takes the shop's blue for boys and pink otherwise. */
+.product-details .eyebrow { color: var(--bng-tone-331); font-weight: 700; letter-spacing: .16em; }
+.product-details .eyebrow.is-boys { color: var(--bng-tone-348); }
+.product-details .eyebrow.is-unisex { background: linear-gradient(90deg, var(--bng-tone-331), var(--bng-tone-348)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.detail-title { display: grid; justify-items: start; margin: 10px 0 14px; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; font-size: clamp(34px, 3.8vw, 54px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; }
+html[dir="rtl"] .detail-title { letter-spacing: 0; line-height: 1.3; }
+.detail-price { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; color: var(--bng-tone-325); font-size: 28px; font-weight: 800; }
+.detail-price del { color: var(--bng-tone-537); font-size: 17px; font-weight: 500; }
+.detail-price .save-chip { padding: 4px 10px; border-radius: 999px; background: var(--bng-tone-378); color: var(--bng-tone-362); font-size: 12px; font-weight: 700; animation: chip-pop .5s cubic-bezier(.34, 1.56, .64, 1) .3s both; }
+.detail-description { color: var(--bng-tone-326); font-size: 15px; line-height: 1.7; }
+
+/* Colours with a springy ring and a check; sizes as dark-pill chips. */
+.variant-section legend { color: var(--bng-tone-325); font-weight: 700; }
+.variant-section legend > span { color: var(--bng-tone-370); font-weight: 500; }
+.detail-colors { gap: 12px; padding: 4px; }
+.detail-colors > button {
+  display: grid; place-items: center; width: 34px; height: 34px; border: 0; outline: 0; border-radius: 50%; background: var(--swatch); color: var(--bng-tone-325);
+  box-shadow: 0 0 0 2px var(--bng-tone-7), 0 0 0 3px var(--bng-tone-403);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.detail-colors > button:hover { transform: scale(1.1); }
+.detail-colors > button.selected { outline: 0; box-shadow: 0 0 0 3px var(--bng-tone-7), 0 0 0 5px var(--bng-tone-325); transform: scale(1.06); }
+.detail-colors > button svg { animation: pc-tick .35s cubic-bezier(.34, 1.56, .64, 1); stroke-width: 3; }
+.size-guide { color: var(--bng-tone-331); font-weight: 700; text-decoration: none; }
+.size-guide:hover { text-decoration: underline; }
+.size-options { gap: 7px; }
+.size-options > button {
+  min-width: 0; padding: 9px 13px; border: 0; border-radius: 999px; background: var(--bng-tone-7); box-shadow: 0 0 0 1px var(--bng-tone-383) inset;
+  color: var(--bng-tone-344); font-size: 13px; font-weight: 700;
+  transition: background-color .25s ease, color .25s ease, box-shadow .25s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+.size-options > button:hover { color: var(--bng-tone-325); box-shadow: 0 0 0 1px var(--bng-tone-343) inset; }
+.size-options > button.selected { background: var(--bng-tone-325); color: var(--bng-tone-7); box-shadow: 0 8px 16px -10px var(--bng-tone-404); transform: scale(1.05); }
+
+/* Add to bag: the glossy button, with a check that draws itself once added. */
+.purchase-row { gap: 10px; }
+.purchase-row > .quantity-control { height: 56px; border-radius: 999px; }
+.purchase-row .add-main { flex: 1; justify-content: space-between; min-height: 56px; border: 0; cursor: pointer; font-size: 15px; }
+.purchase-row .add-main:disabled { opacity: .6; cursor: not-allowed; }
+.add-check { width: 20px; height: 20px; }
+.add-check path { fill: none; stroke: var(--bng-tone-7); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 22; stroke-dashoffset: 22; animation: hero-draw-check .5s cubic-bezier(.16, 1, .3, 1) forwards; }
+.add-main.is-added .bh-cta-arrow, .buy-bar-add.is-added .bh-cta-arrow { background: var(--bng-tone-365); }
+.detail-wish { width: 56px; height: 56px; border: 0; background: var(--bng-tone-7); box-shadow: 0 0 0 1px var(--bng-tone-330) inset; transition: box-shadow .3s ease; }
+.detail-wish:hover { box-shadow: 0 0 0 1px var(--bng-tone-343) inset, 0 10px 22px -12px var(--bng-tone-333); }
+
+/* Reassurance chips with a moving truck and a beating heart. */
+.product-reassurance { gap: 8px; padding-bottom: 22px; border-color: var(--bng-tone-385); }
+.product-reassurance > span { padding: 8px 12px; border-radius: 999px; background: var(--bng-tone-339); box-shadow: 0 0 0 1px var(--bng-tone-330) inset; color: var(--bng-tone-344); font-size: 12px; font-weight: 600; }
+.reassure-truck svg { color: var(--bng-tone-348); animation: bh-truck 1.5s ease-in-out infinite; }
+.reassure-heart svg { color: var(--bng-tone-331); fill: var(--bng-tone-342); animation: bh-heartbeat 1.6s ease-in-out infinite; }
+
+/* Details as cards that open smoothly (the FAQ card style). */
+.detail-cards { display: grid; gap: 10px; margin-top: 22px; border: 0; }
+.detail-cards .faq-item { animation-delay: calc(.3s + var(--i) * 70ms); }
+.detail-cards .faq-question { font-size: 16px; }
+.detail-cards .faq-answer p { padding-inline-start: 76px; font-size: 14px; }
+.detail-cards .faq-answer a { color: var(--bng-tone-331); font-weight: 700; text-decoration: underline; }
+
+/* You may also like. */
+.related-heading { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 28px; text-align: center; }
+.related-heading h2 { margin: 0; }
+.related-heading h2 { color: var(--bng-tone-325); font-family: Quicksand, sans-serif; font-size: clamp(28px, 3.2vw, 42px); letter-spacing: -.04em; }
+
+/* Sticky bar with Add to bag once the main button has scrolled away. */
+.buy-bar { position: fixed; inset-inline: 0; bottom: 16px; z-index: 30; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; transform: translateY(140%); transition: transform .55s cubic-bezier(.16, 1, .3, 1); }
+.buy-bar.is-visible { transform: none; }
+.buy-bar-inner {
+  display: flex; align-items: center; gap: 14px; width: min(720px, 100%); padding: 8px 8px 8px 10px; border-radius: 999px; pointer-events: auto;
+  background: var(--bng-tone-340); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 0 0 1px var(--bng-tone-375) inset, 0 24px 50px -20px var(--bng-tone-424);
+}
+.buy-bar-thumb { flex: none; width: 46px; height: 46px; overflow: hidden; border-radius: 50%; background: var(--bng-tone-369); }
+.buy-bar-thumb .product-photo { width: 100%; height: 100%; }
+.buy-bar-copy { display: grid; flex: 1; min-width: 0; }
+.buy-bar-copy strong { overflow: hidden; color: var(--bng-tone-325); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.buy-bar-copy small { color: var(--bng-tone-370); font-size: 12px; }
+.buy-bar-price { color: var(--bng-tone-325); font-weight: 800; }
+.buy-bar-add { min-height: 46px; border: 0; cursor: pointer; font-size: 14px; }
+/* The bag message and WhatsApp button move up while the bar is showing. */
+body:has(.buy-bar.is-visible) .toast { bottom: 96px; }
+body:has(.buy-bar.is-visible) .whatsapp-floating { bottom: 96px; }
+.toast, .whatsapp-floating { transition: bottom .45s cubic-bezier(.16, 1, .3, 1); }
+
+@media (max-width: 900px) {
+  .product-gallery { position: static; }
+}
+@media (max-width: 560px) {
+  .buy-bar-price, .buy-bar-copy small { display: none; }
+  .buy-bar-inner { gap: 10px; }
+  .detail-cards .faq-answer p { padding-inline-start: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-gallery *, .product-details *, .buy-bar { animation: none !important; transition: none !important; }
+}
+/* The size label and the size guide link sit at opposite ends in either reading direction. */
+.variant-section legend:has(.size-guide) { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.variant-section .size-guide { float: none; }
+
+/* Each detail card's title takes its icon's colour. */
+.detail-cards .faq-question { color: var(--tint); }
+
+/* ---------- Size guide ---------- */
+.modal.fit-guide {
+  width: min(520px, calc(100% - 24px)); padding: 26px; border: 0; border-radius: 28px;
+  background: var(--bng-tone-469); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 0 0 1px var(--bng-tone-375) inset, 0 40px 90px -30px var(--bng-tone-424);
+  animation: palette-in .45s cubic-bezier(.34, 1.4, .64, 1);
+}
+.modal.fit-guide::backdrop { background: var(--bng-tone-380); backdrop-filter: blur(6px); }
+.fit-guide .modal-heading { margin-bottom: 12px; }
+.fit-guide .modal-heading h2 { background: linear-gradient(90deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); -webkit-background-clip: text; background-clip: text; color: transparent; font-family: Quicksand, sans-serif; font-size: 24px; letter-spacing: -.02em; }
+.fit-guide-note, .fit-guide-tip { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+.fit-guide-note { background: var(--bng-tone-350); color: var(--bng-tone-538); }
+.fit-guide-note svg { flex: none; color: var(--bng-tone-348); }
+.fit-guide-tip { margin-top: 14px; background: var(--bng-tone-347); color: var(--bng-tone-425); }
+.fit-guide-tip svg { flex: none; color: var(--bng-tone-331); fill: var(--bng-tone-342); animation: bh-heartbeat 1.6s ease-in-out infinite; }
+
+/* The sizes as a ladder: tap one to choose it. */
+.fit-steps { position: relative; display: grid; gap: 4px; margin: 16px 0 0; padding: 0; list-style: none; }
+.fit-line { position: absolute; top: 18px; bottom: 18px; inset-inline-start: 22px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, var(--bng-tone-331), var(--bng-tone-332)); opacity: .35; }
+.fit-steps li { animation: palette-row .45s cubic-bezier(.16, 1, .3, 1) both; animation-delay: calc(var(--i) * 30ms); }
+.fit-steps button {
+  position: relative; display: flex; align-items: center; gap: 14px; width: 100%; padding: 9px 14px 9px 12px; border-radius: 14px;
+  background: none; color: var(--bng-tone-539); font-size: 15px; font-weight: 600; text-align: start;
+  transition: background-color .2s ease, box-shadow .2s ease, color .2s ease;
+}
+.fit-dot { position: relative; z-index: 1; display: grid; flex: none; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--bng-tone-7); color: var(--bng-tone-7); box-shadow: 0 0 0 2px var(--bng-tone-330); transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), background-color .3s ease, box-shadow .3s ease; }
+.fit-name { flex: 1; }
+.fit-arrow { color: var(--bng-tone-540); opacity: 0; transition: opacity .2s ease, transform .3s cubic-bezier(.23, 1, .32, 1); }
+html[dir="rtl"] .fit-arrow { scale: -1 1; }
+.fit-steps button:hover { background: var(--bng-tone-7); box-shadow: 0 0 0 1px var(--bng-tone-468) inset, 0 10px 22px -16px var(--bng-tone-333); color: var(--bng-tone-325); }
+.fit-steps button:hover .fit-dot { transform: scale(1.15); box-shadow: 0 0 0 2px var(--bng-tone-331); }
+.fit-steps button:hover .fit-arrow { opacity: 1; color: var(--bng-tone-331); transform: translateX(3px); }
+html[dir="rtl"] .fit-steps button:hover .fit-arrow { transform: translateX(-3px); }
+.fit-steps button.is-chosen { background: var(--bng-tone-325); color: var(--bng-tone-7); box-shadow: 0 12px 24px -14px var(--bng-tone-404); }
+.fit-steps button.is-chosen .fit-dot { background: linear-gradient(135deg, var(--bng-tone-331), var(--bng-tone-332)); box-shadow: 0 0 0 3px var(--bng-tone-410); }
+.fit-steps button.is-chosen .fit-arrow { opacity: 0; }
+
+.fit-guide-wa {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; min-height: 48px; border-radius: 999px;
+  background: var(--bng-tone-419); color: var(--bng-tone-7); font-size: 14px; font-weight: 700; box-shadow: 0 12px 26px -14px var(--bng-tone-419);
+  transition: filter .25s ease, box-shadow .25s ease;
+}
+.fit-guide-wa:hover { color: var(--bng-tone-7); filter: brightness(1.05); box-shadow: 0 0 0 4px var(--bng-tone-541), 0 14px 30px -14px var(--bng-tone-419); }
+@media (max-width: 560px) { .modal.fit-guide { padding: 20px 16px; } }
+@media (prefers-reduced-motion: reduce) { .fit-guide, .fit-guide * { animation: none !important; transition: none !important; } }
+html[dir="rtl"] .fit-guide .modal-heading h2 { background-image: linear-gradient(270deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); }
+
+/* Approximate height under each size. */
+.size-options > button { display: inline-grid; justify-items: center; gap: 1px; line-height: 1.15; }
+.size-cm { color: var(--bng-tone-372); font-size: 10.5px; font-weight: 600; transition: color .25s ease; }
+.size-options > button.selected .size-cm { color: var(--bng-tone-416); }
+.fit-cm { color: var(--bng-tone-372); font-size: 12px; font-weight: 600; }
+.fit-steps button.is-chosen .fit-cm { color: var(--bng-tone-339); }
+.fit-guide-cm { margin: 10px 2px 0; color: var(--bng-tone-370); font-size: 12px; }
+
+/* "All the little details" in the brand's pink-to-blue blend. */
+.detail-cards .faq-item.is-blend .faq-question { background: linear-gradient(90deg, var(--bng-tone-331), var(--bng-tone-332)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html[dir="rtl"] .detail-cards .faq-item.is-blend .faq-question { background-image: linear-gradient(270deg, var(--bng-tone-331), var(--bng-tone-332)); }
+.detail-cards .faq-item.is-blend .faq-icon { background: linear-gradient(135deg, var(--bng-tone-347), var(--bng-tone-350)); color: var(--bng-tone-331); }
+.detail-cards .faq-item.is-blend.is-open .faq-icon, .detail-cards .faq-item.is-blend.is-open .faq-toggle { background: linear-gradient(135deg, var(--bng-tone-331), var(--bng-tone-332)); color: var(--bng-tone-7); }
+.detail-cards .faq-item.is-blend::before { background: conic-gradient(from var(--beam), transparent 0deg 210deg, var(--bng-tone-331) 285deg, var(--bng-tone-7) 318deg, var(--bng-tone-332) 345deg, transparent 360deg); }
+
+/* ---------- Delivery strip under Add to bag ---------- */
+.ship-strip {
+  position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 18px; padding: 8px; border-radius: 20px;
+  background: var(--bng-tone-339); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 0 0 1px var(--bng-tone-340) inset, 0 14px 30px -26px var(--bng-tone-335);
+}
+.ship-strip::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; padding: 1.5px; border-radius: inherit;
+  background: linear-gradient(90deg, var(--bng-tone-336), var(--bng-tone-439));
+  -webkit-mask: linear-gradient(var(--bng-tone-322) 0 0) content-box, linear-gradient(var(--bng-tone-322) 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(var(--bng-tone-322) 0 0) content-box exclude, linear-gradient(var(--bng-tone-322) 0 0);
+}
+.ship-row { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border-radius: 14px; transition: background-color .3s ease; }
+.ship-row:hover { background: var(--bng-tone-7); }
+.ship-row > span:last-child { display: grid; min-width: 0; }
+.ship-row strong { color: var(--bng-tone-325); font-size: 13px; font-weight: 700; line-height: 1.3; }
+.ship-row small { color: var(--bng-tone-370); font-size: 12px; line-height: 1.3; }
+.ship-icon { position: relative; display: grid; flex: none; place-items: center; width: 38px; height: 38px; overflow: hidden; border-radius: 12px; }
+.ship-row-truck .ship-icon { background: var(--bng-tone-350); color: var(--bng-tone-348); }
+.ship-row-truck .ship-icon svg { position: relative; animation: bh-truck 1.6s ease-in-out infinite; }
+.ship-row-cash .ship-icon { background: var(--bng-tone-347); color: var(--bng-tone-345); }
+.ship-row-cash .ship-icon svg { animation: ship-flip 3.2s ease-in-out infinite; }
+.ship-row-return .ship-icon { background: var(--bng-tone-350); color: var(--bng-tone-348); }
+.ship-row-return .ship-icon svg { animation: ship-turn 3.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+@keyframes ship-flip { 0%, 60%, 100% { transform: none; } 75% { transform: rotateY(180deg); } 90% { transform: rotateY(360deg); } }
+@keyframes ship-turn { 0%, 55% { transform: rotate(0); } 85%, 100% { transform: rotate(-360deg); } }
+.ship-more { grid-column: 1 / -1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-top: 1px solid var(--bng-tone-385); color: var(--bng-tone-370); font-size: 12px; font-weight: 700; transition: color .3s ease; }
+.ship-more:hover { color: var(--bng-tone-331); }
+.ship-more svg { transition: transform .3s ease; }
+.ship-more:hover svg { transform: translateX(3px); }
+html[dir="rtl"] .ship-more svg { scale: -1 1; }
+@media (max-width: 760px) { .ship-strip { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .ship-icon svg { animation: none !important; } }
+.detail-cards .faq-item.is-blend .faq-question { flex: 0 1 auto; margin-inline-end: auto; }
+.ship-row strong { white-space: nowrap; }
+@media (max-width: 1100px) { .ship-row strong { white-space: normal; } }
