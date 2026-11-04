@@ -5,7 +5,7 @@ import {
   Check,
   ChevronRight,
   Clock3,
-  CreditCard,
+  Wallet,
   Minus,
   Plus,
   Search,
@@ -14,12 +14,26 @@ import {
 } from "lucide-react";
 import type { CommerceSnapshot } from "../../server/commerce/queries.server";
 import { Badge, Empty, Feedback, Modal, usd, useCommand } from "./ui";
-type CartLine = { variantId: string; quantity: number; discount: number };
+import { finalPrice } from "../../domain/pricing";
+import { InlineSelect } from "./InlineSelect";
+type CartLine = {
+  isQuickSale?: boolean;
+  name?: string;
+  price?: number;
+  cost?: number | null;
+  category?: string;
+  variantId: string;
+  quantity: number;
+  discount: number;
+};
 type Product = CommerceSnapshot["products"][number];
 type Pay = { method: string; amount: number; reference: string };
 export default function POS({ data }: { data: CommerceSnapshot }) {
   const [params] = useSearchParams();
   const online = params.get("channel") === "online";
+  const [quick, setQuick] = useState(false);
+  const [quickShop, setQuickShop] = useState(data.shops[0]?.id || "");
+  const [quickCategory, setQuickCategory] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -45,13 +59,34 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
   const seen = useRef<unknown>(null);
   const parkedSeen = useRef<unknown>(null);
   const variants = data.products.flatMap((p) =>
-    p.variants.map((v) => ({ ...v, product: p })),
+    p.variants.map((v) => ({
+      ...v,
+      product: {
+        ...p,
+        price: finalPrice(p.price, p),
+        onlinePrice: finalPrice(p.onlinePrice, p),
+      },
+    })),
   );
   const customer = data.customers.find((c) => c.id === customerId);
   const lines = cart
     .map((l) => ({
       ...l,
-      variant: variants.find((v) => v.id === l.variantId)!,
+      variant:
+        variants.find((v) => v.id === l.variantId) ||
+        (l.isQuickSale
+          ? {
+              id: l.variantId,
+              stock: Infinity,
+              size: "Unlisted item",
+              color: "",
+              product: {
+                name: l.name || "",
+                price: l.price || 0,
+                onlinePrice: l.price || 0,
+              },
+            }
+          : undefined)!,
     }))
     .filter((l) => l.variant);
   const subtotal = lines.reduce(
@@ -113,14 +148,12 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
   }, [park.data]);
   const add = (variantId: string) => {
     const variant = variants.find((v) => v.id === variantId);
-    if (!variant || variant.stock < 1) return;
+    if (!variant) return;
     setCart((old) => {
       const exists = old.find((l) => l.variantId === variantId);
       return exists
         ? old.map((l) =>
-            l.variantId === variantId
-              ? { ...l, quantity: Math.min(l.quantity + 1, variant.stock) }
-              : l,
+            l.variantId === variantId ? { ...l, quantity: l.quantity + 1 } : l,
           )
         : [...old, { variantId, quantity: 1, discount: 0 }];
     });
@@ -128,7 +161,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
   const visible = data.products.filter(
     (p) =>
       !p.archived &&
-      (online ? p.published : !p.onlineOnly) &&
+      (online ? p.visibility === "website_and_pos" : true) &&
       (category === "All" || p.category === category) &&
       (!query ||
         `${p.name} ${p.brand} ${p.variants.map((v) => `${v.sku} ${v.barcode}`).join(" ")}`
@@ -139,14 +172,29 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
     requestKey: key,
     channel: online ? "online" : "pos",
     customerId: customerId || undefined,
-    items: cart,
+    items: cart.map((l) =>
+      l.isQuickSale
+        ? {
+            name: l.name,
+            price: l.price,
+            cost: l.cost,
+            category: l.category,
+            quantity: l.quantity,
+            discount: l.discount,
+          }
+        : {
+            variantId: l.variantId,
+            quantity: l.quantity,
+            discount: l.discount,
+          },
+    ),
     discount,
     discountType,
     pointsUsed: points,
     promoCode: promo,
     payments: online && !checkout ? [] : payments,
     cashTendered,
-    note: online ? `Demo ${note || "Cash on delivery"}` : note,
+    note: online ? `${note || "Cash on delivery"}` : note,
     address: customer?.address || "",
     phone: customer?.phone || "",
   });
@@ -190,6 +238,11 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             Open receipt <ChevronRight size={15} />
           </Link>
         </div>
+      )}
+      {!online && (
+        <button className="co-button primary" onClick={() => setQuick(true)}>
+          ＋ Quick Sale / Unlisted Item
+        </button>
       )}
       <div className="co-pos-layout">
         <section className="co-pos-catalog">
@@ -252,7 +305,9 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                   </small>
                   <strong>{p.name}</strong>
                   <span>
-                    <b>{usd(online ? p.onlinePrice : p.price)}</b>
+                    <b>
+                      {usd(finalPrice(online ? p.onlinePrice : p.price, p))}
+                    </b>
                     <i>+ Add</i>
                   </span>
                 </span>
@@ -347,7 +402,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                   <span>{l.quantity}</span>
                   <button
                     aria-label="Increase quantity"
-                    disabled={l.quantity >= l.variant.stock}
+
                     onClick={() => add(l.variantId)}
                   >
                     <Plus size={14} />
@@ -453,7 +508,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               disabled={!cart.length || cmd.busy}
               onClick={online ? () => cmd.run("sale", sale()) : begin}
             >
-              {online ? "Create demo online order" : `Charge ${usd(total)}`}
+              {online ? "Create online order" : `Charge ${usd(total)}`}
               <ChevronRight size={18} />
             </button>
             {online && (
@@ -462,7 +517,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                 disabled={!cart.length || cmd.busy}
                 onClick={begin}
               >
-                Record prepaid demo order / gift / credit
+                Record prepaid order / gift / credit
               </button>
             )}
             <Feedback data={cmd.data} />
@@ -501,6 +556,88 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
           </div>
         </aside>
       </div>
+      {quick && (
+        <Modal
+          title="Quick Sale / Unlisted Item"
+          onClose={() => setQuick(false)}
+        >
+          <form
+            className="co-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = new FormData(e.currentTarget);
+              setCart([
+                ...cart,
+                {
+                  variantId: crypto.randomUUID(),
+                  isQuickSale: true,
+                  name: String(f.get("name")),
+                  price: Math.round(Number(f.get("price")) * 100),
+                  cost: f.get("cost")
+                    ? Math.round(Number(f.get("cost")) * 100)
+                    : null,
+                  category:
+                    data.categories.find((c) => c.id === quickCategory)?.name ||
+                    "Unlisted",
+                  quantity: Number(f.get("quantity")),
+                  discount: 0,
+                },
+              ]);
+              setQuick(false);
+            }}
+          >
+            <label className="co-field">
+              <span>Item name</span>
+              <input name="name" required maxLength={150} />
+            </label>
+            <div className="co-two">
+              <label className="co-field">
+                <span>Sale price $</span>
+                <input
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </label>
+              <label className="co-field">
+                <span>Quantity</span>
+                <input
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  step="1"
+                  defaultValue="1"
+                  required
+                />
+              </label>
+            </div>
+            <label className="co-field">
+              <span>Cost price $ (optional)</span>
+              <input name="cost" type="number" min="0" step="0.01" />
+            </label>
+            <InlineSelect
+              kind="shop"
+              required={false}
+              value={quickShop}
+              onChange={setQuickShop}
+              options={data.shops}
+            />
+            <InlineSelect
+              kind="category"
+              required={false}
+              value={quickCategory}
+              onChange={setQuickCategory}
+              options={data.categories.filter((c) => c.shopId === quickShop)}
+              shopId={quickShop}
+            />
+            <button className="co-button primary">
+              Add unlisted item to sale
+            </button>
+          </form>
+        </Modal>
+      )}
       {selected && (
         <Modal title={selected.name} onClose={() => setSelected(null)}>
           <p>Choose an age size and color.</p>
@@ -509,7 +646,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               <button
                 key={v.id}
                 className="co-variant-option"
-                disabled={v.stock === 0}
+
                 onClick={() => {
                   add(v.id);
                   setSelected(null);
@@ -517,7 +654,11 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               >
                 <strong>{v.size}</strong>
                 <span>{v.color}</span>
-                <small>{v.stock} in stock</small>
+                <small>
+                  {v.stock <= 0
+                    ? "Out of stock — selling allowed"
+                    : `${v.stock} in stock`}
+                </small>
               </button>
             ))}
           </div>
@@ -553,10 +694,10 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                     )
                   }
                 >
-                  {["cash", "card", "whish", "credit", "gift"].map((m) => (
+                  {["cash", "whish", "credit", "gift"].map((m) => (
                     <option key={m} value={m}>
                       {m === "whish"
-                        ? "Whish (demo recorded)"
+                        ? "Whish"
                         : m === "credit"
                           ? "Store credit"
                           : m === "gift"
@@ -594,7 +735,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               >
                 <Trash2 size={17} />
               </button>
-              {["gift", "whish", "card"].includes(p.method) && (
+              {["gift", "whish"].includes(p.method) && (
                 <label className="co-field co-wide">
                   <span>
                     {p.method === "gift"
@@ -621,7 +762,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               setPayments([
                 ...payments,
                 {
-                  method: "card",
+                  method: "whish",
                   amount: Math.max(0, total - paid),
                   reference: "",
                 },
@@ -668,8 +809,8 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             }
             onClick={() => cmd.run("sale", sale())}
           >
-            <CreditCard size={18} />
-            {cmd.busy ? "Saving sale…" : "Complete demo sale"}
+            <Wallet size={18} />
+            {cmd.busy ? "Saving sale…" : "Complete sale"}
           </button>
         </Modal>
       )}

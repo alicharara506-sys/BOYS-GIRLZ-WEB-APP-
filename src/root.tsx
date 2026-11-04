@@ -1,11 +1,12 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, redirect, useLocation, useRouteError, useRouteLoaderData } from "react-router";
 import { globalStructuredData } from "./config/seo";
 import { buildPageMeta } from "./config/meta";
+import CatalogRealtime from "./components/CatalogRealtime";
 import Analytics from "./components/Analytics";
 import { Link } from "./components/LocalizedLink";
 import { CatalogProvider } from "./state/Catalog";
 import { products as previewProducts } from "./data/products";
-import { getStorefrontCatalog } from "./server/admin-data.server";
+
 import { commerceEnabled } from "./server/commerce/db.server";
 import { storefrontCatalog } from "./server/commerce/queries.server";
 import { StoreProvider, useStore } from "./state/Store";
@@ -25,6 +26,7 @@ import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
 import "@fontsource/dm-sans/600.css";
 import "./styles.css";
+import "./brand-tokens.css";
 import "./shop.css";
 import "./redesign.css";
 import "./motion.css";
@@ -61,14 +63,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   if (next.href !== url.href && request.method === "GET") throw redirect(next.href, 308);
   const language: Language = url.searchParams.get("lang") === "ar" ? "ar" : "en";
-  const isLocal = ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
-  const managed = isLocal ? commerceEnabled() ? await storefrontCatalog() : getStorefrontCatalog() : { enabled: false, products: [] };
-  return { language, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled, commerceMode: isLocal && commerceEnabled() };
+
+  const managed = url.pathname.startsWith("/admin")?{enabled:true,products:[]}:await storefrontCatalog();
+  return { language, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled, commerceMode: commerceEnabled(), supabase: {url:process.env.SUPABASE_URL||"",key:process.env.SUPABASE_ANON_KEY||""} };
 }
 
 // Language variants have stable URLs; filter changes do not reload root data.
 export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
   if (currentUrl.searchParams.get("lang") !== nextUrl.searchParams.get("lang")) return true;
+  // Explicit catalog refreshes keep the same URL and must reach Supabase.
+  if (currentUrl.href === nextUrl.href) return defaultShouldRevalidate;
   return formMethod || currentUrl.pathname !== nextUrl.pathname ? defaultShouldRevalidate : false;
 }
 
@@ -87,7 +91,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, "\\u003c") }} />
       </head>
       <body>
-        <LocaleProvider initialLanguage={language}>{children}<Analytics /></LocaleProvider>
+        <LocaleProvider initialLanguage={language}>{children}<CatalogRealtime/><Analytics /></LocaleProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -99,7 +103,6 @@ function Shell() {
   const { notice } = useStore();
   const { t } = useLocale();
   const { pathname } = useLocation();
-  const root = useRouteLoaderData<typeof loader>("root");
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return <Outlet />;
   return (
     <>
@@ -107,7 +110,7 @@ function Shell() {
       <Header />
       <RouteEffects />
       <main id="main">
-        {root?.managedCatalog && <p className="local-store-notice">{t("Local store preview")} · {t("Orders are saved on this computer. No payment is taken.")}</p>}
+
         <Outlet />
       </main>
       <Footer />

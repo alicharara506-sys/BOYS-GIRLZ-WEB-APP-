@@ -1,13 +1,11 @@
+import FinancialCards from "./FinancialCards";
 import { Link } from "react-router";
 import {
-  ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  DollarSign,
   Package,
   ShoppingBag,
   Sparkles,
-  Users,
 } from "lucide-react";
 import {
   Area,
@@ -27,18 +25,18 @@ export function SalesChart({ data }: { data: CommerceSnapshot }) {
         <AreaChart data={data.report.series}>
           <defs>
             <linearGradient id="salesBlue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#59a5c0" stopOpacity={0.22} />
-              <stop offset="100%" stopColor="#59a5c0" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--bng-tone-357)" stopOpacity={0.22} />
+              <stop offset="100%" stopColor="var(--bng-tone-357)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="salesPink" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#df9aae" stopOpacity={0.18} />
-              <stop offset="100%" stopColor="#df9aae" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--bng-tone-358)" stopOpacity={0.18} />
+              <stop offset="100%" stopColor="var(--bng-tone-358)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid
             strokeDasharray="3 4"
             vertical={false}
-            stroke="#eaeef1"
+            stroke="var(--bng-tone-359)"
           />
           <XAxis
             dataKey="date"
@@ -61,7 +59,7 @@ export function SalesChart({ data }: { data: CommerceSnapshot }) {
             isAnimationActive={false}
             type="monotone"
             dataKey="pos"
-            stroke="#4b9cba"
+            stroke="var(--bng-tone-360)"
             strokeWidth={2.5}
             fill="url(#salesBlue)"
           />
@@ -70,7 +68,7 @@ export function SalesChart({ data }: { data: CommerceSnapshot }) {
             isAnimationActive={false}
             type="monotone"
             dataKey="online"
-            stroke="#d58ca3"
+            stroke="var(--bng-tone-361)"
             strokeWidth={2.5}
             fill="url(#salesPink)"
           />
@@ -81,9 +79,7 @@ export function SalesChart({ data }: { data: CommerceSnapshot }) {
 }
 export default function Overview({ data }: { data: CommerceSnapshot }) {
   const { kpis } = data;
-  const growth = kpis.lastMonth
-    ? Math.round((kpis.month / kpis.lastMonth - 1) * 100)
-    : 0;
+
   return (
     <>
       <div className="co-page-head">
@@ -99,63 +95,7 @@ export default function Overview({ data }: { data: CommerceSnapshot }) {
           New sale <ArrowUpRight size={16} />
         </Link>
       </div>
-      <div className="co-kpis">
-        {[
-          [
-            "Today’s sales",
-            usd(kpis.today),
-            `${kpis.todayCount} orders across both channels`,
-            DollarSign,
-            "blue",
-          ],
-          [
-            "This month",
-            usd(kpis.month),
-            `${growth >= 0 ? "+" : ""}${growth}% vs last month`,
-            ShoppingBag,
-            "pink",
-          ],
-          [
-            "Your community",
-            String(kpis.customers),
-            "Customers, big and little",
-            Users,
-            "purple",
-          ],
-          [
-            "Stock on hand",
-            kpis.units.toLocaleString(),
-            `${data.lowStock.length} variants need a little love`,
-            Package,
-            "peach",
-          ],
-        ].map(([label, value, sub, Icon, tone]) => {
-          const I = Icon as typeof Package;
-          return (
-            <article className="co-kpi" key={String(label)}>
-              <div>
-                <span>{String(label)}</span>
-                <span className={`co-kpi-icon ${tone}`}>
-                  <I size={19} />
-                </span>
-              </div>
-              <strong>{String(value)}</strong>
-              <small>
-                {label === "This month" ? (
-                  growth >= 0 ? (
-                    <ArrowUpRight size={14} />
-                  ) : (
-                    <ArrowDownRight size={14} />
-                  )
-                ) : (
-                  <span className="co-mini-dot" />
-                )}
-                {String(sub)}
-              </small>
-            </article>
-          );
-        })}
-      </div>
+      <FinancialCards data={data} />
       <div className="co-dashboard-middle">
         <Panel
           title="Little sales, big picture"

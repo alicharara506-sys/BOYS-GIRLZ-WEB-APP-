@@ -3,7 +3,6 @@ import { CommerceError } from "./rules";
 export type Tx = Prisma.TransactionClient;
 export const accounts = [
   ["1000", "Cash on hand", "asset"],
-  ["1010", "Card clearing", "asset"],
   ["1020", "Whish wallet", "asset"],
   ["1100", "Accounts receivable / COD", "asset"],
   ["1200", "Inventory asset", "asset"],
@@ -27,9 +26,8 @@ export const accounts = [
   ["5200", "Cash variance", "expense"],
 ] as const;
 export const paymentAccount = (method: string) =>
-  ({ cash: "1000", card: "1010", whish: "1020", credit: "2200", gift: "2210" })[
-    method
-  ] || "1000";
+  ({ cash: "1000", whish: "1020", credit: "2200", gift: "2210" })[method] ||
+  "1000";
 export async function journal(
   tx: Tx,
   reference: string,

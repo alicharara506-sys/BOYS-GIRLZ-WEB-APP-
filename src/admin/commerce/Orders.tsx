@@ -43,7 +43,7 @@ export function Orders({ data }: Props) {
         <div className="co-actions">
           <Download kind="orders" label="Export orders" />
           <Link className="co-button primary" to="/admin/pos?channel=online">
-            Simulate online order <ArrowUpRight size={16} />
+            Create online order <ArrowUpRight size={16} />
           </Link>
         </div>
       </div>
@@ -170,12 +170,6 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
             {packing ? "Show receipt" : "Packing slip"}
           </button>
           <PrintButton />
-          <a
-            className="co-button"
-            href={`mailto:${encodeURIComponent(order.customer?.email || "")}?subject=${encodeURIComponent(`Boys & Girlz receipt BG-${order.number}`)}&body=${encodeURIComponent(`Thank you for shopping with Boys & Girlz.\nReceipt BG-${order.number}\n${order.items.map((l) => `${l.name} (${l.size}, ${l.color}) x${l.quantity}: ${usd(l.net)}`).join("\n")}\nTotal: ${usd(order.total)}\nStatus: ${order.status}\nDemo receipt — no online payment collected.`)}`}
-          >
-            Prepare email receipt
-          </a>
         </div>
       </div>
       <div className="co-detail-layout">
@@ -187,7 +181,7 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
             <p>{data.settings.shopAddress}</p>
             <p>{data.settings.shopPhone}</p>
             <Badge tone="amber">
-              DEMO {packing ? "PACKING SLIP" : "RECEIPT"}
+              {packing ? "PACKING SLIP" : "RECEIPT"}
             </Badge>
             <h2>BG-{String(order.number).padStart(6, "0")}</h2>
             <p>{new Date(order.createdAt).toLocaleString()}</p>
@@ -214,6 +208,17 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
                       <small>
                         {l.size} · {l.color} · {l.sku}
                       </small>
+                      {l.isQuickSale && (
+                        <>
+                          <Badge>Unlisted item</Badge>{" "}
+                          <Link
+                            className="co-text-link"
+                            to={`/admin/products/new?name=${encodeURIComponent(l.name)}&price=${l.unitPrice}&category=${encodeURIComponent(l.category)}`}
+                          >
+                            Add to catalog
+                          </Link>
+                        </>
+                      )}
                       {l.returned > 0 && <small>{l.returned} returned</small>}
                     </td>
                     <td>{l.quantity}</td>
@@ -266,7 +271,7 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
           <footer>
             {order.note && <p>{order.note}</p>}
             <p>{data.settings.receiptFooter}</p>
-            <small>Sample workspace · not a fiscal receipt</small>
+            <small>Boys & Girlz</small>
           </footer>
         </Panel>
         <aside>
@@ -332,8 +337,7 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
                   label="Payment collected through"
                   options={[
                     { value: "cash", label: "Cash on delivery" },
-                    { value: "whish", label: "Whish — owner verified (demo)" },
-                    { value: "card", label: "Card (demo)" },
+                    { value: "whish", label: "Whish — owner verified" },
                   ]}
                 />
                 <p className="co-help">
@@ -401,7 +405,7 @@ export function Returns({ data }: Props) {
     0,
   );
   const variants = data.products
-    .filter((p) => !p.archived && !p.onlineOnly)
+    .filter((p) => !p.archived)
     .flatMap((p) =>
       p.variants.filter((v) => v.stock > 0).map((v) => ({ ...v, product: p })),
     );
@@ -546,7 +550,7 @@ export function Returns({ data }: Props) {
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
-                {["credit", "cash", "card", "whish"].map((m) => (
+                {["credit", "cash", "whish"].map((m) => (
                   <option key={m} value={m}>
                     {m === "credit" ? "Store credit" : m}
                   </option>
@@ -617,7 +621,6 @@ export function Returns({ data }: Props) {
                         onChange={(e) => setExtraMethod(e.target.value)}
                       >
                         <option value="cash">Cash</option>
-                        <option value="card">Card</option>
                         <option value="whish">Whish</option>
                       </select>
                     </label>

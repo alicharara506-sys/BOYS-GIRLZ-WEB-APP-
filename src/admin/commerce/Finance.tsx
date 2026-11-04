@@ -6,6 +6,7 @@ import { SalesChart } from "./Overview";
 import {
   amount,
   Badge,
+  Check,
   CommandForm,
   date,
   Download,
@@ -24,8 +25,7 @@ import {
 type Props = { data: CommerceSnapshot };
 const paymentOptions = [
   { value: "cash", label: "Cash" },
-  { value: "card", label: "Card" },
-  { value: "whish", label: "Whish (recorded / demo)" },
+  { value: "whish", label: "Whish" },
 ];
 export function Suppliers({ data }: Props) {
   const [editing, setEditing] = useState("");
@@ -706,6 +706,18 @@ export function Accounting({ data }: Props) {
   );
 }
 export function Reports({ data }: Props) {
+  const [unlisted, setUnlisted] = useState(false);
+  const quick = data.orders
+    .filter(
+      (o) =>
+        o.createdAt.slice(0, 10) >= data.report.from &&
+        o.createdAt.slice(0, 10) <= data.report.to,
+    )
+    .flatMap((o) =>
+      o.items
+        .filter((l) => l.isQuickSale)
+        .map((l) => ({ ...l, number: o.number })),
+    );
   const report = data.report;
   const monthly = new Map<
     string,
@@ -807,7 +819,7 @@ export function Reports({ data }: Props) {
               <dd>{usd(report.tax)}</dd>
             </div>
             <div>
-              <dt>Cash / card / Whish net movement</dt>
+              <dt>Cash / Whish net movement</dt>
               <dd>{usd(report.cashFlow)}</dd>
             </div>
           </dl>
@@ -817,6 +829,46 @@ export function Reports({ data }: Props) {
           </p>
         </Panel>
       </div>
+      <Panel title="Unlisted items sold">
+        <label className="co-check">
+          <input
+            type="checkbox"
+            checked={unlisted}
+            onChange={(e) => setUnlisted(e.target.checked)}
+          />
+          Show quick-sale lines in this period
+        </label>
+        {unlisted && (
+          <div className="co-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Sales</th>
+                  <th>Known cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quick.map((l) => (
+                  <tr key={l.id}>
+                    <td>BG-{l.number}</td>
+                    <td>{l.name}</td>
+                    <td>{l.quantity}</td>
+                    <td>{usd(l.net)}</td>
+                    <td>
+                      {l.unitCost === null
+                        ? "Not provided"
+                        : usd(l.unitCost * l.quantity)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
       <Panel title="Daily sales summary">
         <SalesChart data={data} />
         <div className="co-table-wrap">
@@ -1147,6 +1199,7 @@ export function ShopSettings({ data }: Props) {
           pointsPerDollar: num(f, "pointsPerDollar"),
           pointValue: num(f, "pointValue"),
           returnDays: num(f, "returnDays"),
+          demo: flag(f, "demo"),
         })}
       >
         <div className="co-detail-layout">
@@ -1174,13 +1227,18 @@ export function ShopSettings({ data }: Props) {
                 label="Receipt footer"
                 value={s.receiptFooter}
               />
+              <Check
+                name="demo"
+                label="Testing workspace — mark new sales as sample data"
+                value={s.demo}
+              />
             </div>
           </Panel>
           <Panel title="Delivery & rewards">
             <div className="co-form co-two">
               <Field
                 name="shipping"
-                label="Demo delivery fee $"
+                label="Delivery fee $"
                 type="number"
                 min={0}
                 step="0.01"
@@ -1226,23 +1284,8 @@ export function ShopSettings({ data }: Props) {
         <div className="co-integration-grid">
           {[
             ["Storefront", "Connected to this website", "green"],
-            ["Database", "PostgreSQL + Prisma · shared stock", "green"],
-            ["Whish", "Demo / manually verified recording", "amber"],
-            [
-              "Card payments",
-              "Demo recording; no terminal connection",
-              "amber",
-            ],
-            [
-              "SMS & email campaigns",
-              "Mock integration; no messages sent",
-              "amber",
-            ],
-            [
-              "Shopify / WooCommerce",
-              "Adapter interface ready; not connected",
-              "",
-            ],
+            ["Database", "Supabase · shared stock", "green"],
+            ["Whish", "Owner-confirmed payment recording", "amber"],
           ].map(([name, description, tone]) => (
             <div key={name}>
               <strong>{name}</strong>
@@ -1251,9 +1294,8 @@ export function ShopSettings({ data }: Props) {
           ))}
         </div>
         <p className="co-help">
-          The previous SQLite admin data remains separate and unchanged. This
-          demo uses a new PostgreSQL database. Use the private login file or
-          environment configuration for the single owner account.
+          The owner account, shared database, image storage, and campaign
+          history use the same Supabase project.
         </p>
       </Panel>
     </>

@@ -1,3 +1,5 @@
+import { publicSupabase } from "../supabase.server";
+import { finalPrice } from "../../domain/pricing";
 import { db } from "./db.server";
 import type { Category } from "../../data/products";
 import { dateRange } from "./rules";
@@ -62,7 +64,12 @@ export async function commerceSnapshot(from?: string, to?: string) {
     db.account.findMany({ orderBy: { code: "asc" } }),
     db.giftCard.findMany({ orderBy: { createdAt: "desc" } }),
     db.promo.findMany(),
-    db.campaign.findMany({ orderBy: { createdAt: "desc" } }),
+    db.campaign.findMany({
+      include: {
+        recipients: { include: { customer: { select: { name: true } } } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
     settings(),
     db.stockMovement.findMany({
       include: { variant: { include: { product: true } } },
@@ -177,7 +184,15 @@ export async function commerceSnapshot(from?: string, to?: string) {
           reorder: Math.max(0, p.threshold * 2 - v.stock),
         })),
     );
+  const [shops, categories, liabilities] = await Promise.all([
+    db.shop.findMany(),
+    db.category.findMany(),
+    db.liability.findMany(),
+  ]);
   const data = {
+    shops,
+    categories,
+    liabilities,
     products,
     customers: customers.map((c) => {
       const history = orders.filter(
@@ -224,7 +239,7 @@ export async function commerceSnapshot(from?: string, to?: string) {
         .flatMap((p) => p.variants)
         .reduce((s, v) => s + v.stock * v.averageCost, 0),
       cashFlow: balances
-        .filter((a) => ["1000", "1010", "1020"].includes(a.code))
+        .filter((a) => ["1000", "1020"].includes(a.code))
         .reduce((s, a) => s + a.debit - a.credit, 0),
       series: [...series.values()].sort((a, b) => a.date.localeCompare(b.date)),
       topProducts: [...grouped.values()].sort((a, b) => b.total - a.total),
@@ -258,31 +273,43 @@ type Serialized<T> = T extends Date
 export type CommerceSnapshot = Awaited<ReturnType<typeof commerceSnapshot>>;
 
 export async function storefrontCatalog() {
-  const products = await db.product.findMany({
-    where: { published: true, archived: false },
-    include: { variants: { where: { active: true } } },
-  });
+  const result = await publicSupabase()
+    .from("products")
+    .select(
+      "id,slug,name,description,price_cents,online_price_cents,discount_type,discount_value,category,gender,brand,image_url,image_index,featured,visibility,archived,product_variants(id,size,color,stock,active)",
+    )
+    .eq("visibility", "website_and_pos")
+    .eq("archived", false);
+  if (result.error) throw new Error("The shared catalog could not be loaded.");
   return {
     enabled: true,
-    products: products.map((p) => ({
-      id: p.slug,
-      name: p.name,
-      description: p.description,
-      price: p.onlinePrice / 100,
-      category: (p.category === "Toys" || p.category === "Accessories"
-        ? p.category
-        : p.gender) as Category,
-      gender: p.gender as "Boys" | "Girls" | "Unisex",
-      condition: "new" as const,
-      productType: p.category,
-      image: p.imageIndex,
-      imageUrl: p.imageUrl || null,
-      available: p.variants.some((v) => v.stock > 0),
-      sizes: [...new Set(p.variants.map((v) => v.size))],
-      colors: [...new Set(p.variants.map((v) => v.color))],
-      model: "set" as const,
-      isNew: p.featured,
-      brand: p.brand,
-    })),
+    products: (result.data || []).map((p) => {
+      const variants = p.product_variants.filter((v) => v.active);
+      return {
+        id: p.slug,
+        name: p.name,
+        description: p.description,
+        price:
+          finalPrice(p.online_price_cents, {
+            discountType: p.discount_type,
+            discountValue: p.discount_value,
+          }) / 100,
+        originalPrice: p.discount_type ? p.online_price_cents / 100 : undefined,
+        category: (p.category === "Toys" || p.category === "Accessories"
+          ? p.category
+          : p.gender) as Category,
+        gender: p.gender as "Boys" | "Girls" | "Unisex",
+        condition: "new" as const,
+        productType: p.category,
+        image: p.image_index,
+        imageUrl: p.image_url || null,
+        available: true,
+        sizes: [...new Set(variants.map((v) => v.size))],
+        colors: [...new Set(variants.map((v) => v.color))],
+        model: "set" as const,
+        isNew: p.featured,
+        brand: p.brand,
+      };
+    }),
   };
 }

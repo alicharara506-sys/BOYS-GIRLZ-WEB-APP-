@@ -1,9 +1,13 @@
 import "dotenv/config";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { localPostgres } from "./local-postgres.mjs";
+import {register}from "tsx/esm/api";
+register();
+const {supabaseConfig}=await import("../src/server/supabase.server.ts");
+supabaseConfig();
 process.env.BNG_COMMERCE = "1";
-const pg = await localPostgres();
+const {startWhatsAppWorker}=await import("../src/server/whatsapp.server.ts");
+await startWhatsAppWorker();
 const port = Number(process.env.PORT || 5181);
 const production = process.argv.includes("--production");
 const app = express();
@@ -27,7 +31,7 @@ app.use(
 );
 const server = app.listen(port, "127.0.0.1", () =>
   console.log(
-    `Boys & Girlz · http://127.0.0.1:${port}/admin · Local demo / USD / no tax`,
+    `Boys & Girlz · http://127.0.0.1:${port}/admin · Supabase / USD / no tax`,
   ),
 );
 let closing = false;
@@ -36,7 +40,6 @@ const stop = async () => {
   closing = true;
   server.close();
   await vite?.close();
-  await pg.stop();
   process.exit(0);
 };
 process.on("SIGINT", stop);

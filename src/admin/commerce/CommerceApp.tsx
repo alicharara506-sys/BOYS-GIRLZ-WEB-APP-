@@ -24,7 +24,7 @@ import Overview from "./Overview";
 import POS from "./POS";
 import { Inventory, ProductEditor, Products } from "./Products";
 import { OrderDetail, Orders, Returns } from "./Orders";
-import { CustomerDetail, Customers, Marketing } from "./Customers";
+import { CustomerDetail, Customers } from "./Customers";
 import {
   Accounting,
   CashDrawer,
@@ -34,6 +34,8 @@ import {
   Suppliers,
   Rewards,
 } from "./Finance";
+import WhatsAppCampaigns from "./WhatsAppCampaigns";
+import { Liabilities } from "./Liabilities";
 import "./commerce.css";
 const navigation = [
   ["", "Overview", LayoutDashboard],
@@ -47,6 +49,7 @@ const navigation = [
   ["suppliers", "Suppliers", Truck],
   ["purchases", "Purchases", ShoppingBag],
   ["accounting", "Accounting", CircleDollarSign],
+  ["liabilities", "Liabilities", CircleDollarSign],
   ["reports", "Reports", ChartNoAxesCombined],
   ["cash", "Cash drawer", Store],
   ["rewards", "Loyalty & gift cards", Gift],
@@ -56,10 +59,12 @@ export default function CommerceApp({
   snapshot,
   csrfToken,
   email,
+  whatsapp,
 }: {
   snapshot: CommerceSnapshot;
   csrfToken: string;
   email: string;
+  whatsapp: { status: string; qr: string };
 }) {
   const path = useLocation()
     .pathname.replace(/\/$/, "")
@@ -88,13 +93,24 @@ export default function CommerceApp({
   else if (section === "returns") content = <Returns data={snapshot} />;
   else if (section === "customers")
     content = itemId ? (
-      <CustomerDetail key={itemId} data={snapshot} id={itemId} />
+      <>
+        <CustomerDetail key={itemId} data={snapshot} id={itemId} />
+        {itemId !== "new" && (
+          <WhatsAppCampaigns
+            data={snapshot}
+            connection={whatsapp}
+            customerId={itemId}
+          />
+        )}
+      </>
     ) : (
       <Customers data={snapshot} />
     );
-  else if (section === "marketing") content = <Marketing data={snapshot} />;
+  else if (section === "marketing")
+    content = <WhatsAppCampaigns data={snapshot} connection={whatsapp} />;
   else if (section === "suppliers") content = <Suppliers data={snapshot} />;
   else if (section === "purchases") content = <Purchases data={snapshot} />;
+  else if (section === "liabilities") content = <Liabilities data={snapshot} />;
   else if (section === "accounting") content = <Accounting data={snapshot} />;
   else if (section === "reports") content = <Reports data={snapshot} />;
   else if (section === "cash") content = <CashDrawer data={snapshot} />;
@@ -114,9 +130,12 @@ export default function CommerceApp({
         )}
         <aside className={`co-sidebar ${menu ? "is-open" : ""}`}>
           <Link to="/admin" className="co-brand">
-            <span className="co-brand-mark">
-              b<span>&</span>g
-            </span>
+            <img
+              src="/assets/boys-girlz-logo.webp"
+              alt="Boys & Girlz"
+              width="150"
+              height="50"
+            />
             <div>
               Boys & Girlz<small>THE OWNER’S DESK</small>
             </div>
@@ -150,8 +169,8 @@ export default function CommerceApp({
           </nav>
           <div className="co-sidebar-bottom">
             <div className="co-local-card">
-              <span className="co-online-dot" /> Local demo
-              <small>Sample data · no live payments</small>
+              <span className="co-online-dot" /> Connected shop
+              <small>Supabase · shared inventory</small>
             </div>
             <Form action="/admin/logout" method="post">
               <input type="hidden" name="csrfToken" value={csrfToken} />
@@ -187,8 +206,12 @@ export default function CommerceApp({
             </div>
           </header>
           <div className="co-demo-banner">
-            <span>DEMO WORKSPACE</span> One shop. One stock pool. USD prices
-            with no tax. Payments are recorded for testing.
+            <span>
+              {snapshot.settings.demo
+                ? "SAMPLE DATA · TEST SALES"
+                : "BOYS & GIRLZ"}
+            </span>{" "}
+            One shop. One stock pool. USD prices with no tax. Cash and Whish.
           </div>
           <main className="co-main" id="admin-main">
             {content}

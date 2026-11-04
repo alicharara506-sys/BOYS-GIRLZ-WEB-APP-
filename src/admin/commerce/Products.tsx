@@ -22,6 +22,9 @@ import {
   usd,
   useCommand,
 } from "./ui";
+import { InlineSelect } from "./InlineSelect";
+import { finalPrice } from "../../domain/pricing";
+import { useSearchParams } from "react-router";
 import JsBarcode from "jsbarcode";
 type Props = { data: CommerceSnapshot };
 export function Products({ data }: Props) {
@@ -109,7 +112,8 @@ export function Products({ data }: Props) {
                   </td>
                   <td>{p.category}</td>
                   <td>
-                    <strong>{usd(p.price)}</strong> / {usd(p.onlinePrice)}
+                    <strong>{usd(finalPrice(p.price, p))}</strong> /{" "}
+                    {usd(finalPrice(p.onlinePrice, p))}
                   </td>
                   <td>
                     {p.variants.reduce((s, v) => s + v.stock, 0)} units
@@ -124,7 +128,6 @@ export function Products({ data }: Props) {
                           : "Hidden"}
                     </Badge>
                     {p.featured && <small>Featured</small>}
-                    {p.onlineOnly && <small>Online only</small>}
                   </td>
                   <td>
                     <button
@@ -151,6 +154,15 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
   const cmd = useCommand();
   const [preview, setPreview] = useState(product?.imageUrl || "");
   const token = useContext(TokenContext);
+  const [params] = useSearchParams();
+  const [shopId, setShopId] = useState(
+    product?.shopId || data.shops[0]?.id || "",
+  );
+  const [categoryId, setCategoryId] = useState(
+    product?.categoryId ||
+      data.categories.find((c) => c.name === params.get("category"))?.id ||
+      "",
+  );
   if (id !== "new" && !product) return <Empty>Product not found.</Empty>;
   const save = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -160,7 +172,16 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
       name: str(form, "name"),
       slug: str(form, "slug"),
       description: str(form, "description"),
-      category: str(form, "category"),
+      category:
+        data.categories.find((c) => c.id === categoryId)?.name || "Unlisted",
+      categoryId,
+      shopId,
+      visibility: str(form, "visibility"),
+      discountType: str(form, "discountType") || null,
+      discountValue:
+        str(form, "discountType") === "percentage"
+          ? num(form, "discountValue")
+          : amount(form.get("discountValue")),
       gender: str(form, "gender"),
       brand: str(form, "brand"),
       season: str(form, "season"),
@@ -170,9 +191,9 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
       onlinePrice: amount(form.get("onlinePrice")),
       cost: amount(form.get("cost")),
       threshold: num(form, "threshold"),
-      published: flag(form, "published"),
+
       featured: flag(form, "featured"),
-      onlineOnly: flag(form, "onlineOnly"),
+
       sizes: str(form, "sizes")
         .split(",")
         .map((s) => s.trim())
@@ -227,7 +248,7 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
               <Field
                 name="name"
                 label="Product name"
-                value={product?.name}
+                value={product?.name || params.get("name") || ""}
                 required
               />
               <Field
@@ -237,20 +258,21 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
                 required
                 hint="Lowercase letters, numbers, and dashes"
               />
-              <Select
-                name="category"
-                label="Category"
-                value={product?.category}
-                options={[
-                  "Tops",
-                  "Bottoms",
-                  "Dresses",
-                  "Outerwear",
-                  "Accessories",
-                  "Sets",
-                  "Sleepwear",
-                  "Toys",
-                ]}
+              <InlineSelect
+                kind="shop"
+                value={shopId}
+                onChange={(id) => {
+                  setShopId(id);
+                  setCategoryId("");
+                }}
+                options={data.shops}
+              />
+              <InlineSelect
+                kind="category"
+                value={categoryId}
+                onChange={setCategoryId}
+                options={data.categories.filter((c) => c.shopId === shopId)}
+                shopId={shopId}
               />
               <Select
                 name="gender"
@@ -297,7 +319,11 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
                 type="number"
                 min={0}
                 step="0.01"
-                value={(product?.price || 0) / 100}
+                value={
+                  product
+                    ? product.price / 100
+                    : Number(params.get("price") || 0) / 100
+                }
                 required
               />
               <Field
@@ -306,7 +332,11 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
                 type="number"
                 min={0}
                 step="0.01"
-                value={(product?.onlinePrice || 0) / 100}
+                value={
+                  product
+                    ? product.onlinePrice / 100
+                    : Number(params.get("price") || 0) / 100
+                }
                 required
               />
               <Field
@@ -388,30 +418,49 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
               label="Or HTTPS image URL"
               value={product?.imageUrl || ""}
             />
-            <Field
+            <input
               name="imageIndex"
-              label="Sample image number (0–11)"
-              type="number"
-              min={0}
+              type="hidden"
               value={product?.imageIndex || 0}
             />
           </Panel>
           <Panel title="Online visibility">
             <div className="co-form">
-              <Check
-                name="published"
-                label="Publish on the website"
-                value={product?.published}
+              <Select
+                name="visibility"
+                label="Sell on"
+                value={product?.visibility || "website_and_pos"}
+                options={[
+                  { value: "website_and_pos", label: "Website and POS" },
+                  { value: "pos_only", label: "POS only" },
+                ]}
               />
               <Check
                 name="featured"
                 label="Featured favorite"
                 value={product?.featured}
               />
-              <Check
-                name="onlineOnly"
-                label="Online only (hide from POS)"
-                value={product?.onlineOnly}
+              <Select
+                name="discountType"
+                label="Product discount"
+                value={product?.discountType || ""}
+                options={[
+                  { value: "", label: "None" },
+                  { value: "percentage", label: "Percentage" },
+                  { value: "amount", label: "Fixed amount $" },
+                ]}
+              />
+              <Field
+                name="discountValue"
+                label="Discount value (% or $)"
+                type="number"
+                min={0}
+                step="0.01"
+                value={
+                  product?.discountType === "percentage"
+                    ? product.discountValue
+                    : (product?.discountValue || 0) / 100
+                }
               />
               <p className="co-help">
                 POS and website orders always use the same stock.

@@ -1,7 +1,7 @@
 import { business } from "../config/business";
 
 // Keep answers as plain text: the FAQ page and its JSON-LD use these exact strings.
-// TODO: Replace the policy fallback only after the owner confirms the returns terms.
+// Replace the policy fallback only after the owner confirms the returns terms.
 export const returnsPolicy = business.returnsPolicy.trim() || "The Boys & Girlz returns and exchanges policy has not been confirmed for publication yet. Contact the shop before ordering to ask about eligibility, time limits and any conditions for the items you want; the website does not currently publish a confirmed return window.";
 
 export const faqs = [

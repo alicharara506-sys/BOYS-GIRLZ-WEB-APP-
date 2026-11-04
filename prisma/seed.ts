@@ -19,6 +19,11 @@ else
         update: {},
         create: { key: "shop", value: defaults },
       });
+      const shop = await tx.shop.upsert({
+        where: { name: "Boys & Girlz" },
+        update: {},
+        create: { name: "Boys & Girlz" },
+      });
       const rows = [
         ["Everyday Overshirt", "Tops", "Boys", 2800, 1200, 8],
         ["Gingham Day Dress", "Dresses", "Girls", 3200, 1400, 9],
@@ -37,8 +42,15 @@ else
       let inventoryValue = 0;
       for (const [index, row] of rows.entries()) {
         const [name, category, gender, price, cost, imageIndex] = row;
+        const group = await tx.category.upsert({
+          where: { name_shopId: { name: category, shopId: shop.id } },
+          update: {},
+          create: { name: category, shopId: shop.id },
+        });
         const product = await tx.product.create({
           data: {
+            shopId: shop.id,
+            categoryId: group.id,
             slug: name
               .toLowerCase()
               .replace(/[^a-z0-9]+/g, "-")
@@ -166,7 +178,7 @@ else
           (channel === "online" ? product.onlinePrice : product.price) *
             quantity +
           (channel === "online" ? 500 : 0);
-        const method = i % 2 ? "cash" : "card";
+        const method = i % 2 ? "cash" : "whish";
         const order = await sell(tx, {
           requestKey: `seed-sale-${i}`,
           channel,

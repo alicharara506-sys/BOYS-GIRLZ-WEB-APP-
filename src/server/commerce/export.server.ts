@@ -158,7 +158,7 @@ export async function commerceExport(url: URL) {
         "Cash flow",
         r.from,
         r.to,
-        "Cash / card / Whish net movement",
+        "Cash / Whish net movement",
         dollar(r.cashFlow),
       ],
       [

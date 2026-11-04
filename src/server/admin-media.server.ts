@@ -1,9 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile, unlink } from "node:fs/promises";
-import { resolve } from "node:path";
+import { storageSupabase } from "./supabase.server";
 
 const MAX_UPLOAD = 5 * 1024 * 1024;
-export const mediaDirectory = () => resolve(process.env.BNG_ADMIN_DATA_DIR || ".data", "uploads");
 export const mediaFilename = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:png|jpg|webp|gif)$/;
 
 export async function readAdminForm(request: Request): Promise<FormData> {
@@ -39,15 +37,10 @@ export async function saveAdminImage(file: FormDataEntryValue | null): Promise<{
   else if (["GIF87a", "GIF89a"].includes(bytes.toString("ascii", 0, 6))) extension = "gif";
   if (!extension) throw new Error("Choose a valid JPG, PNG, WebP or GIF image.");
   const filename = `${randomUUID()}.${extension}`;
-  const path = resolve(mediaDirectory(), filename);
-  await mkdir(mediaDirectory(), { recursive: true });
-  await writeFile(path, bytes, { flag: "wx" });
-  return { url: `/media/${filename}`, file: path };
+  const bucket=storageSupabase().storage.from('product-images');
+  const {error}=await bucket.upload(filename,bytes,{contentType:extension==='jpg'?'image/jpeg':`image/${extension}`,upsert:false});
+  if(error)throw new Error('Image upload failed.');
+  return {url:bucket.getPublicUrl(filename).data.publicUrl,file:filename};
 }
 
-export async function removeFailedUpload(path: string) { await unlink(path).catch(() => undefined); }
-export async function readAdminImage(filename: string) {
-  if (!mediaFilename.test(filename)) throw new Response("Not found", { status: 404 });
-  try { return await readFile(resolve(mediaDirectory(), filename)); }
-  catch { throw new Response("Not found", { status: 404 }); }
-}
+export async function removeFailedUpload(path: string) { await storageSupabase().storage.from('product-images').remove([path]); }

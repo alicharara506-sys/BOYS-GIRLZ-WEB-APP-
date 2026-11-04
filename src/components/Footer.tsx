@@ -8,7 +8,6 @@ import { categories, matchesCategory } from "../data/products";
 import { useCatalog } from "../state/Catalog";
 import { useLocale } from "../i18n/Locale";
 import { brandColors } from "./BrandRibbon";
-import Newsletter from "./Newsletter";
 import { business } from "../config/business";
 
 const FOOTER_BRANDS = 6;
@@ -94,7 +93,7 @@ export default function Footer() {
           <div className="footer-signup">
             <h2>{t("Join our little circle")}</h2>
             <p>{t("Be the first to know about new arrivals, special offers and more.")}</p>
-            <Newsletter compact />
+            {whatsapp&&<a className="btn btn-pink" href={whatsapp} target="_blank" rel="noreferrer">{t("WhatsApp")} →</a>}
           </div>
           <div className="footer-contacts">
             {socials.map(({ name, handle, href, Icon }) => <ContactRow key={name} icon={<Icon size={16} />} label={name} href={href}>

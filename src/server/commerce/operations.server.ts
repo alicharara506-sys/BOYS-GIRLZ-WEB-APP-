@@ -18,16 +18,12 @@ const productInput = z.object({
   name: requiredText.max(150),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description: text,
-  category: z.enum([
-    "Tops",
-    "Bottoms",
-    "Dresses",
-    "Outerwear",
-    "Accessories",
-    "Sets",
-    "Sleepwear",
-    "Toys",
-  ]),
+  category: requiredText,
+  shopId: requiredText,
+  categoryId: requiredText,
+  visibility: z.enum(["website_and_pos", "pos_only"]),
+  discountType: z.enum(["percentage", "amount"]).nullable().optional(),
+  discountValue: cents.default(0),
   gender: z.enum(["Boys", "Girls", "Unisex"]),
   brand: requiredText,
   season: requiredText,
@@ -47,9 +43,9 @@ const productInput = z.object({
   onlinePrice: cents,
   cost: cents,
   threshold: z.coerce.number().int().min(0).max(10000),
-  published: z.boolean(),
+  published: z.boolean().optional(),
   featured: z.boolean(),
-  onlineOnly: z.boolean(),
+
   sizes: z.array(requiredText.max(40)).min(1).max(30),
   colors: z.array(requiredText.max(40)).min(1).max(20),
 });
@@ -66,6 +62,15 @@ export async function saveCommerceProduct(raw: unknown) {
     if (prior && input.slug !== prior.slug)
       throw new CommerceError("The product URL cannot change after creation.");
     const { id: productId, sizes, colors, ...data } = input;
+    if (input.discountType === "percentage" && input.discountValue > 100)
+      throw new CommerceError("Percentage must be between 0 and 100.");
+    if (
+      !(await tx.category.findFirst({
+        where: { id: input.categoryId, shopId: input.shopId },
+      }))
+    )
+      throw new CommerceError("Choose a category belonging to this shop.");
+    data.published = input.visibility === "website_and_pos";
     if (
       new Set(sizes).size !== sizes.length ||
       new Set(colors).size !== colors.length
@@ -97,30 +102,39 @@ export async function saveCommerceProduct(raw: unknown) {
       where: { productId: product.id },
       data: { active: false },
     });
+    const existingIds: string[] = [];
+    const additions: {
+      productId: string;
+      size: string;
+      color: string;
+      sku: string;
+      barcode: string;
+      averageCost: number;
+    }[] = [];
     for (const size of sizes)
       for (const color of colors) {
         const old = prior?.variants.find(
           (v) => v.size === size && v.color === color,
         );
-        if (old)
-          await tx.variant.update({
-            where: { id: old.id },
-            data: { active: true },
-          });
+        if (old) existingIds.push(old.id);
         else {
           const code = `BG${randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase()}`;
-          await tx.variant.create({
-            data: {
-              productId: product.id,
-              size,
-              color,
-              sku: code,
-              barcode: code,
-              averageCost: input.cost,
-            },
+          additions.push({
+            productId: product.id,
+            size,
+            color,
+            sku: code,
+            barcode: code,
+            averageCost: input.cost,
           });
         }
       }
+    if (existingIds.length)
+      await tx.variant.updateMany({
+        where: { id: { in: existingIds } },
+        data: { active: true },
+      });
+    if (additions.length) await tx.variant.createMany({ data: additions });
     return product;
   });
 }
@@ -137,6 +151,7 @@ const customerInput = z.object({
   email: z.union([z.email(), z.literal("")]),
   address: text,
   tags: z.array(text).max(20),
+  consentWhatsapp: z.boolean().default(false),
   children: z
     .array(
       z.object({
@@ -218,8 +233,7 @@ export async function runCommand(intent: string, raw: unknown) {
       const variant = await tx.variant.findUnique({
         where: { id: input.variantId },
       });
-      if (!variant || variant.stock + input.quantity < 0)
-        throw new CommerceError("This adjustment would make stock negative.");
+      if (!variant) throw new CommerceError("Variant not found.");
       await tx.variant.update({
         where: { id: variant.id },
         data: { stock: { increment: input.quantity } },
@@ -280,7 +294,7 @@ export async function runCommand(intent: string, raw: unknown) {
         ]),
         tracking: text,
         carrier: text,
-        method: z.enum(["cash", "card", "whish"]),
+        method: z.enum(["cash", "whish"]),
       })
       .parse(raw);
     return updateOnlineOrder(
@@ -305,7 +319,7 @@ export async function runCommand(intent: string, raw: unknown) {
             }),
           )
           .min(1),
-        method: z.enum(["cash", "card", "whish", "credit"]),
+        method: z.enum(["cash", "whish", "credit"]),
         reason: requiredText,
         replacement: z.unknown().optional(),
       })
@@ -438,11 +452,14 @@ export async function runCommand(intent: string, raw: unknown) {
       if (!purchase || purchase.status !== "ordered")
         throw new CommerceError("This purchase is not awaiting receipt.");
       for (const item of purchase.items) {
-        const averageCost = Math.round(
-          (item.variant.stock * item.variant.averageCost +
-            item.quantity * item.cost) /
-            (item.variant.stock + item.quantity),
-        );
+        const averageCost =
+          item.variant.stock <= 0
+            ? item.cost
+            : Math.round(
+                (item.variant.stock * item.variant.averageCost +
+                  item.quantity * item.cost) /
+                  (item.variant.stock + item.quantity),
+              );
         await tx.variant.update({
           where: { id: item.variantId },
           data: { stock: { increment: item.quantity }, averageCost },
@@ -476,7 +493,7 @@ export async function runCommand(intent: string, raw: unknown) {
       .object({
         id,
         amount: cents.refine((v) => v > 0),
-        method: z.enum(["cash", "card", "whish"]),
+        method: z.enum(["cash", "whish"]),
         reference: text,
       })
       .parse(raw);
@@ -533,7 +550,7 @@ export async function runCommand(intent: string, raw: unknown) {
           "Other",
         ]),
         amount: cents.refine((v) => v > 0),
-        method: z.enum(["cash", "card", "whish"]),
+        method: z.enum(["cash", "whish"]),
         note: requiredText,
         date: z.iso.date(),
       })
@@ -569,7 +586,7 @@ export async function runCommand(intent: string, raw: unknown) {
     const input = z
       .object({
         amount: cents.refine((v) => v > 0),
-        method: z.enum(["cash", "card", "whish"]),
+        method: z.enum(["cash", "whish"]),
       })
       .parse(raw);
     return atomic(async (tx) => {
@@ -659,6 +676,7 @@ export async function runCommand(intent: string, raw: unknown) {
         shopPhone: text,
         shopAddress: text,
         receiptFooter: text,
+        demo: z.boolean(),
       })
       .parse(raw);
     const config = await settings();
@@ -668,19 +686,30 @@ export async function runCommand(intent: string, raw: unknown) {
       create: { key: "shop", value: { ...config, ...input } },
     });
   }
-  if (intent === "campaign") {
+  if (intent === "create-shop") {
+    const input = z.object({ name: requiredText }).parse(raw);
+    return db.shop.create({ data: input });
+  }
+  if (intent === "create-category") {
+    const input = z.object({ name: requiredText, shopId: id }).parse(raw);
+    return db.category.create({ data: input });
+  }
+  if (intent === "liability") {
     const input = z
       .object({
-        name: requiredText,
-        audience: requiredText,
-        channel: z.enum(["email", "sms"]),
-        message: requiredText,
+        id: text.optional(),
+        creditor: requiredText,
+        amount: cents,
+        settled: cents,
+        note: text,
       })
       .parse(raw);
-    const customers = await campaignAudience(input.audience);
-    return db.campaign.create({
-      data: { ...input, count: customers.length, status: "mock-sent" },
-    });
+    if (input.settled > input.amount)
+      throw new CommerceError("Settled amount exceeds the liability.");
+    const { id: recordId, ...data } = input;
+    return recordId
+      ? db.liability.update({ where: { id: recordId }, data })
+      : db.liability.create({ data });
   }
   throw new CommerceError("Unknown action.");
 }

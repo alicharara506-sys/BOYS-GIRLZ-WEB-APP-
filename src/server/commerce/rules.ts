@@ -2,7 +2,7 @@ import { z } from "zod";
 export const cents = z.coerce.number().int().min(0).max(100_000_000);
 export const text = z.string().trim().max(500);
 export const requiredText = text.min(1);
-export const methods = ["cash", "card", "whish", "credit", "gift"] as const;
+export const methods = ["cash", "whish", "credit", "gift"] as const;
 export const paymentSchema = z.object({
   method: z.enum(methods),
   amount: cents,
@@ -11,6 +11,7 @@ export const paymentSchema = z.object({
 export const saleSchema = z.object({
   requestKey: z.string().min(8).max(150),
   channel: z.enum(["pos", "online"]).default("pos"),
+  paymentMethod:z.enum(['cash_on_delivery','whish']).optional(),
   customerId: text.optional(),
   customerName: text.default("Walk-in customer"),
   phone: text.default(""),
@@ -18,7 +19,11 @@ export const saleSchema = z.object({
   items: z
     .array(
       z.object({
-        variantId: requiredText,
+        variantId: requiredText.optional(),
+        name: requiredText.optional(),
+        price: cents.optional(),
+        cost: cents.nullable().optional(),
+        category: text.optional(),
         quantity: z.coerce.number().int().min(1).max(999),
         discount: cents.default(0),
       }),
@@ -49,7 +54,7 @@ export const defaults = {
   shopPhone: "+961 81 061 731",
   shopAddress: "",
   receiptFooter: "Thank you for shopping small. See you again soon!",
-  demo: true,
+  demo: false,
 };
 export type Settings = typeof defaults;
 export class CommerceError extends Error {

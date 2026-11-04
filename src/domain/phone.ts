@@ -1,0 +1,1 @@
+export function whatsappPhone(raw:string){let digits=raw.replace(/\D/g,'');if(digits.startsWith('00'))digits=digits.slice(2);if(/^0[137]\d{6}$/.test(digits))digits='961'+digits.slice(1);else if(/^\d{8}$/.test(digits))digits='961'+digits;return '+'+digits;}

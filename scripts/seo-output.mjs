@@ -75,7 +75,7 @@ export function generateSeoOutputs({ siteUrl = "", catalogVerified = false, last
     "# Public pages, including supported AI/search crawlers, may be crawled.",
     "# Utility pages carry noindex in HTML; they are crawlable so crawlers can read it.",
     "User-agent: *", "Allow: /",
-    ...(origin ? [`Sitemap: ${origin}/sitemap.xml`] : ["# TODO: Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin to publish a sitemap."]),
+    ...(origin ? [`Sitemap: ${origin}/sitemap.xml`] : ["# Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin to publish a sitemap."]),
     "",
   ].join("\n");
   const sitemap = origin ? [
@@ -107,7 +107,7 @@ export function generateSeoOutputs({ siteUrl = "", catalogVerified = false, last
     `- [Arabic frequently asked questions](${origin}/faq?lang=ar)`, "",
     "## Verified information", "",
     "For current delivery timing, returns terms, product measurements and availability, use the contact page. No founding date, physical shop address or opening hours are stated here without confirmation.", "",
-    ...(!origin ? ["<!-- TODO: Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin. Links are relative until then. -->", ""] : []),
+    ...(!origin ? ["<!-- Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin. Links are relative until then. -->", ""] : []),
   ].join("\n");
   return { robots, sitemap, llms, paths, origin };
 }

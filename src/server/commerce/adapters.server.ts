@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { atomic, sell } from "./sales.server";
 import { CommerceError } from "./rules";
+import {whatsappPhone}from'../../domain/phone';
 export interface StorefrontAdapter {
   name: string;
   placeOrder(
@@ -26,13 +27,12 @@ export type StorefrontOrder = {
     quantity: number;
   }[];
 };
-// Future Shopify/WooCommerce adapters translate external IDs and webhooks into this contract.
 // External payment settlement must be verified server-side before recording a payment.
 export const builtInStorefront: StorefrontAdapter = {
   name: "Boys & Girlz storefront",
   async placeOrder(input) {
     const order = await atomic(async (tx) => {
-      const phone = input.mobile.replace(/[^+0-9]/g, "");
+      const phone = whatsappPhone(input.mobile);
       const customer = await tx.customer.upsert({
         where: { phone },
         update: {},
@@ -41,7 +41,8 @@ export const builtInStorefront: StorefrontAdapter = {
           phone,
           email: input.email,
           address: `${input.governorate}, ${input.cityArea}, ${input.streetBuilding}`,
-          demo: true,
+          demo: false,
+          consentWhatsapp:false,
         },
       });
       const lines = [];
@@ -50,7 +51,7 @@ export const builtInStorefront: StorefrontAdapter = {
           where: {
             product: {
               slug: item.productSlug,
-              published: true,
+              visibility: "website_and_pos",
               archived: false,
             },
             active: true,
@@ -67,6 +68,7 @@ export const builtInStorefront: StorefrontAdapter = {
       return sell(tx, {
         requestKey: input.requestKey || randomUUID(),
         channel: "online",
+        paymentMethod:input.paymentMethod==='whish'?'whish':'cash_on_delivery',
         customerId: customer.id,
         items: lines,
         promoCode: input.promoCode,
@@ -78,22 +80,6 @@ export const builtInStorefront: StorefrontAdapter = {
     return {
       orderNumber: `BG-${String(order.number).padStart(6, "0")}`,
       totals: { totalCents: order.total },
-    };
-  },
-};
-export interface PaymentAdapter {
-  name: string;
-  mode: "mock" | "live";
-  verify(reference: string): Promise<{ verified: boolean; message: string }>;
-}
-export const whishDemo: PaymentAdapter = {
-  name: "Whish",
-  mode: "mock",
-  async verify() {
-    return {
-      verified: false,
-      message:
-        "Demo only. Connect a Whish merchant agreement and verified server callback before accepting live payments.",
     };
   },
 };

@@ -1,3 +1,4 @@
+import { finalPrice } from "../../domain/pricing";
 import { Prisma } from "@prisma/client";
 import { db } from "./db.server";
 import {
@@ -53,38 +54,66 @@ export async function sell(tx: Tx, raw: SaleInput) {
   if (existing) return existing;
   const config = await settings(tx);
   if (
-    new Set(input.items.map((item) => item.variantId)).size !==
-    input.items.length
+    new Set(
+      input.items.filter((i) => i.variantId).map((item) => item.variantId),
+    ).size !== input.items.filter((i) => i.variantId).length
   )
     throw new CommerceError("Combine duplicate variants into one cart line.");
   const variants = await tx.variant.findMany({
     where: {
-      id: { in: input.items.map((item) => item.variantId) },
+      id: {
+        in: input.items.flatMap((item) =>
+          item.variantId ? [item.variantId] : [],
+        ),
+      },
       active: true,
     },
     include: { product: true },
   });
   const lines = input.items.map((item) => {
+    if (!item.variantId) {
+      if (input.channel !== "pos" || !item.name || item.price === undefined)
+        throw new CommerceError(
+          "Enter a name and price for this unlisted item.",
+        );
+      if (item.discount > item.price * item.quantity)
+        throw new CommerceError("Line discount exceeds the item value.");
+      return {
+        variantId: null,
+        productId: null,
+        isQuickSale: true,
+        name: item.name,
+        category: item.category || "Unlisted",
+        sku: "",
+        size: "",
+        color: "",
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discount: item.discount,
+        net: item.price * item.quantity - item.discount,
+        unitCost: item.cost ?? null,
+      };
+    }
     const variant = variants.find((v) => v.id === item.variantId);
     if (
       !variant ||
       variant.product.archived ||
-      (input.channel === "pos" && variant.product.onlineOnly) ||
-      (input.channel === "online" && !variant.product.published)
+      (input.channel === "online" &&
+        variant.product.visibility !== "website_and_pos")
     )
       throw new CommerceError("One of these products is unavailable.");
-    if (variant.stock < item.quantity)
-      throw new CommerceError(
-        `${variant.product.name} (${variant.size}, ${variant.color}) has only ${variant.stock} available.`,
-      );
-    const price =
+    const price = finalPrice(
       input.channel === "online"
         ? variant.product.onlinePrice
-        : variant.product.price;
+        : variant.product.price,
+      variant.product,
+    );
     if (item.discount > price * item.quantity)
       throw new CommerceError("A line discount cannot exceed the line value.");
     return {
       variantId: variant.id,
+      productId: variant.productId,
+      isQuickSale: false,
       name: variant.product.name,
       category: variant.product.category,
       sku: variant.sku,
@@ -94,7 +123,7 @@ export async function sell(tx: Tx, raw: SaleInput) {
       unitPrice: price,
       discount: item.discount,
       net: price * item.quantity - item.discount,
-      unitCost: variant.averageCost,
+      unitCost: variant.product.cost,
     };
   });
   const subtotal = lines.reduce(
@@ -164,7 +193,7 @@ export async function sell(tx: Tx, raw: SaleInput) {
   // Owner confirmed no tax. The tax account is retained for a future tax configuration.
   const total = net + shipping;
   const cost = lines.reduce(
-    (sum, line) => sum + line.quantity * line.unitCost,
+    (sum, line) => sum + line.quantity * (line.unitCost || 0),
     0,
   );
   if (
@@ -211,6 +240,8 @@ export async function sell(tx: Tx, raw: SaleInput) {
   const order = await tx.order.create({
     data: {
       requestKey: input.requestKey,
+      paymentMethod:input.payments.length>1?"split":input.payments[0]?.method||input.paymentMethod||(input.channel==="online"?"cash_on_delivery":"cash"),
+      shopId:variants[0]?.product.shopId,
       channel: input.channel,
       status:
         paid === total
@@ -246,8 +277,9 @@ export async function sell(tx: Tx, raw: SaleInput) {
     include: fullOrder,
   });
   for (const line of lines) {
+    if (!line.variantId) continue;
     const changed = await tx.variant.updateMany({
-      where: { id: line.variantId, stock: { gte: line.quantity } },
+      where: { id: line.variantId },
       data: { stock: { decrement: line.quantity } },
     });
     if (!changed.count)
@@ -332,7 +364,7 @@ export async function updateOnlineOrder(
       throw new CommerceError("This order cannot move to that status.");
     const paid = order.payments.reduce((sum, p) => sum + p.amount, 0);
     if ((status === "paid" || status === "delivered") && paid < order.total) {
-      if (!["cash", "whish", "card"].includes(method))
+      if (!["cash", "whish"].includes(method))
         throw new CommerceError("Choose the collected payment method.");
       const amount = order.total - paid;
       const drawer =
@@ -357,14 +389,18 @@ export async function updateOnlineOrder(
       if (order.returns.length)
         throw new CommerceError("An order with returns cannot be cancelled.");
       for (const line of order.items) {
+        if (!line.variantId) continue;
         const variant = await tx.variant.findUniqueOrThrow({
           where: { id: line.variantId },
         });
-        const averageCost = Math.round(
-          (variant.stock * variant.averageCost +
-            line.quantity * line.unitCost) /
-            (variant.stock + line.quantity),
-        );
+        const averageCost =
+          variant.stock <= 0
+            ? line.unitCost || 0
+            : Math.round(
+                (variant.stock * variant.averageCost +
+                  line.quantity * (line.unitCost || 0)) /
+                  (variant.stock + line.quantity),
+              );
         await tx.variant.update({
           where: { id: line.variantId },
           data: { stock: { increment: line.quantity }, averageCost },
@@ -457,7 +493,7 @@ export async function returnItems(
     new Set(input.items.map((i) => i.lineId)).size !== input.items.length
   )
     throw new CommerceError("Choose distinct return lines.");
-  if (!["cash", "card", "whish", "credit"].includes(input.method))
+  if (!["cash", "whish", "credit"].includes(input.method))
     throw new CommerceError("Choose a refund method.");
   if (input.method === "credit" && !order.customerId)
     throw new CommerceError("Store credit requires a named customer.");
@@ -519,13 +555,13 @@ export async function returnItems(
       where: { id: item.lineId },
       data: { returned: { increment: item.quantity } },
     });
-    if (item.restock) {
+    if (item.restock && item.line.variantId) {
       const variant = await tx.variant.findUniqueOrThrow({
         where: { id: item.line.variantId },
       });
-      const averageCost = Math.round(
+      const averageCost = variant.stock<=0 ? (item.line.unitCost||0) : Math.round(
         (variant.stock * variant.averageCost +
-          item.quantity * item.line.unitCost) /
+          item.quantity * (item.line.unitCost || 0)) /
           (variant.stock + item.quantity),
       );
       await tx.variant.update({
@@ -540,7 +576,7 @@ export async function returnItems(
           reference: result.id,
         },
       });
-      restockCost += item.line.unitCost * item.quantity;
+      restockCost += (item.line.unitCost || 0) * item.quantity;
     }
   }
   if (input.method === "cash")

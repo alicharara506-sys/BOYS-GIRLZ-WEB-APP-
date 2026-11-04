@@ -10,7 +10,6 @@ import {
   Empty,
   Field,
   Panel,
-  Select,
   str,
   usd,
 } from "./ui";
@@ -166,6 +165,7 @@ export function CustomerDetail({ data, id }: Props & { id: string }) {
           phone: str(f, "phone"),
           email: str(f, "email"),
           address: str(f, "address"),
+          consentWhatsapp: f.get("consentWhatsapp") === "on",
           tags: str(f, "tags")
             .split(",")
             .map((s) => s.trim())
@@ -194,6 +194,14 @@ export function CustomerDetail({ data, id }: Props & { id: string }) {
               type="email"
               value={customer?.email}
             />
+            <label className="co-check">
+              <input
+                name="consentWhatsapp"
+                type="checkbox"
+                defaultChecked={customer?.consentWhatsapp || false}
+              />
+              Customer consents to WhatsApp messages
+            </label>
             <Field name="address" label="Address" value={customer?.address} />
             <Field
               name="tags"
@@ -378,167 +386,6 @@ export function CustomerDetail({ data, id }: Props & { id: string }) {
           </Panel>
         </>
       )}
-    </>
-  );
-}
-export function Marketing({ data }: Props) {
-  const [audience, setAudience] = useState("birthdays");
-  const options = [
-    { value: "all", label: "All customers" },
-    { value: "birthdays", label: "Children’s birthdays this month" },
-    { value: "size-up", label: "Size-up reminder (90+ days since visit)" },
-    { value: "back-to-school", label: "Back to school (ages 4–14)" },
-    ...[...new Set(data.customers.flatMap((c) => c.tags))].map((t) => ({
-      value: t,
-      label: t,
-    })),
-  ];
-  const now = new Date();
-  const customers = data.customers.filter(
-    (c) =>
-      audience === "all" ||
-      (audience === "birthdays" &&
-        c.children.some(
-          (k) => new Date(k.birthdate).getUTCMonth() === now.getUTCMonth(),
-        )) ||
-      (audience === "size-up" &&
-        c.children.length > 0 &&
-        (!c.lastVisit || +now - +new Date(c.lastVisit) > 90 * 86400000)) ||
-      (audience === "back-to-school" &&
-        c.children.some(
-          (k) =>
-            (+now - +new Date(k.birthdate)) / 31557600000 >= 4 &&
-            (+now - +new Date(k.birthdate)) / 31557600000 <= 14,
-        )) ||
-      c.tags.includes(audience),
-  );
-  return (
-    <>
-      <div className="co-page-head">
-        <div>
-          <p className="co-eyebrow">THOUGHTFUL LITTLE REMINDERS</p>
-          <h1>
-            Keep in touch<span>.</span>
-          </h1>
-          <p>
-            Build targeted lists. Sending is simulated; no SMS or email leaves
-            this app.
-          </p>
-        </div>
-      </div>
-      <div className="co-detail-layout">
-        <Panel title="Create a campaign">
-          <CommandForm
-            intent="campaign"
-            label="Simulate campaign"
-            build={(f) => ({
-              name: str(f, "name"),
-              audience,
-              channel: str(f, "channel"),
-              message: str(f, "message"),
-            })}
-          >
-            <Field
-              label="Campaign name"
-              name="name"
-              required
-              placeholder="A birthday treat"
-            />
-            <label className="co-field">
-              <span>Audience</span>
-              <select
-                value={audience}
-                onChange={(e) => setAudience(e.target.value)}
-              >
-                {options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Select
-              name="channel"
-              label="Channel (mock integration)"
-              options={["sms", "email"]}
-            />
-            <label className="co-field">
-              <span>Message</span>
-              <textarea
-                name="message"
-                required
-                rows={5}
-                maxLength={500}
-                placeholder="A little hello from Boys & Girlz…"
-              />
-            </label>
-            <Badge tone="blue">
-              {customers.length} families in this audience
-            </Badge>
-          </CommandForm>
-        </Panel>
-        <Panel
-          title="Audience preview"
-          action={
-            <Download
-              kind="campaign"
-              label="Export list CSV"
-              segment={audience}
-            />
-          }
-        >
-          <p className="co-help">
-            Review contacts and consent before using a real marketing service.
-          </p>
-          {customers.map((c) => (
-            <div className="co-stock-row" key={c.id}>
-              <span className="co-owner-avatar">{c.name[0]}</span>
-              <div>
-                <strong>{c.name}</strong>
-                <small>
-                  {c.phone} · {c.email}
-                </small>
-              </div>
-            </div>
-          ))}
-          {!customers.length && (
-            <Empty>No families match this segment yet.</Empty>
-          )}
-        </Panel>
-      </div>
-      <Panel title="Campaign history">
-        <div className="co-table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Campaign</th>
-                <th>Audience</th>
-                <th>Channel</th>
-                <th>Recipients</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.campaigns.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td>{c.audience}</td>
-                  <td>{c.channel}</td>
-                  <td>{c.count}</td>
-                  <td>
-                    <Badge tone="blue">{c.status}</Badge>
-                  </td>
-                  <td>{date(c.createdAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!data.campaigns.length && (
-            <Empty>Your simulated campaigns will appear here.</Empty>
-          )}
-        </div>
-      </Panel>
     </>
   );
 }
