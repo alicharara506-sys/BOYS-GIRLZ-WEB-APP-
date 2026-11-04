@@ -9,6 +9,7 @@ process.env.BNG_COMMERCE = "1";
 const {startWhatsAppWorker}=await import("../src/server/whatsapp.server.ts");
 await startWhatsAppWorker();
 const port = Number(process.env.PORT || 5181);
+const host = process.env.HOST || "127.0.0.1";
 const production = process.argv.includes("--production");
 const app = express();
 app.disable("x-powered-by");
@@ -29,9 +30,9 @@ app.use(
     mode: production ? "production" : "development",
   }),
 );
-const server = app.listen(port, "127.0.0.1", () =>
+const server = app.listen(port, host, () =>
   console.log(
-    `Boys & Girlz · http://127.0.0.1:${port}/admin · Supabase / USD / no tax`,
+    `Boys & Girlz · http://localhost:${port}/admin · Supabase / USD / no tax`,
   ),
 );
 let closing = false;
