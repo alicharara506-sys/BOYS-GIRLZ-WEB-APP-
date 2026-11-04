@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useRevalidator } from "react-router";
+import { useFetcher } from "react-router";
 import type { CommerceSnapshot } from "../../server/commerce/queries.server";
 import {
   Panel,
@@ -21,14 +21,16 @@ export default function WhatsAppCampaigns({
 }) {
   const csrfToken = useContext(TokenContext);
   const cmd = useCommand();
-  const revalidator = useRevalidator();
+  const statusFetcher = useFetcher<{ whatsapp: typeof connection }>();
+  const liveConnection = statusFetcher.data?.whatsapp ?? connection;
   const [audience, setAudience] = useState("all");
   useEffect(() => {
     const id = setInterval(() => {
-      if (revalidator.state === "idle") void revalidator.revalidate();
-    }, 3000);
+      if (statusFetcher.state === "idle")
+        statusFetcher.load("/admin/status");
+    }, 10000);
     return () => clearInterval(id);
-  }, [revalidator]);
+  }, [statusFetcher]);
   return (
     <>
       <div className="co-page-head">
@@ -43,11 +45,11 @@ export default function WhatsAppCampaigns({
       <div className="co-detail-layout">
         <Panel title="Business WhatsApp">
           <p>
-            Status: <Badge>{connection.status}</Badge>
+            Status: <Badge>{liveConnection.status}</Badge>
           </p>
-          {connection.qr && (
+          {liveConnection.qr && (
             <img
-              src={connection.qr}
+              src={liveConnection.qr}
               width={256}
               height={256}
               alt="Scan this QR code from WhatsApp Linked devices"
@@ -60,7 +62,7 @@ export default function WhatsAppCampaigns({
           <div className="co-toolbar">
             <button
               className="co-button primary"
-              disabled={cmd.busy || connection.status === "connected"}
+              disabled={cmd.busy || liveConnection.status === "connected"}
               onClick={() => cmd.run("whatsapp-connect", {})}
             >
               Connect / show QR
@@ -133,7 +135,7 @@ export default function WhatsAppCampaigns({
             </label>
             <button
               className="co-button primary"
-              disabled={cmd.busy || connection.status !== "connected"}
+              disabled={cmd.busy || liveConnection.status !== "connected"}
             >
               Send WhatsApp {customerId ? "message" : "broadcast"}
             </button>

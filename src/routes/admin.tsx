@@ -28,10 +28,28 @@ import {
 import { CommerceError } from "../server/commerce/rules";
 import { whatsappCommand, whatsappStatus } from "../server/whatsapp.server";
 import type { Route } from "./+types/admin";
+import type { ShouldRevalidateFunctionArgs } from "react-router";
 export const meta: Route.MetaFunction = () => [
   { title: "Store Admin | Boys & Girlz" },
   { name: "robots", content: "noindex,nofollow" },
 ];
+export function shouldRevalidate({
+  currentUrl,
+  nextUrl,
+  formMethod,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  // The admin shell shares one snapshot across all modules. Keep it while
+  // navigating between modules; mutations, filters, and explicit refreshes
+  // still follow React Router's normal revalidation behavior.
+  if (
+    currentUrl.pathname !== nextUrl.pathname &&
+    currentUrl.search === nextUrl.search &&
+    !formMethod
+  )
+    return false;
+  return defaultShouldRevalidate;
+}
 export const headers: Route.HeadersFunction = ({
   loaderHeaders,
   actionHeaders,
