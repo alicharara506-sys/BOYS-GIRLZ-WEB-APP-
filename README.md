@@ -1,19 +1,20 @@
 # Boys & Girlz
 
-A mobile-first merchandising shop frontend for kids' clothing, accessories, maternity wear, toys, and Like New outlet finds. The visual system follows the approved Boys & Girlz homepage mockup: the illustrated B and G characters, sky blue and pink feature panels, warm cream surfaces, lighter product cards, and compact mobile navigation.
+A kidswear storefront and connected single-owner dashboard for POS, shared inventory, ecommerce orders, CRM, loyalty, suppliers, purchases and accounting. The existing React / TypeScript / Tailwind storefront is retained; the owner workspace uses Express, PostgreSQL, Prisma and Recharts.
 
-The visible catalog still uses mock product data and local cart/wishlist state. This branch also includes an unconfigured Supabase order and contact draft; no live orders are accepted without approved credentials, inventory, delivery fees, and notifications. There is no real payment processing.
+The connected app starts with clearly marked demo data. Prices are USD with no tax. Cash on delivery and Whish requests are supported; payments are recorded for testing and no funds are collected. The previous SQLite admin / static catalog preview remains available separately through the legacy dev commands. See [the complete owner guide](docs/commerce-admin.md).
 
 ## Run locally
 
-Requirements: Node.js 20 or newer and npm.
+Requirements: Node.js 24 and npm.
 
 ```bash
 npm install
-npm run dev
+npm run setup
+npm start
 ```
 
-Open the local URL printed by Vite. Other useful commands:
+Open <http://127.0.0.1:5181/admin>. The default username is `owner@boysandgirlz.local`; your installation's generated password is stored privately in `.data/admin-login.txt`. After setup, `npm start` runs the database and app together. Other useful commands:
 
 ```bash
 npm run build

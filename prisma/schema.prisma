@@ -1,0 +1,325 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id           String @id @default(cuid())
+  slug         String @unique
+  name         String
+  description  String @default("")
+  category     String
+  gender       String @default("Unisex")
+  brand        String @default("Boys & Girlz")
+  season       String @default("All season")
+  imageUrl     String @default("")
+  imageIndex   Int @default(0)
+  price        Int
+  onlinePrice  Int
+  cost         Int
+  threshold    Int @default(5)
+  published    Boolean @default(false)
+  featured     Boolean @default(false)
+  onlineOnly   Boolean @default(false)
+  archived     Boolean @default(false)
+  demo         Boolean @default(false)
+  createdAt    DateTime @default(now())
+  variants     Variant[]
+}
+
+model Variant {
+  id          String @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  size        String
+  color       String
+  sku         String @unique
+  barcode     String @unique
+  stock       Int @default(0)
+  averageCost Int @default(0)
+  active      Boolean @default(true)
+  movements   StockMovement[]
+  orderLines  OrderLine[]
+  purchaseLines PurchaseLine[]
+  @@unique([productId, size, color])
+}
+
+model Customer {
+  id        String @id @default(cuid())
+  name      String
+  phone     String @unique
+  email     String @default("")
+  address   String @default("")
+  tags      String[] @default([])
+  points    Int @default(0)
+  credit    Int @default(0)
+  demo      Boolean @default(false)
+  createdAt DateTime @default(now())
+  children  Child[]
+  orders    Order[]
+  loyalty   LoyaltyEntry[]
+}
+
+model Child {
+  id         String @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  name       String
+  birthdate  DateTime
+  gender     String
+  size       String
+}
+
+model Order {
+  id            String @id @default(cuid())
+  number        Int @unique @default(autoincrement())
+  requestKey    String @unique
+  channel       String
+  status        String
+  customerId    String?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  customerName  String @default("Walk-in customer")
+  address       String @default("")
+  phone         String @default("")
+  subtotal      Int
+  discount      Int
+  shipping      Int @default(0)
+  tax           Int @default(0)
+  total         Int
+  cost          Int
+  pointsEarned  Int @default(0)
+  pointsUsed    Int @default(0)
+  loyaltyValue  Int @default(0)
+  promoCode     String @default("")
+  tracking      String @default("")
+  carrier       String @default("")
+  note          String @default("")
+  demo          Boolean @default(false)
+  createdAt     DateTime @default(now())
+  items         OrderLine[]
+  payments      Payment[]
+  returns       Return[]
+}
+
+model OrderLine {
+  id          String @id @default(cuid())
+  orderId     String
+  order       Order @relation(fields: [orderId], references: [id])
+  variantId   String
+  variant     Variant @relation(fields: [variantId], references: [id])
+  name        String
+  sku         String
+  size        String
+  color       String
+  category    String
+  quantity    Int
+  unitPrice   Int
+  discount    Int @default(0)
+  net         Int
+  unitCost    Int
+  returned    Int @default(0)
+  returnLines ReturnLine[]
+}
+
+model Payment {
+  id        String @id @default(cuid())
+  orderId   String
+  order     Order @relation(fields: [orderId], references: [id])
+  method    String
+  amount    Int
+  reference String @default("")
+  drawerId  String?
+  drawer    Drawer? @relation(fields: [drawerId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Return {
+  id        String @id @default(cuid())
+  requestKey String @unique @default(cuid())
+  orderId   String
+  order     Order @relation(fields: [orderId], references: [id])
+  reason    String
+  amount    Int
+  method    String
+  createdAt DateTime @default(now())
+  lines     ReturnLine[]
+}
+
+model ReturnLine {
+  id        String @id @default(cuid())
+  returnId  String
+  return    Return @relation(fields: [returnId], references: [id])
+  lineId    String
+  line      OrderLine @relation(fields: [lineId], references: [id])
+  quantity  Int
+  amount    Int
+  restock   Boolean @default(true)
+}
+
+model Drawer {
+  id          String @id @default(cuid())
+  openedAt    DateTime @default(now())
+  closedAt    DateTime?
+  opening     Int
+  counted     Int?
+  expected    Int?
+  variance    Int?
+  note        String @default("")
+  payments    Payment[]
+  cashEvents  CashEvent[]
+}
+
+model CashEvent {
+  id        String @id @default(cuid())
+  drawerId  String
+  drawer    Drawer @relation(fields: [drawerId], references: [id])
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+model ParkedSale {
+  id        String @id @default(cuid())
+  name      String
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
+model StockMovement {
+  id        String @id @default(cuid())
+  variantId String
+  variant   Variant @relation(fields: [variantId], references: [id])
+  quantity  Int
+  reason    String
+  reference String
+  createdAt DateTime @default(now())
+}
+
+model Supplier {
+  id        String @id @default(cuid())
+  name      String
+  phone     String @default("")
+  email     String @default("")
+  address   String @default("")
+  purchases Purchase[]
+}
+
+model Purchase {
+  id            String @id @default(cuid())
+  number        Int @unique @default(autoincrement())
+  supplierId    String
+  supplier      Supplier @relation(fields: [supplierId], references: [id])
+  status        String @default("ordered")
+  invoiceNumber String @default("")
+  dueDate       DateTime?
+  total         Int
+  paid          Int @default(0)
+  createdAt     DateTime @default(now())
+  receivedAt    DateTime?
+  items         PurchaseLine[]
+  payments      SupplierPayment[]
+}
+
+model PurchaseLine {
+  id         String @id @default(cuid())
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  variantId  String
+  variant    Variant @relation(fields: [variantId], references: [id])
+  quantity   Int
+  cost       Int
+}
+
+model SupplierPayment {
+  id         String @id @default(cuid())
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  amount     Int
+  method     String
+  reference  String @default("")
+  createdAt  DateTime @default(now())
+}
+
+model Expense {
+  id        String @id @default(cuid())
+  category  String
+  amount    Int
+  method    String
+  note      String
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+model Account {
+  code    String @id
+  name    String
+  type    String
+  entries JournalLine[]
+}
+
+model Journal {
+  id        String @id @default(cuid())
+  reference String @unique
+  memo      String
+  date      DateTime @default(now())
+  lines     JournalLine[]
+}
+
+model JournalLine {
+  id        String @id @default(cuid())
+  journalId String
+  journal   Journal @relation(fields: [journalId], references: [id])
+  accountId String
+  account   Account @relation(fields: [accountId], references: [code])
+  debit     Int @default(0)
+  credit    Int @default(0)
+}
+
+model GiftCard {
+  id        String @id @default(cuid())
+  code      String @unique
+  balance   Int
+  issued    Int
+  active    Boolean @default(true)
+  createdAt DateTime @default(now())
+}
+
+model LoyaltyEntry {
+  id         String @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  points     Int
+  credit     Int @default(0)
+  reason     String
+  createdAt  DateTime @default(now())
+}
+
+model Promo {
+  code       String @id
+  kind       String
+  amount     Int
+  minimum    Int @default(0)
+  active     Boolean @default(true)
+  expiresAt  DateTime?
+  limit      Int @default(0)
+  used       Int @default(0)
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
+
+model Campaign {
+  id        String @id @default(cuid())
+  name      String
+  audience  String
+  channel   String
+  message   String
+  count     Int
+  status    String @default("mock-sent")
+  createdAt DateTime @default(now())
+}

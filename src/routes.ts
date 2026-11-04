@@ -1,6 +1,7 @@
 import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
 
 export default [
+  route("admin/export", "routes/admin-export.tsx"),
   route("admin/*", "routes/admin.tsx"),
   route("media/:filename", "routes/media.tsx"),
   index("routes/home.tsx"),

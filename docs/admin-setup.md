@@ -1,5 +1,7 @@
 # Boys & Girlz admin panel
 
+For the expanded PostgreSQL POS, CRM and accounting workspace, use `npm run setup` then `npm start`. See [the connected owner guide](commerce-admin.md). The instructions below cover the earlier SQLite review mode retained through `npm run dev`.
+
 Open http://127.0.0.1:5181/admin. The local owner credentials are in `.data/admin-login.txt`. This entire data directory is ignored by Git. `node scripts/create-admin.mjs` creates credentials once and never overwrites an existing account.
 
 ## Available features

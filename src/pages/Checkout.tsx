@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties, type FormEvent, type PointerEvent } from "react";
 import { Link } from "../components/LocalizedLink";
-import { useFetcher } from "react-router";
+import { useFetcher, useRouteLoaderData } from "react-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, LoaderCircle, Package, ShoppingBag, Truck } from "lucide-react";
 import { useStore } from "../state/Store";
 import { money } from "../data/products";
@@ -44,6 +44,9 @@ export default function Checkout() {
   const { language, t } = useLocale();
   const { cart, totals, dispatch } = useStore();
   const fetcher = useFetcher<OrderReply>();
+  const commerceMode = useRouteLoaderData<{ commerceMode?: boolean }>("root")?.commerceMode;
+  const [paymentMethod, setPaymentMethod] = useState("cash_on_delivery");
+  const [requestKey] = useState(() => crypto.randomUUID());
   const [shipping, setShipping] = useState<Shipping>(initialShipping);
   const [review, setReview] = useState(false);
   const order = fetcher.data?.orderNumber;
@@ -54,6 +57,7 @@ export default function Checkout() {
     if (!review) { setReview(true); return; }
     fetcher.submit({
       ...shipping,
+      paymentMethod, requestKey,
       items: cart.map((item) => ({
         productSlug: item.productId, size: item.size || null,
         color: item.color || null, quantity: item.quantity,
@@ -66,7 +70,7 @@ export default function Checkout() {
     </span>
     <span className="contact-sent-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" /></svg></span>
     <h1 className="contact-title"><SplitTitle text={t("Your order has been received.")} byWord={language === "ar"} /></h1>
-    <p>{language === "ar" ? <>الطلب <strong>{order}</strong> بانتظار التأكيد. يُرجى تجهيز المبلغ نقداً عند التوصيل.</> : <>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</>}</p>
+      <p>{paymentMethod === "whish" ? <>Order <strong>{order}</strong> is awaiting Whish payment verification. This demo does not collect a payment.</> : language === "ar" ? <>الطلب <strong>{order}</strong> بانتظار التأكيد. يُرجى تجهيز المبلغ نقداً عند التوصيل.</> : <>Order <strong>{order}</strong> is awaiting confirmation. Please have cash ready when it is delivered.</>}</p>
     <p className="checkout-done-total">{language === "ar" ? "المجموع:" : "Total:"} {money((fetcher.data?.totals?.totalCents ?? 0) / 100)}</p>
     <Link to="/shop" className="bh-cta" onPointerMove={spotlight}>
       <span className="bh-cta-shine" aria-hidden="true" />
@@ -143,14 +147,15 @@ export default function Checkout() {
               </div>
             </div>}
             <div className="delivery-option delivery-glass"><span className="delivery-glass-icon" aria-hidden="true"><Truck size={22} /></span><div><strong>{t("Delivery in Lebanon")}</strong><p>{t("Cash on Delivery · Delivery timing confirmed with the shop")}</p></div></div>
-            {review && <p className="demo-disclosure">{t("Payment method:")} <strong>{t("Cash on Delivery")}</strong>. {t("The server checks stock, promo eligibility and final shipping before accepting your order.")}</p>}
+            {commerceMode && <label className="float-field float-select"><select aria-label="Payment method" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}><option value="cash_on_delivery">Cash on Delivery</option><option value="whish">Whish — demo, awaiting verification</option></select></label>}
+            {review && <p className="demo-disclosure">{t("Payment method:")} <strong>{paymentMethod === "whish" ? "Whish (demo)" : t("Cash on Delivery")}</strong>. {t("The server checks stock, promo eligibility and final shipping before accepting your order.")}</p>}
             {fetcher.data?.error && <p className="form-error" role="alert">{t(fetcher.data.error)}</p>}
             <div className="step-buttons">
               {review && <button className="glass-button" type="button" onClick={() => setReview(false)}><ArrowLeft size={15} /> {t("Edit details")}</button>}
               <button className={`bh-cta checkout-submit ${sending ? "is-sending" : ""}`} type="submit" disabled={sending} onPointerMove={spotlight}>
                 <span className="bh-cta-spot" aria-hidden="true" />
                 <span className="bh-cta-shine" aria-hidden="true" />
-                <span className="bh-cta-label">{t(sending ? "Checking your order…" : review ? "Place Cash on Delivery order" : "Review order")}</span>
+                <span className="bh-cta-label">{t(sending ? "Checking your order…" : review ? paymentMethod === "whish" ? "Place demo Whish order" : "Place Cash on Delivery order" : "Review order")}</span>
                 <span className="bh-cta-arrow" aria-hidden="true">{sending ? <LoaderCircle size={16} className="spin" /> : <ArrowRight size={16} />}</span>
               </button>
             </div>

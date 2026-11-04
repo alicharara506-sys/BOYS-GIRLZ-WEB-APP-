@@ -6,6 +6,8 @@ import { Link } from "./components/LocalizedLink";
 import { CatalogProvider } from "./state/Catalog";
 import { products as previewProducts } from "./data/products";
 import { getStorefrontCatalog } from "./server/admin-data.server";
+import { commerceEnabled } from "./server/commerce/db.server";
+import { storefrontCatalog } from "./server/commerce/queries.server";
 import { StoreProvider, useStore } from "./state/Store";
 import { Header } from "./components/Layout";
 import Footer from "./components/Footer";
@@ -45,7 +47,7 @@ import "./brands.css";
 
 export const meta: Route.MetaFunction = ({ location }) => buildPageMeta(location.pathname, new URLSearchParams(location.search).get("lang") === "ar" ? "ar" : "en");
 
-export function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const canonical = new URL(business.siteUrl);
   const next = new URL(url);
@@ -60,14 +62,14 @@ export function loader({ request }: LoaderFunctionArgs) {
   if (next.href !== url.href && request.method === "GET") throw redirect(next.href, 308);
   const language: Language = url.searchParams.get("lang") === "ar" ? "ar" : "en";
   const isLocal = ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
-  const managed = isLocal ? getStorefrontCatalog() : { enabled: false, products: [] };
-  return { language, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled };
+  const managed = isLocal ? commerceEnabled() ? await storefrontCatalog() : getStorefrontCatalog() : { enabled: false, products: [] };
+  return { language, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled, commerceMode: isLocal && commerceEnabled() };
 }
 
 // Language variants have stable URLs; filter changes do not reload root data.
 export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
   if (currentUrl.searchParams.get("lang") !== nextUrl.searchParams.get("lang")) return true;
-  return formMethod ? defaultShouldRevalidate : false;
+  return formMethod || currentUrl.pathname !== nextUrl.pathname ? defaultShouldRevalidate : false;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

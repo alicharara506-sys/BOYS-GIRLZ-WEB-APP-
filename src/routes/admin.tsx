@@ -6,6 +6,12 @@ import { AdminDataError, archiveProduct, getAdminOverview, getOrder, getProduct,
 import { readAdminForm, removeFailedUpload, saveAdminImage } from "../server/admin-media.server";
 import type { AdminOrderStatus } from "../admin/types";
 import type { Route } from "./+types/admin";
+import CommerceApp from "../admin/commerce/CommerceApp";
+import { commerceEnabled } from "../server/commerce/db.server";
+import { commerceSnapshot } from "../server/commerce/queries.server";
+import { runCommand } from "../server/commerce/operations.server";
+import { CommerceError } from "../server/commerce/rules";
+import { commerceExport } from "../server/commerce/export.server";
 
 export const meta: Route.MetaFunction = () => [{ title: "Store Admin | Boys & Girlz" }, { name: "robots", content: "noindex, nofollow, noarchive" }];
 export const headers: Route.HeadersFunction = () => adminHeaders;
@@ -20,6 +26,12 @@ export async function loader({ request }: Route.LoaderArgs) {
     return data({ login: true as const, csrfToken: state.csrfToken, configured: state.configured, localEmail: process.env.BNG_ADMIN_EMAIL || "owner@boysandgirlz.local" }, { headers: state.headers });
   }
   const user = await requireAdmin(request);
+  if (commerceEnabled()) {
+    if (path === "/admin/export") return commerceExport(url);
+    const section = path.split("/")[2] || "";
+    if (!["", "pos", "products", "inventory", "orders", "returns", "customers", "marketing", "suppliers", "purchases", "accounting", "reports", "cash", "rewards", "discounts", "settings"].includes(section)) throw new Response("Admin page not found", { status: 404, headers: adminHeaders });
+    return data({ login: false as const, commerce: true as const, snapshot: await commerceSnapshot(url.searchParams.get("from") || undefined, url.searchParams.get("to") || undefined), csrfToken: user.csrfToken, email: user.email }, { headers: adminHeaders });
+  }
   const query = url.searchParams.get("q")?.trim().slice(0, 100) || "";
   const result: AdminPageData = { section: "overview", csrfToken: user.csrfToken, user: { email: user.email }, mode: "local", query };
   if (path === "/admin") result.overview = getAdminOverview();
@@ -36,7 +48,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   } else if (path === "/admin/customers") { result.section = "customers"; result.customers = listCustomers().filter(customer => !query || `${customer.fullName} ${customer.mobile} ${customer.email}`.toLowerCase().includes(query.toLowerCase())); }
   else if (path === "/admin/discounts") { result.section = "discounts"; result.promos = listPromos(); }
   else throw new Response("Admin page not found", { status: 404, headers: adminHeaders });
-  return data({ login: false as const, ...result }, { headers: adminHeaders });
+  return data({ login: false as const, commerce: false as const, ...result }, { headers: adminHeaders });
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -48,6 +60,16 @@ export async function action({ request }: Route.ActionArgs) {
   let uploaded: Awaited<ReturnType<typeof saveAdminImage>> = null;
   try {
     const intent = value(form, "intent");
+    if (commerceEnabled()) {
+      let payload;
+      try { payload = JSON.parse(value(form, "payload")); } catch { throw new CommerceError("The submitted details could not be read."); }
+      if (intent === "product") {
+        uploaded = await saveAdminImage(form.get("imageFile"));
+        if (uploaded) payload.imageUrl = uploaded.url;
+      }
+      const result = await runCommand(intent, payload);
+      return data({ success: "Saved successfully.", result }, { headers: adminHeaders });
+    }
     if (intent === "save-product") {
       uploaded = await saveAdminImage(form.get("imageFile"));
       const product = saveProduct({
@@ -78,8 +100,9 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ success: "Your changes have been saved." }, { headers: adminHeaders });
   } catch (error) {
     if (uploaded) await removeFailedUpload(uploaded.file);
-    const message = error instanceof ZodError ? error.issues.map(issue => `${issue.path.join(" ")}: ${issue.message}`).slice(0, 3).join(". ") : error instanceof Error ? error.message : "Your changes could not be saved.";
-    return data({ error: message }, { status: error instanceof AdminDataError ? error.status : 400, headers: adminHeaders });
+    const isDuplicate = error && typeof error === "object" && "code" in error && error.code === "P2002";
+    const message = isDuplicate ? "That product URL, phone number, SKU, or barcode already exists." : error instanceof ZodError ? error.issues.map(issue => `${issue.path.join(" ")}: ${issue.message}`).slice(0, 3).join(". ") : error instanceof CommerceError || error instanceof AdminDataError ? error.message : "Your changes could not be saved. Check the details and try again.";
+    return data({ error: message }, { status: error instanceof AdminDataError || error instanceof CommerceError ? error.status : 400, headers: adminHeaders });
   }
 }
 
@@ -87,6 +110,7 @@ export default function AdminRoute() {
   const state = useLoaderData<typeof loader>();
   const action = useActionData<{ csrfToken?: string }>();
   if (state.login) return <AdminLogin csrfToken={action?.csrfToken || state.csrfToken} configured={state.configured} localEmail={state.localEmail} />;
+  if (state.commerce) return <CommerceApp snapshot={state.snapshot} csrfToken={state.csrfToken} email={state.email} />;
   return <AdminPanel data={state} />;
 }
 

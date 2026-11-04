@@ -31,6 +31,8 @@ export const adminHeaders: Record<string, string> = {
 };
 
 type Credentials = { email: string; passwordHash: string; sessionSecret: string };
+let environmentCredentials: { fingerprint: string; promise: Promise<Credentials> } | undefined;
+const environmentSessionSecret = randomBytes(48).toString("base64url");
 type AdminSession = { csrfToken: string; preauthExpiresAt: number; sid: string; email: string; expiresAt: number };
 export type AdminUser = { email: string; csrfToken: string };
 export type AdminLoginState = { configured: boolean; csrfToken: string; headers: Headers; email?: string };
@@ -64,6 +66,15 @@ function assertPostOrigin(request: Request) {
 }
 
 async function credentials(): Promise<Credentials | null> {
+  if (process.env.BNG_ADMIN_PASSWORD) {
+    const email = (process.env.BNG_ADMIN_EMAIL || "owner@boysandgirlz.local").trim().toLowerCase();
+    const password = process.env.BNG_ADMIN_PASSWORD;
+    const secret = process.env.BNG_SESSION_SECRET || environmentSessionSecret;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 16 || secret.length < 32) return null;
+    const fingerprint = createHash("sha256").update(`${email}\0${password}\0${secret}`).digest("hex");
+    if (!environmentCredentials || environmentCredentials.fingerprint !== fingerprint) environmentCredentials = { fingerprint, promise: hashAdminPassword(password).then(passwordHash => ({ email, passwordHash, sessionSecret: secret })) };
+    return environmentCredentials.promise;
+  }
   try {
     const filename = resolve(process.env.BNG_ADMIN_DATA_DIR || resolve(process.cwd(), ".data"), "admin-credentials.json");
     const value: unknown = JSON.parse(await readFile(filename, "utf8"));

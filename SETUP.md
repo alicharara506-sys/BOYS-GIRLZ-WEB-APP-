@@ -1,4 +1,8 @@
-# Local setup — draft branch
+# Local setup — connected owner app
+
+Run `npm ci`, `npm run setup`, then `npm start`. Open <http://127.0.0.1:5181/admin>. This is the PostgreSQL POS / CRM / accounting app. The installation's private password is in `.data/admin-login.txt`. See [commerce-admin.md](docs/commerce-admin.md).
+
+## Legacy storefront review mode
 
 1. Install Node.js 24 and run `npm ci`.
 2. Copy `.env.example` to `.env` and fill only verified values. Never put private credentials in a `VITE_` variable.
