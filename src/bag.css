@@ -96,7 +96,7 @@ html[dir="rtl"] .modal.drawer.bag-drawer { animation-name: bag-drawer-in-rtl; }
 @keyframes bag-drawer-in { from { transform: translateX(100%); } }
 @keyframes bag-drawer-in-rtl { from { transform: translateX(-100%); } }
 .modal.bag-drawer::backdrop { background: var(--bng-tone-380); backdrop-filter: blur(6px); }
-.bag-drawer .modal-heading h2 { font-family: Quicksand, sans-serif; letter-spacing: -.02em; }
+.bag-drawer .modal-heading .modal-title { font-family: Quicksand, sans-serif; letter-spacing: -.02em; }
 .bag-drawer .drawer-items .cart-line { padding: 10px; }
 .bag-drawer .drawer-items .cart-line > a { width: 76px; }
 .bag-drawer .drawer-items .cart-line:nth-child(2) { animation-delay: .06s; } .bag-drawer .drawer-items .cart-line:nth-child(3) { animation-delay: .12s; }
@@ -116,7 +116,7 @@ html[dir="rtl"] .modal.drawer.bag-drawer { animation-name: bag-drawer-in-rtl; }
   transform-origin: 50% 0; animation: bag-sway 3s ease-in-out infinite alternate;
 }
 @keyframes bag-sway { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
-.bag-empty h1, .bag-empty h2 { margin: 6px 0 0; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; }
+.bag-empty h1, .bag-empty h2, .bag-empty .bag-title { margin: 6px 0 0; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; }
 .bag-title { display: grid; justify-items: center; font-size: clamp(28px, 3vw, 36px); line-height: 1.1; letter-spacing: -.03em; }
 .bag-empty p { margin: 0 0 8px; color: var(--bng-tone-326); }
 

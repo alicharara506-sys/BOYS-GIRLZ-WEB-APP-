@@ -37,7 +37,7 @@ html[dir="rtl"] .footer-beam span { animation-direction: reverse; }
 
 /* ---------- Newsletter, as a compact field in the brand column ---------- */
 .footer-signup { display: grid; gap: 6px; max-width: 380px; margin-top: 6px; }
-.footer-signup h2 { margin: 0; color: var(--bng-tone-7); font-family: Quicksand, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.footer-signup .footer-signup-title { margin: 0; color: var(--bng-tone-7); font-family: Quicksand, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
 .footer-signup > p { margin: 0 0 6px; color: var(--bng-tone-446); font-size: 13px; line-height: 1.5; }
 .footer-signup .newsletter.compact { display: block; padding: 0; border-radius: 0; background: none; box-shadow: none; transform: none; }
 .footer-signup .newsletter form {
@@ -102,7 +102,7 @@ a.footer-contact:hover .footer-contact-copy > span { color: var(--bng-tone-7); }
   mask: linear-gradient(var(--bng-tone-322) 0 0) content-box exclude, linear-gradient(var(--bng-tone-322) 0 0);
 }
 .footer-panel:hover::before, .footer-panel:hover::after { opacity: 1; }
-.footer-panel h2 { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 12px 8px; }
+.footer-panel .footer-panel-heading { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 12px 8px; }
 .footer-panel-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--bng-tone-436); color: var(--bng-tone-457); box-shadow: 0 0 0 1px var(--bng-tone-448) inset; }
 .footer-panel-title { color: var(--bng-tone-7); font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
 .footer-panel-count { margin-inline-start: auto; padding: 2px 8px; border-radius: 999px; background: var(--bng-tone-436); color: var(--bng-tone-339); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -156,7 +156,7 @@ html[dir="rtl"] .footer-panel-title, html[dir="rtl"] .footer-contact-copy small 
 @media (max-width: 760px) {
   .footer-panels { grid-template-columns: 1fr 1fr; gap: 10px; }
   .footer-panels > .footer-panel:nth-child(2) { grid-column: 1 / -1; order: 3; }
-  .footer-panel h2 { padding: 10px 8px 6px; }
+  .footer-panel .footer-panel-heading { padding: 10px 8px 6px; }
   .footer-panel-title { font-size: 11px; letter-spacing: .12em; }
   .footer-links a { padding: 7px 8px; font-size: 13px; }
   .footer-link-count { display: none; }

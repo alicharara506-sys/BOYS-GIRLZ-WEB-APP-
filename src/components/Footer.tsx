@@ -49,11 +49,11 @@ function FooterPanel({ title, icon, count, children }: { title: string; icon: Re
     event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
   };
   return <div className="footer-panel" onPointerMove={torch}>
-    <h2>
+    <p className="footer-panel-heading">
       <span className="footer-panel-icon" aria-hidden="true">{icon}</span>
       <span className="footer-panel-title">{title}</span>
       {count !== undefined && <span className="footer-panel-count">{count}</span>}
-    </h2>
+    </p>
     {children}
   </div>;
 }
@@ -91,7 +91,7 @@ export default function Footer() {
         <div className="footer-brand">
           <p>{t("A children's shop in Lebanon")}</p>
           <div className="footer-signup">
-            <h2>{t("Join our little circle")}</h2>
+            <p className="footer-signup-title">{t("Join our little circle")}</p>
             <p>{t("Be the first to know about new arrivals, special offers and more.")}</p>
             {whatsapp&&<a className="btn btn-pink" href={whatsapp} target="_blank" rel="noreferrer">{t("WhatsApp")} →</a>}
           </div>
@@ -106,7 +106,7 @@ export default function Footer() {
         <div className="footer-panels">
           <FooterPanel title={t("Shop")} icon={<LayoutGrid size={14} />} count={products.length}>
             <FooterLinkList>
-              {categories.map((category) => <FooterLink key={category} to={`/category/${category.toLowerCase()}`}
+              {categories.filter((category) => !products.length || categoryCounts[category] > 0).map((category) => <FooterLink key={category} to={`/category/${category.toLowerCase()}`}
                 detail={<span className="footer-link-count">{categoryCounts[category]}</span>}>{t(category)}</FooterLink>)}
               <FooterLink to="/shop"><strong>{t("Shop all")}</strong></FooterLink>
             </FooterLinkList>

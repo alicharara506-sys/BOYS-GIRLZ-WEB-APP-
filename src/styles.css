@@ -73,6 +73,21 @@ h2 {
   font-weight: 700;
   letter-spacing: -0.7px;
 }
+/* Titles in dialogs and the footer are plain text (not h2s, so they stay out of every page's
+   heading outline) but keep the h2 look. More specific rules still set their own sizes. */
+.modal-title,
+.footer-panel-heading,
+.footer-signup-title {
+  margin: 0;
+  font-family: Quicksand, sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+.bag-title {
+  font-family: Quicksand, sans-serif;
+  font-weight: 700;
+}
 h3 {
   font-weight: 700;
 }
@@ -765,7 +780,8 @@ input[type="checkbox"] {
   width: 100%;
   aspect-ratio: 1;
   height: auto;
-  object-fit: fill;
+  /* contain, not fill: photos that aren't square are shown whole instead of stretched. */
+  object-fit: contain;
   display: block;
   background-color: var(--bng-tone-369);
 }
@@ -1107,7 +1123,7 @@ input[type="checkbox"] {
   margin-bottom: 24px;
   gap: 15px;
 }
-.modal-heading h2 {
+.modal-heading .modal-title {
   font-size: 25px;
 }
 .modal.drawer {
@@ -1852,7 +1868,7 @@ input[type="checkbox"] {
   .modal {
     padding: 23px 20px;
   }
-  .modal-heading h2 {
+  .modal-heading .modal-title {
     font-size: 23px;
   }
   .page-heading {

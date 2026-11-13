@@ -29,6 +29,7 @@ import { whatsAppUrl } from "../components/WhatsAppLink";
 import { socials, WhatsAppIcon } from "../components/SocialIcons";
 import { useLocale } from "../i18n/Locale";
 import { AnimatedLine, SplitTitle } from "../components/HeroSection";
+import { pageHeading } from "../config/seo";
 import PromiseCards, { type PromiseCardItem } from "../components/PromiseCards";
 import { useReducedMotion } from "../hooks/useExperience";
 import GrowingSteps from "../components/GrowingSteps";
@@ -79,12 +80,13 @@ export function About() {
           <span className="about-field about-field-blue" />
         </div>
         <div className="about-hero-copy">
-          <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{t("A little about us")}</span>
-          <h1 className="about-title">
+          {/* The H1 is the keyword line in the pill; the big slogan below is a tagline. */}
+          <h1 className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{pageHeading("/about", language)}</h1>
+          <p className="about-title">
             <span className="sr-only">{lineOne} {lineTwo}</span>
             <span className="bh-line" aria-hidden="true"><AnimatedLine text={lineOne} start={0} byWord={language === "ar"} /></span>
             <span className="bh-line bh-line-accent" aria-hidden="true"><AnimatedLine text={lineTwo} start={lineOne.length} gradient byWord={language === "ar"} /></span>
-          </h1>
+          </p>
           <p className="about-lead">{t("First smiles. First steps. The first time they insist on dressing themselves.")}</p>
         </div>
         <GrowingSteps />
@@ -188,10 +190,10 @@ export function Contact() {
           <span className="about-field about-field-pink" />
           <span className="about-field about-field-blue" />
         </div>
-        <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{t("We’re all ears")}</span>
-        <h1 className="contact-title">
+        <h1 className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{pageHeading("/contact", language)}</h1>
+        <p className="contact-title">
           <SplitTitle text={heading} byWord={language === "ar"} />
-        </h1>
+        </p>
         <p className="contact-lead">{t("Questions about a little favorite? We’re here to help.")}</p>
       </section>
 
@@ -204,7 +206,7 @@ export function Contact() {
             {whatsapp && <ContactCard href={whatsapp} icon={<WhatsAppIcon size={22} />} title={t("Chat with us")} value={<span dir="ltr">WhatsApp · {business.phoneDisplay}</span>} tint="#16a36d" />}
             {socials.map(({ name, handle, href, Icon, tint }) => <ContactCard key={name} href={href} icon={<Icon size={22} />} title={name} value={<span dir="ltr">{handle}</span>} tint={tint} />)}
             {business.phone && <ContactCard href={`tel:${business.phone}`} external={false} icon={<Phone size={22} />} title={t("Contact us")} value={<span dir="ltr">{business.phone}</span>} tint="#0898d6" />}
-            {business.address && <ContactCard href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} icon={<MapPin size={22} />} title={t("Visit us:").replace(/[:：]$/, "")} value={<>{business.address}{business.hours && <small className="contact-card-hours">{t("Opening hours:")} {business.hours}</small>}</>} tint="#e7a400" />}
+            {business.address && <ContactCard href={business.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${business.address}, ${business.locality}`)}`} icon={<MapPin size={22} />} title={t("Visit us:").replace(/[:：]$/, "")} value={<>{business.address}{business.locality ? `, ${business.locality}` : ""}{business.hours && <small className="contact-card-hours">{t("Opening hours:")} {business.hours}</small>}</>} tint="#e7a400" />}
           </div>
         </div>
         <div className={`contact-form-wrap buddies-on-${field || "idle"} ${noteLength >= 10 ? "buddies-cheer" : ""}`}>
@@ -356,8 +358,8 @@ export function Help() {
           <span className="about-field about-field-pink" />
           <span className="about-field about-field-blue" />
         </div>
-        <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{t("Here for the little things")}</span>
-        <h1 className="contact-title"><SplitTitle text={t(content.title)} byWord={language === "ar"} /></h1>
+        <h1 className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>{pageHeading(`/help/${key}`, language)}</h1>
+        <p className="contact-title"><SplitTitle text={t(content.title)} byWord={language === "ar"} /></p>
         <p className="contact-lead">{t(content.intro)}</p>
       </section>
 

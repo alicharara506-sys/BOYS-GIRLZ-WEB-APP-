@@ -160,7 +160,7 @@ html[dir="rtl"] .shop-menu-all svg { scale: -1 1; }
 @keyframes palette-in { from { opacity: 0; transform: translateY(-24px) scale(.96); } }
 .modal.search-palette::backdrop { background: var(--bng-tone-380); backdrop-filter: blur(6px); }
 .search-palette .modal-heading { margin-bottom: 14px; }
-.search-palette .modal-heading h2 { font-family: Quicksand, sans-serif; font-size: 22px; letter-spacing: -.02em; }
+.search-palette .modal-heading .modal-title { font-family: Quicksand, sans-serif; font-size: 22px; letter-spacing: -.02em; }
 .palette-field {
   display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 18px; border-radius: 18px;
   background: var(--bng-tone-7); box-shadow: 0 0 0 1.5px var(--bng-tone-330) inset; color: var(--bng-tone-372); transition: box-shadow .3s ease;

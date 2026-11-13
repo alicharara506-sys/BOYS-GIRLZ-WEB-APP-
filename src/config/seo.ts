@@ -110,7 +110,7 @@ const categoryCopy: Record<string, { en: PageCopy; ar: PageCopy }> = {
 };
 
 const arabicProducts: Record<string, string> = {
-  "Everyday Overshirt": "قميص يومي واسع", "Gingham Day Dress": "فستان مربعات يومي", "Happy Days Tee": "قميص أيام سعيدة",
+  "Everyday Overshirt": "قميص يومي واسع", "Gingham Day Dress": "فستان مربعات يومي", "Sunday Cotton Dress": "فستان قطني ليوم الأحد", "Happy Days Tee": "قميص أيام سعيدة",
   "Adventure Overalls": "أوفرول المغامرات", "Fleece Bear Overall": "أوفرول الدب الناعم", "Little Safari Romper": "رومبر السفاري الصغير",
   "Knit Hooded Cardigan": "كارديغان محبوك بغطاء رأس", "Teddy Bear Sweater Set": "طقم كنزة الدب", "Cloud Puffer Overall": "أوفرول شتوي مبطّن",
   "Little Cloud Booties": "حذاء السحابة الصغير", "Bunny’s First Cuddles": "أرنب العناق الأول", "The Sunday Maternity Dress": "فستان أمومة ليوم الأحد",
@@ -140,8 +140,66 @@ export function canonicalUrl(path: string, language: SeoLanguage, siteUrl: strin
   return `${siteUrl.replace(/\/+$/, "")}${localizedPath(path, language)}`;
 }
 
+// The catalogue may store a straight apostrophe where this map has a curly one ("Bunny's").
+export function localProductName(name: string, language: SeoLanguage): string {
+  if (language !== "ar") return name;
+  return arabicProducts[name] || arabicProducts[name.replace(/'/g, "’")] || name;
+}
+
 export function productName(product: Product, language: SeoLanguage): string {
-  return language === "ar" ? arabicProducts[product.name] || product.name : product.name;
+  return localProductName(product.name, language);
+}
+
+export function categoryLabel(category: string, language: SeoLanguage): string {
+  return categoryCopy[category]?.[language].label || category;
+}
+
+// A keyword heading for a page ("Boys' Clothes in Lebanon"), taken from its title so it stays in
+// step with the title in both languages. The decorative slogan sits beside it, not in the H1.
+export function pageHeading(path: string, language: SeoLanguage): string {
+  return getPageSeo(path, language).title.split(" | ")[0];
+}
+
+type ProductSchemaInput = {
+  url: string;
+  siteUrl: string;
+  language: SeoLanguage;
+  sku: string;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  condition?: "new" | "like-new";
+  brand?: string | null;
+  imageUrl?: string | null;
+  // Left out when stock isn't known, rather than guessing.
+  inStock?: boolean;
+};
+
+export function productStructuredData({ url, siteUrl, language, sku, name, description, category, price, condition = "new", brand, imageUrl, inStock }: ProductSchemaInput) {
+  const base = siteUrl.replace(/\/+$/, "");
+  const image = imageUrl ? (/^https?:\/\//.test(imageUrl) ? imageUrl : `${base}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`) : undefined;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${url}#product`,
+    url,
+    sku,
+    name,
+    ...(description ? { description } : {}),
+    category: categoryLabel(category, language),
+    ...(image ? { image: [image] } : {}),
+    ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "USD",
+      price: price.toFixed(2),
+      itemCondition: condition === "like-new" ? "https://schema.org/UsedCondition" : "https://schema.org/NewCondition",
+      ...(inStock === undefined ? {} : { availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock" }),
+      seller: { "@id": `${base}#organization` },
+    },
+  };
 }
 
 export function getPageSeo(path: string, language: SeoLanguage = "en", { catalogVerified = false }: SeoOptions = {}): PageSeo {
@@ -210,24 +268,10 @@ export function pageStructuredData(page: PageSeo, language: SeoLanguage, siteUrl
   if (page.kind !== "product" || !options.catalogVerified) return undefined;
   const product = productById(page.path.slice("/product/".length));
   if (!product) return undefined;
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "@id": `${url}#product`,
-    url,
-    name: productName(product, language),
-    description: product.description,
-    category: categoryCopy[product.category][language].label,
-    ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
-    offers: {
-      "@type": "Offer",
-      url,
-      priceCurrency: "USD",
-      price: product.price.toFixed(2),
-      itemCondition: product.condition === "like-new" ? "https://schema.org/UsedCondition" : "https://schema.org/NewCondition",
-      seller: { "@id": `${siteUrl.replace(/\/+$/, "")}#organization` },
-    },
-  };
+  return productStructuredData({
+    url, siteUrl, language, sku: product.id, name: productName(product, language), description: product.description,
+    category: product.category, price: product.price, condition: product.condition, brand: product.brand,
+  });
 }
 
 type GlobalSchemaOptions = {
@@ -246,10 +290,11 @@ type GlobalSchemaOptions = {
   latitude?: string;
   longitude?: string;
   sameAs?: string[];
+  mapsUrl?: string;
   catalogVerified?: boolean;
 };
 
-export function globalStructuredData({ language, siteUrl = "", name = "Boys & Girlz", phone = "", whatsappPhone = "", email = "", address = "", hours = "", founded = "", locality = "", postalCode = "", countryCode = "LB", latitude = "", longitude = "", sameAs = [] }: GlobalSchemaOptions) {
+export function globalStructuredData({ language, siteUrl = "", name = "Boys & Girlz", phone = "", whatsappPhone = "", email = "", address = "", hours = "", founded = "", locality = "", postalCode = "", countryCode = "LB", latitude = "", longitude = "", sameAs = [], mapsUrl = "" }: GlobalSchemaOptions) {
   const base = siteUrl.replace(/\/+$/, "");
   const hasLocation = Boolean(address && locality);
   const validHours = hours.split(/[;\n]/).map(value => value.trim()).filter(value => /^(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))? (?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$/.test(value));
@@ -258,6 +303,8 @@ export function globalStructuredData({ language, siteUrl = "", name = "Boys & Gi
     "@type": hasLocation ? "ClothingStore" : "Organization",
     ...(base ? { "@id": `${base}#organization`, url: base, logo: `${base}/assets/boys-girlz-logo.webp` } : {}),
     name,
+    // Other spellings people use, so search and AI tools tie them to this one shop.
+    alternateName: ["Boys and Girlz", "Boys & Girlz Lebanon", "بويز آند غيرلز"],
     description: "A Lebanon-based children's shop offering clothing, baby items, toys, accessories, maternity and Like New outlet items.",
     areaServed: { "@type": "Country", name: "Lebanon" },
     ...(phone || whatsappPhone ? { telephone: phone || whatsappPhone } : {}),
@@ -265,6 +312,7 @@ export function globalStructuredData({ language, siteUrl = "", name = "Boys & Gi
     ...(hasLocation ? { address: { "@type": "PostalAddress", streetAddress: address, addressLocality: locality, addressCountry: countryCode, ...(postalCode ? { postalCode } : {}) } } : {}),
     ...(hasLocation && validHours.length ? { openingHours: validHours } : {}),
     ...(hasLocation && validGeo ? { geo: { "@type": "GeoCoordinates", latitude: Number(latitude), longitude: Number(longitude) } } : {}),
+    ...(hasLocation && /^https:\/\//.test(mapsUrl) ? { hasMap: mapsUrl } : {}),
     ...(/^\d{4}$/.test(founded) ? { foundingDate: founded } : {}),
     ...(sameAs.length ? { sameAs } : {}),
   };

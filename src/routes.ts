@@ -19,5 +19,8 @@ export default [
   route("contact", "routes/contact.tsx"),
   route("faq", "routes/faq.tsx"),
   route("help/:topic", "routes/help.tsx"),
+  // Built live from the catalogue (see the routes), not static files.
+  route("sitemap.xml", "routes/sitemap.tsx"),
+  route("llms.txt", "routes/llms.tsx"),
   route("*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

@@ -3,6 +3,7 @@ import { Link } from "../components/LocalizedLink";
 import { ChevronRight } from "lucide-react";
 import { approvedBrands } from "../data/brands";
 import { SplitTitle } from "../components/HeroSection";
+import { pageHeading } from "../config/seo";
 import { useLocale } from "../i18n/Locale";
 
 // The best-known brands, first and on large cards.
@@ -66,10 +67,10 @@ export default function Brands() {
       </div>
       <div className="section-eyebrow">
         <span aria-hidden="true" />
-        <span className="section-eyebrow-text">{t("Brands")}</span>
+        <h1 className="section-eyebrow-text shop-hero-keyword">{pageHeading("/brands", language)}</h1>
         <span aria-hidden="true" />
       </div>
-      <h1 className="contact-title"><SplitTitle text={t("The brands we trust.")} byWord={language === "ar"} /></h1>
+      <p className="contact-title"><SplitTitle text={t("The brands we trust.")} byWord={language === "ar"} /></p>
       <p className="contact-lead">{t("Brands you'll find here")}</p>
     </header>
 

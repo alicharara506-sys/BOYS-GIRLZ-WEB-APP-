@@ -1,6 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { isIP } from "node:net";
-import { canonicalUrl, getPublicPagePaths } from "../src/config/seo.ts";
+import { getPublicPagePaths } from "../src/config/seo.ts";
+import { buildSitemap, xmlEscape } from "../src/config/sitemap.ts";
+import { buildLlms } from "../src/config/llms.ts";
+
+export { xmlEscape };
 
 /** Public URLs deliberately cannot point to a local preview or include private URL data. */
 export function publicSiteOrigin(value = "") {
@@ -20,11 +24,6 @@ export function publicSiteOrigin(value = "") {
     throw new Error("VITE_PUBLIC_SITE_URL must be a public HTTPS origin with no path, port, query, fragment or credentials.");
   }
   return url.origin;
-}
-
-export function xmlEscape(value) {
-  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
 }
 
 const commonSources = [
@@ -56,17 +55,6 @@ export function gitLastModified(path, cwd) {
   }
 }
 
-const readingLinks = [
-  ["About Boys & Girlz", "/about"], ["Browse the shop", "/shop"],
-  ["Boys' clothing", "/category/boys"], ["Girls' clothing", "/category/girls"],
-  ["Baby and unisex clothing", "/category/unisex"], ["Accessories", "/category/accessories"],
-  ["Maternity clothing", "/category/maternity"], ["Toys", "/category/toys"],
-  ["Like New outlet", "/category/outlet"], ["Brands", "/brands"],
-  ["Delivery information", "/help/shipping"], ["Returns information", "/help/returns"],
-  ["Sizing information", "/help/sizing"], ["Frequently asked questions", "/faq"],
-  ["Contact the shop", "/contact"],
-];
-
 /** A deterministic API used by the build and regression tests. No files are written here. */
 export function generateSeoOutputs({ siteUrl = "", catalogVerified = false, lastModified = () => undefined } = {}) {
   const origin = publicSiteOrigin(siteUrl);
@@ -78,36 +66,11 @@ export function generateSeoOutputs({ siteUrl = "", catalogVerified = false, last
     ...(origin ? [`Sitemap: ${origin}/sitemap.xml`] : ["# Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin to publish a sitemap."]),
     "",
   ].join("\n");
-  const sitemap = origin ? [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-    ...paths.flatMap((path) => {
-      const modified = lastModified(path);
-      const validModified = modified && /^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(modified) && !Number.isNaN(Date.parse(modified));
-      return ["en", "ar"].map((language) => {
-        const links = [
-          ["en", canonicalUrl(path, "en", origin)],
-          ["ar", canonicalUrl(path, "ar", origin)],
-          ["x-default", canonicalUrl(path, "en", origin)],
-        ];
-        return `  <url>\n    <loc>${xmlEscape(canonicalUrl(path, language, origin))}</loc>\n${validModified ? `    <lastmod>${xmlEscape(modified)}</lastmod>\n` : ""}${links.map(([locale, href]) => `    <xhtml:link rel="alternate" hreflang="${locale}" href="${xmlEscape(href)}" />`).join("\n")}\n  </url>`;
-      });
-    }),
-    "</urlset>", "",
-  ].join("\n") : null;
-  const llms = [
-    "# Boys & Girlz", "",
-    "> Boys & Girlz is a Lebanon-based shop for children's clothing, baby items, toys, accessories and maternity wear.", "",
-    "The shop also has a Like New outlet for pre-owned items in excellent condition at reduced prices. Delivery is within Lebanon. Cash on Delivery is available.", "",
-    ...(!catalogVerified ? ["The website currently contains a preview catalog. Product listings, prices and availability must be confirmed with the shop before ordering.", ""] : []),
-    "## Main pages", "",
-    ...readingLinks.map(([label, path]) => `- [${label}](${origin}${path})`), "",
-    "## Arabic", "",
-    `- [Arabic storefront](${origin}/?lang=ar)`,
-    `- [Arabic frequently asked questions](${origin}/faq?lang=ar)`, "",
-    "## Verified information", "",
-    "For current delivery timing, returns terms, product measurements and availability, use the contact page. No founding date, physical shop address or opening hours are stated here without confirmation.", "",
-    ...(!origin ? ["<!-- Set VITE_PUBLIC_SITE_URL to the confirmed production HTTPS origin. Links are relative until then. -->", ""] : []),
-  ].join("\n");
+  // The deployed site serves a live /sitemap.xml (src/routes/sitemap.tsx); this static version is
+  // kept for the tests and as the format reference.
+  const sitemap = origin ? buildSitemap(paths, origin, lastModified) : null;
+  // Like the sitemap, the deployed site serves llms.txt live (src/routes/llms.tsx) so it can leave
+  // out empty categories; this version is kept for the tests.
+  const llms = buildLlms({ origin, catalogVerified });
   return { robots, sitemap, llms, paths, origin };
 }

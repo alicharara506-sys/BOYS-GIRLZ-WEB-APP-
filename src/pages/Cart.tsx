@@ -231,7 +231,7 @@ export function CartDrawer() {
             <span className="bag-empty-icon"><ShoppingBag size={44} strokeWidth={1.4} /></span>
             <span className="home-mascot home-mascot-girl" />
           </span>
-          <h2 className="bag-title"><SplitTitle text={t("A little empty, for now.")} byWord={language === "ar"} /></h2>
+          <p className="bag-title"><SplitTitle text={t("A little empty, for now.")} byWord={language === "ar"} /></p>
           <p>{t("Your next favorite is waiting.")}</p>
           <Link to="/shop" className="bh-cta" onClick={() => setCartOpen(false)} onPointerMove={spotlight}>
             <span className="bh-cta-shine" aria-hidden="true" />

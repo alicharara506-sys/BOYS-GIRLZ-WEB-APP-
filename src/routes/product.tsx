@@ -9,29 +9,32 @@ import {
 import type { Route } from "./+types/product";
 
 import { storefrontCatalog } from "../server/commerce/queries.server";
+
+// Products come from the live catalogue. The page meta gets what search engines need for a
+// Product result: price, condition, brand, photo and whether it can be bought right now.
 export async function loader({ params }: Route.LoaderArgs) {
   const catalog = await storefrontCatalog();
-  const managed = true;
-  const product = managed
-    ? catalog.products.find((item) => item.id === params.id)
-    : undefined;
+  const product = catalog.products.find((item) => item.id === params.id);
   if (!product) throw new Response("Product not found", { status: 404 });
+  // Same rule as the product page's "sold out" state, so the markup matches what shoppers see.
+  const inStock = product.available !== false && !(product.productType === "shoes" && product.sizes.length === 0);
   return {
+    id: product.id,
     name: product.name,
     description: product.description,
-    id: product.id,
     category: product.category,
-    managed,
+    price: product.price,
+    condition: product.condition,
+    brand: product.brand,
+    imageUrl: product.imageUrl,
+    inStock,
   };
 }
+
 export const meta: Route.MetaFunction = ({ data, matches }) =>
-  data?.managed
+  data
     ? managedProductMeta(data, languageFromMatches(matches))
-    : pageMeta(
-        data?.name || "Product",
-        data?.description ||
-          "Shop children's clothing and accessories at Boys & Girlz.",
-        `/product/${data?.id || ""}`,
-        languageFromMatches(matches),
-      );
+    : // No such product: describe a missing page, not a product.
+      pageMeta("Page not found", "", "/not-found", languageFromMatches(matches));
+
 export default ProductDetail;

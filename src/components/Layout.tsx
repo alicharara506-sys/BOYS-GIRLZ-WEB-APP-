@@ -69,8 +69,10 @@ export function Modal({
         if (e.target === ref.current) onClose();
       }}
     >
+      {/* A plain title, not an h2: every page renders these dialogs, and their titles shouldn't
+          sit in the page's heading outline ahead of its H1. The dialog is labelled by aria-label. */}
       <div className="modal-heading">
-        <h2>{title}</h2>
+        <p className="modal-title">{title}</p>
         <button
           className="icon-button"
           onClick={onClose}
@@ -106,6 +108,10 @@ const shopMenu: { category: Category; Icon: typeof Shirt; tint: string }[] = [
 export function Header() {
   const { products } = useCatalog();
   const menuCounts = Object.fromEntries(categories.map((c) => [c, products.filter((p) => matchesCategory(p, c)).length]));
+  // Categories with nothing in them right now stay out of the menus (their pages are noindex too).
+  // If the catalogue hasn't loaded, every category shows.
+  const liveMenu = shopMenu.filter(({ category }) => !products.length || menuCounts[category] > 0);
+  const saleLive = !products.length || menuCounts.Sale > 0;
   const { language, setLanguage, t } = useLocale();
   const { count, wishlist, setCartOpen } = useStore();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -207,12 +213,12 @@ export function Header() {
       <details className="mobile-shop" open>
         <summary>{t("Shop")} <ChevronDown size={18} aria-hidden="true" /></summary>
         <div>
-          {shopMenu.filter(({ category }) => category !== "Sale").map(({ category }) => <NavLink key={category} to={`/category/${category.toLowerCase()}`}>{t(category)}</NavLink>)}
+          {liveMenu.filter(({ category }) => category !== "Sale").map(({ category }) => <NavLink key={category} to={`/category/${category.toLowerCase()}`}>{t(category)}</NavLink>)}
           <NavLink to="/shop" end>{t("Shop all")}</NavLink>
         </div>
       </details>
       <Link to="/shop?sort=newest">{t("New In")}</Link>
-      <NavLink to="/category/sale">{t("Sale")}</NavLink>
+      {saleLive && <NavLink to="/category/sale">{t("Sale")}</NavLink>}
       <NavLink to="/about">{t("About us")}</NavLink>
       <NavLink to="/contact">{t("Contact")}</NavLink>
     </>
@@ -234,7 +240,7 @@ export function Header() {
                 <summary>{t("Shop")} <ChevronDown size={15} aria-hidden="true" /></summary>
                 <div className="shop-menu">
                   <div className="shop-menu-grid">
-                    {shopMenu.map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties}>
+                    {liveMenu.map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties}>
                       <span className="shop-menu-icon" aria-hidden="true"><Icon size={17} /></span>
                       <span className="shop-menu-name">{t(category)}</span>
                       <span className="shop-menu-count">{menuCounts[category]}</span>
@@ -244,7 +250,7 @@ export function Header() {
                 </div>
               </details>
               <Link to="/shop?sort=newest">{t("New In")}</Link>
-              <NavLink className="nav-sale" to="/category/sale">{t("Sale")}</NavLink>
+              {saleLive && <NavLink className="nav-sale" to="/category/sale">{t("Sale")}</NavLink>}
               <NavLink to="/about">{t("About us")}</NavLink>
               <NavLink to="/contact">{t("Contact")}</NavLink>
             </nav>
@@ -335,7 +341,7 @@ export function Header() {
           </button>
         </form>
         {!query && <div className="palette-chips">
-          {shopMenu.slice(0, 6).map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties} onClick={() => setSearchOpen(false)}>
+          {liveMenu.slice(0, 6).map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties} onClick={() => setSearchOpen(false)}>
             <Icon size={14} aria-hidden="true" /> {t(category)}
           </Link>)}
         </div>}

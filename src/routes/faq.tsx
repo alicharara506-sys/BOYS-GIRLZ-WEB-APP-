@@ -5,6 +5,7 @@ import { business } from "../config/business";
 import { localizedMeta } from "../config/meta";
 import { useLocale } from "../i18n/Locale";
 import { SplitTitle } from "../components/HeroSection";
+import { pageHeading } from "../config/seo";
 import { faqs } from "../data/faqs";
 
 const presentation: Record<(typeof faqs)[number]["id"], { Icon: LucideIcon; tint: string }> = {
@@ -92,10 +93,10 @@ export default function FAQ() {
           <span className="about-field about-field-pink" />
           <span className="about-field about-field-blue" />
         </div>
-        <span className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Plus size={13} /></span>{t("Here to help")}</span>
-        <h1 className="contact-title">
+        <h1 className="bh-kicker"><span className="bh-pulse" aria-hidden="true"><Plus size={13} /></span>{pageHeading("/faq", language)}</h1>
+        <p className="contact-title">
           <SplitTitle text={heading} byWord={language === "ar"} />
-        </h1>
+        </p>
         <p className="contact-lead">{language === "ar" ? `إجابات عن التسوّق من ${business.name} في لبنان.` : `Answers about shopping with ${business.name} in Lebanon.`}</p>
       </section>
 

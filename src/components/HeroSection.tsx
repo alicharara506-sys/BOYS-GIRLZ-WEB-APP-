@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useLocale } from "../i18n/Locale";
+import { pageHeading } from "../config/seo";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -182,15 +183,16 @@ export default function HeroSection() {
 
     <div className="bh-inner page-width">
       <div className="bh-copy">
-        <span className="bh-kicker">
+        {/* The H1 is the keyword line in the pill; the big slogan below is a tagline. */}
+        <h1 className="bh-kicker">
           <span className="bh-pulse" aria-hidden="true"><Heart size={13} /></span>
-          {t("Made for little moments")}
-        </span>
-        <h1 className="bh-title">
+          {pageHeading("/", language)}
+        </h1>
+        <p className="bh-title">
           <span className="sr-only">{lineOne} {lineTwo}</span>
           <span className="bh-line" aria-hidden="true"><AnimatedLine text={lineOne} start={0} byWord={byWord} /></span>
           <span className="bh-line bh-line-accent" aria-hidden="true"><AnimatedLine text={lineTwo} start={lineOne.length} gradient byWord={byWord} /></span>
-        </h1>
+        </p>
         <p className="bh-body">{t("A children's clothing shop in Lebanon, with little finds for every day.")}</p>
         <div className="bh-actions">
           <Link className="bh-cta" to="/shop" onPointerMove={spotlight}>

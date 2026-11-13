@@ -121,7 +121,7 @@ body:has(.buy-bar.is-visible) .whatsapp-floating { bottom: 96px; }
 }
 .modal.fit-guide::backdrop { background: var(--bng-tone-380); backdrop-filter: blur(6px); }
 .fit-guide .modal-heading { margin-bottom: 12px; }
-.fit-guide .modal-heading h2 { background: linear-gradient(90deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); -webkit-background-clip: text; background-clip: text; color: transparent; font-family: Quicksand, sans-serif; font-size: 24px; letter-spacing: -.02em; }
+.fit-guide .modal-heading .modal-title { background: linear-gradient(90deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); -webkit-background-clip: text; background-clip: text; color: transparent; font-family: Quicksand, sans-serif; font-size: 24px; letter-spacing: -.02em; }
 .fit-guide-note, .fit-guide-tip { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
 .fit-guide-note { background: var(--bng-tone-350); color: var(--bng-tone-538); }
 .fit-guide-note svg { flex: none; color: var(--bng-tone-348); }
@@ -156,7 +156,7 @@ html[dir="rtl"] .fit-steps button:hover .fit-arrow { transform: translateX(-3px)
 }
 .fit-guide-wa:hover { color: var(--bng-tone-7); filter: brightness(1.05); box-shadow: 0 0 0 4px var(--bng-tone-541), 0 14px 30px -14px var(--bng-tone-419); }
 @media (max-width: 560px) { .modal.fit-guide { padding: 20px 16px; } }
-html[dir="rtl"] .fit-guide .modal-heading h2 { background-image: linear-gradient(270deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); }
+html[dir="rtl"] .fit-guide .modal-heading .modal-title { background-image: linear-gradient(270deg, var(--bng-tone-325) 40%, var(--bng-tone-331) 75%, var(--bng-tone-332)); }
 
 /* Approximate height under each size. */
 .size-options > button { display: inline-grid; justify-items: center; gap: 1px; line-height: 1.15; }

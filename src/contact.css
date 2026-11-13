@@ -223,7 +223,7 @@ body:has(.buy-bar.is-visible) .wa-fab { bottom: 96px; }
 }
 .modal.wa-order::backdrop { background: var(--bng-tone-380); backdrop-filter: blur(6px); }
 .wa-order .modal-heading { margin-bottom: 8px; }
-.wa-order .modal-heading h2 { font-family: Quicksand, sans-serif; font-size: 22px; }
+.wa-order .modal-heading .modal-title { font-family: Quicksand, sans-serif; font-size: 22px; }
 .wa-order-form { display: grid; gap: 14px; }
 .wa-order-lead { margin: 0 0 4px; color: var(--bng-tone-326); font-size: 14px; line-height: 1.55; }
 .wa-order-where { display: grid; gap: 10px; }

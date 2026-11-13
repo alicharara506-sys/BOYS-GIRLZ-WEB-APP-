@@ -210,7 +210,7 @@ const arabic: Record<string, string> = {
 };
 
 const productNames: Record<string, string> = {
-  "Everyday Overshirt": "قميص يومي واسع", "Gingham Day Dress": "فستان مربعات يومي", "Happy Days Tee": "قميص أيام سعيدة",
+  "Everyday Overshirt": "قميص يومي واسع", "Gingham Day Dress": "فستان مربعات يومي", "Sunday Cotton Dress": "فستان قطني ليوم الأحد", "Happy Days Tee": "قميص أيام سعيدة",
   "Adventure Overalls": "أوفرول المغامرات", "Fleece Bear Overall": "أوفرول الدب الناعم", "Little Safari Romper": "رومبر السفاري الصغير",
   "Knit Hooded Cardigan": "كارديغان محبوك بغطاء رأس", "Teddy Bear Sweater Set": "طقم كنزة الدب", "Cloud Puffer Overall": "أوفرول شتوي مبطّن",
   "Little Cloud Booties": "حذاء السحابة الصغير", "Bunny’s First Cuddles": "أرنب العناق الأول", "The Sunday Maternity Dress": "فستان أمومة ليوم الأحد",
@@ -233,7 +233,17 @@ export function translate(text: string, language: Language) {
   if (arabic[text]) return arabic[text];
   if (text.startsWith("Shop ")) return `تسوّق ${arabic[text.slice(5)] || text.slice(5)}`;
   if (text.startsWith("Help: ")) return `المساعدة: ${arabic[text.slice(6)] || text.slice(6)}`;
-  return arabic[text] || productNames[text] || text;
+  // Size labels from the catalogue ("6–7 Years", "12–18 Months", "One size") that the list above
+  // doesn't name, so new sizes never show in English on Arabic pages.
+  if (text === "One size") return "مقاس واحد";
+  const size = text.match(/^(\d+)\s*[–-]\s*(\d+) (Years|Months)$/);
+  if (size) {
+    const upper = Number(size[2]);
+    const unit = size[3] === "Years" ? (upper > 10 ? "سنة" : "سنوات") : (upper > 10 ? "شهراً" : "أشهر");
+    return `${size[1]}–${size[2]} ${unit}`;
+  }
+  // The catalogue may store a straight apostrophe where the name list has a curly one.
+  return productNames[text] || productNames[text.replace(/'/g, "’")] || text;
 }
 
 const LocaleContext = createContext<{ language: Language; setLanguage: (language: Language) => void; t: (text: string) => string } | null>(null);

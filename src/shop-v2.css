@@ -16,13 +16,15 @@ main { overflow-x: clip; }
 .shop-hero.boys .shop-hero-field-pink { background: var(--bng-tone-493); }
 .shop-hero.girls .shop-hero-field-blue { background: var(--bng-tone-491); }
 .shop-hero-copy { display: grid; justify-items: center; gap: 12px; max-width: 640px; }
-.shop-hero h1 { margin: 4px 0 0; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; font-size: clamp(38px, 5vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; }
-.shop-hero h1 .bh-letter { animation-name: bh-letter; animation-delay: calc(var(--i) * 28ms + 60ms); }
+.shop-hero .shop-hero-title { max-width: none; animation: none; margin: 4px 0 0; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; font-size: clamp(38px, 5vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -.045em; }
+.shop-hero .shop-hero-title .bh-letter { animation-name: bh-letter; animation-delay: calc(var(--i) * 28ms + 60ms); }
 .shop-hero p { max-width: 480px; margin: 0; color: var(--bng-tone-566); font-size: 15px; line-height: 1.65; animation: bh-rise .8s cubic-bezier(.16, 1, .3, 1) .45s both; }
 .shop-hero .gender-mark { margin: 0; }
+/* The page H1 is the small keyword line above the big slogan; it keeps the eyebrow look but may wrap. */
+.section-eyebrow .shop-hero-keyword { font-family: inherit; white-space: normal; }
 .shop-hero .outlet-note { margin-top: 4px; text-align: start; }
 .shop-hero .category-scene { flex: 0 0 clamp(170px, 20vw, 240px); height: 170px; background: var(--bng-tone-391); border-radius: 26px; box-shadow: 0 0 0 1px var(--bng-tone-340) inset; }
-html[dir="rtl"] .shop-hero h1 { letter-spacing: 0; line-height: 1.3; }
+html[dir="rtl"] .shop-hero .shop-hero-title { letter-spacing: 0; line-height: 1.3; }
 
 /* Category chips, with a gradient fill on the current one. */
 .shop-cats {

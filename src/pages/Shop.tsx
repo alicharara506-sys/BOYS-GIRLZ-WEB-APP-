@@ -28,6 +28,7 @@ import CategoryScene from "../components/CategoryScene";
 import { useStore } from "../state/Store";
 import { useLocale } from "../i18n/Locale";
 import { approvedBrands, brandSlug } from "../data/brands";
+import { pageHeading } from "../config/seo";
 import { AnimatedLine, SplitTitle } from "../components/HeroSection";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useCountUp } from "../hooks/useCountUp";
@@ -292,15 +293,16 @@ export default function Shop() {
           <span className="shop-hero-field shop-hero-field-blue" />
         </div>
         <div className="shop-hero-copy">
+          {/* The H1 is the keyword line ("Boys' Clothes in Lebanon"); the big slogan below is a tagline. */}
           <div className="section-eyebrow">
             <span aria-hidden="true" />
-            <span className="section-eyebrow-text">{t("Made for little moments")}</span>
+            <h1 className="section-eyebrow-text shop-hero-keyword">{pageHeading(routeCategory ? `/category/${routeCategory.toLowerCase()}` : "/shop", language)}</h1>
             <span aria-hidden="true" />
           </div>
-          <h1 key={title}>
+          <p className="shop-hero-title" key={title}>
             <span className="sr-only">{title}</span>
             <span aria-hidden="true"><AnimatedLine text={title} start={0} byWord={language === "ar"} /></span>
-          </h1>
+          </p>
           {routeCategory === "Boys" && <span className="gender-mark"><GenderIcon kind="boys" /> <span>{t("Little Boys")}</span></span>}
           {routeCategory === "Girls" && <span className="gender-mark"><GenderIcon kind="girls" /> <span>{t("Little Girls")}</span></span>}
           <p>
@@ -320,7 +322,8 @@ export default function Shop() {
       </div>
       <nav className="shop-cats" aria-label={t("Shop for")}>
         <Link to={{ pathname: "/shop", search: chipSearch }} preventScrollReset data-tone="all" className={!routeCategory && !selected.length ? "active tone-pill" : ""} aria-current={!routeCategory && !selected.length ? "page" : undefined}>{t("All")} <span>{products.length}</span></Link>
-        {categories.map((c) => <Link key={c} to={{ pathname: `/category/${c.toLowerCase()}`, search: chipSearch }} preventScrollReset data-tone={c === "Boys" ? "boys" : c === "Girls" ? "girls" : c === "Unisex" ? "unisex" : "all"} className={routeCategory === c ? "active tone-pill" : ""} aria-current={routeCategory === c ? "page" : undefined}>
+        {/* Empty categories are left out, except the one being viewed. */}
+        {categories.filter((c) => c === routeCategory || !products.length || products.some((p) => matchesCategory(p, c))).map((c) => <Link key={c} to={{ pathname: `/category/${c.toLowerCase()}`, search: chipSearch }} preventScrollReset data-tone={c === "Boys" ? "boys" : c === "Girls" ? "girls" : c === "Unisex" ? "unisex" : "all"} className={routeCategory === c ? "active tone-pill" : ""} aria-current={routeCategory === c ? "page" : undefined}>
           {routeCategory === c && <span className="tone-burst" aria-hidden="true" />}{t(c)} <span>{products.filter((p) => matchesCategory(p, c)).length}</span>
         </Link>)}
       </nav>
