@@ -125,10 +125,6 @@ html[dir="rtl"] .float-field label { transform-origin: 100% 0; }
 @media (max-width: 560px) {
   .contact-card { flex: 1 1 100%; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .contact-page *, .contact-page *::before { animation: none !important; transition: none !important; }
-  .contact-sent-check path { stroke-dashoffset: 0; }
-}
 
 /* The ways to reach the shop sit under "Let's talk", and the form starts level with it. */
 .contact-aside .contact-cards { display: grid; justify-content: stretch; gap: 10px; margin: 14px 0 0; }
@@ -203,7 +199,6 @@ html[dir="rtl"] .buddies-bubble { border-radius: 18px 18px 6px 18px; }
 @keyframes buddy-send { 0% { transform: none; } 20% { transform: scale(1.12, .84); } 50% { transform: translateY(-55%) rotate(-12deg); } 70% { transform: translateY(-50%) rotate(10deg); } 90% { transform: translateY(0) scale(1.08, .92); } 100% { transform: none; } }
 
 @media (max-width: 900px) { .buddies { inset-inline-end: 50%; translate: 50% 0; } html[dir="rtl"] .buddies { translate: -50% 0; } }
-@media (prefers-reduced-motion: reduce) { .buddies *, .buddies { animation: none !important; transition: none !important; } }
 
 /* ---------- Floating WhatsApp button ---------- */
 .wa-fab {
@@ -219,7 +214,6 @@ html[dir="rtl"] .buddies-bubble { border-radius: 18px 18px 6px 18px; }
 @keyframes wa-ping { 75%, 100% { transform: scale(2); opacity: 0; } }
 @media (min-width: 768px) { .wa-fab { bottom: 32px; inset-inline-end: 32px; } }
 body:has(.buy-bar.is-visible) .wa-fab { bottom: 96px; }
-@media (prefers-reduced-motion: reduce) { .wa-fab-ring { animation: none; } }
 
 /* ---------- Order on WhatsApp sheet ---------- */
 .modal.wa-order {

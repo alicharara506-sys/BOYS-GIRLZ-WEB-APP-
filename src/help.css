@@ -57,9 +57,6 @@ html[dir="rtl"] .ruler-fill { transform-origin: 100% 50%; background: linear-gra
   .ruler-dot { display: none; }
   .ruler-label { white-space: nowrap; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .help-v2 *, .help-v2 *::before { animation: none !important; transition: none !important; }
-}
 .ruler { min-width: 0; }
 .ruler-cm { color: var(--bng-tone-372); font-size: 11px; font-weight: 600; white-space: nowrap; }
 .ruler-step a:hover .ruler-cm { color: var(--bng-tone-332); }

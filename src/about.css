@@ -85,11 +85,6 @@ html[dir="rtl"] .about-question h2 { letter-spacing: 0; }
   .about-line { inset-inline-start: 17px; }
   .about-step-body { padding: 18px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .about-page *, .about-page *::before { animation: none !important; transition: none !important; }
-  .about-line-fill { transform: none; }
-  .about-question::before { opacity: 1; }
-}
 
 /* ---------- Growing-up staircase ---------- */
 .gs { --rx: 0deg; --ry: 0deg; position: relative; perspective: 1100px; }
@@ -137,4 +132,3 @@ html[dir="rtl"] .about-question h2 { letter-spacing: 0; }
 @keyframes gs-heart { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(.4); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-90px) scale(1.15); } }
 
 @media (max-width: 900px) { .gs-stage { max-width: 460px; } }
-@media (prefers-reduced-motion: reduce) { .gs *, .gs-stage { animation: none !important; transition: none !important; } }

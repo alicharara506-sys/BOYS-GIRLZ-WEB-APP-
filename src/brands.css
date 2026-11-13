@@ -78,4 +78,3 @@ html[dir="rtl"] .brand-card:hover .brand-card-cta svg { transform: translateX(-4
   .brand-card-name strong { font-size: 14px; }
   .brand-card-lg { min-height: 0; }
 }
-@media (prefers-reduced-motion: reduce) { .brands-v3 *, .brands-v3 *::before { animation: none !important; transition: none !important; } }

@@ -43,6 +43,3 @@ html[dir="rtl"] .tone-pill { animation-direction: reverse; }
 .shop-cats a.tone-pill[data-tone="unisex"] { animation: tone-flow 3.2s linear infinite, tone-pulse 3.2s ease-in-out infinite, chip-pop .45s cubic-bezier(.34, 1.56, .64, 1); }
 .favorites-pill.tone-pill { transition: transform .55s cubic-bezier(.34, 1.4, .64, 1), width .55s cubic-bezier(.34, 1.4, .64, 1); }
 
-@media (prefers-reduced-motion: reduce) {
-  .tone-pill, .tone-pill::before, .tone-burst { animation: none !important; }
-}

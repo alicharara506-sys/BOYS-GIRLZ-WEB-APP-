@@ -151,9 +151,6 @@ html[dir="rtl"] .footer-panel-title, html[dir="rtl"] .footer-contact-copy small 
   .footer-panels { grid-template-columns: 1fr; }
   .footer-bottom-v2 > div { flex-direction: column; align-items: flex-start; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .site-footer-v2 *, .site-footer-v2 *::before { animation: none !important; transition: none !important; }
-}
 
 /* Phones: Shop and Help side by side, Brands beneath, so the footer stays short. */
 @media (max-width: 760px) {
@@ -175,4 +172,3 @@ html[dir="rtl"] .footer-panel-title, html[dir="rtl"] .footer-contact-copy small 
   font-weight: 800; letter-spacing: .01em; animation: footer-credit 5s linear infinite;
 }
 @keyframes footer-credit { to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { .footer-glows::before, .footer-credit * { animation: none !important; transition: none !important; } }

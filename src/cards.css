@@ -252,10 +252,6 @@ html[dir="rtl"] .favorites-view-all svg { scale: -1 1; }
 @media (hover: none) {
   .pc-quick { transform: none; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .pc-tilt { transform: none; }
-  .pc *, .pc *::after, .favorites-pill { animation: none !important; transition: none !important; }
-}
 .pc .pc-photo, .pc:hover .pc-photo { scale: none; filter: none; }
 /* The sprite cells bleed a sliver of the next product at their bottom edge. */
 .pc .pc-photo { clip-path: inset(0 0 4% 0); }

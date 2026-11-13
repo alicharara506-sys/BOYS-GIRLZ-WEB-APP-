@@ -106,9 +106,6 @@ html[dir="rtl"] .hdr .desktop-nav > a.active::after { background: linear-gradien
   .hdr.is-scrolled .brand-logo-image { width: 112px; height: 38px; }
   .hdr.is-scrolled .hdr-shell { width: calc(100% - 16px); transform: translateY(8px); border-radius: 18px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hdr, .hdr * { animation: none !important; transition: none !important; }
-}
 
 /* ---------- Shop menu ---------- */
 .hdr .nav-shop summary { display: inline-flex; align-items: center; gap: 4px; }
@@ -213,9 +210,6 @@ html[dir="rtl"] .palette-results > a.is-active > svg, html[dir="rtl"] .palette-r
 @media (max-width: 560px) {
   .modal.search-palette { width: 100%; max-width: 100%; margin: 0 0 auto; border-radius: 0 0 26px 26px; padding: 18px 16px; }
   .palette-esc, .palette-keys { display: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .search-palette, .search-palette * { animation: none !important; transition: none !important; }
 }
 
 .palette-keys button, .palette-esc { padding: 0; border-radius: 8px; background: none; cursor: pointer; }

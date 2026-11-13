@@ -84,9 +84,8 @@ export function WishButton({ product }: { product: Product }) {
     </button>
   );
 }
-// Tilts the card toward the cursor and moves its light to follow it; only for a mouse.
+// Tilts the card toward the cursor, or the finger while it presses, and moves its light to follow.
 function follow(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== "mouse") return;
   const card = event.currentTarget;
   const box = card.getBoundingClientRect();
   const x = (event.clientX - box.left) / box.width;
@@ -95,6 +94,10 @@ function follow(event: PointerEvent<HTMLElement>) {
   card.style.setProperty("--my", `${y * 100}%`);
   card.style.setProperty("--rx", `${(0.5 - y) * 6}deg`);
   card.style.setProperty("--ry", `${(x - 0.5) * 8}deg`);
+}
+// A finger lifting lets the card spring back; a mouse keeps its tilt until it leaves.
+function release(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== "mouse") settle(event);
 }
 function settle(event: PointerEvent<HTMLElement>) {
   event.currentTarget.style.setProperty("--rx", "0deg");
@@ -116,7 +119,7 @@ export default function ProductCard({ product, showRange = false }: { product: P
     : t("Sizes coming soon");
   return (
     <article className={`product-card pc ${quickOpen ? "pc-open" : ""}`} style={{ "--pc-glow": colorHex[color] || "#f3c6d6" } as CSSProperties}>
-      <div className="pc-tilt" onPointerMove={follow} onPointerLeave={settle}>
+      <div className="pc-tilt" onPointerDown={follow} onPointerMove={follow} onPointerUp={release} onPointerCancel={settle} onPointerLeave={settle}>
         <span className="pc-light" aria-hidden="true" />
         <span className="pc-edge" aria-hidden="true" />
         <div className="pc-media">

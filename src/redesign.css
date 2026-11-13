@@ -275,6 +275,3 @@ body { background: var(--bng-tone-381); color: var(--bng-tone-542); }
   .footer-socials a { width: 21px; }.footer-socials svg { width: 16px; }
   .footer-bottom { font-size: 8px; line-height: 1.4; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .home-button { transition: none; }
-}

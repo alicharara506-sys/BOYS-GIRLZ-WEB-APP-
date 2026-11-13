@@ -1866,21 +1866,6 @@ input[type="checkbox"] {
     flex-wrap: wrap;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *:before,
-  *:after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .tilt {
-    transform: none !important;
-  }
-  .product-flipper {
-    transition: none !important;
-  }
-}
 @media (max-width: 700px) {
   .brand-logo-image { width: 154px; height: 45px; }
   .editorial-section { margin-top: 56px; }

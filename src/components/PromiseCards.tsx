@@ -15,7 +15,7 @@ const promises: PromiseCardItem[] = [
   { key: "shirt", Icon: Shirt, title: "Easy size guide", body: "Find the perfect fit" },
 ];
 
-// Tilts the card toward the cursor and moves its light to follow it; the tilt is only for a mouse.
+// Tilts the card toward the cursor, or the finger while it presses, and moves its light to follow it.
 function follow(event: PointerEvent<HTMLDivElement>) {
   const card = event.currentTarget;
   const box = card.getBoundingClientRect();
@@ -23,9 +23,12 @@ function follow(event: PointerEvent<HTMLDivElement>) {
   const y = (event.clientY - box.top) / box.height;
   card.style.setProperty("--mx", `${x * 100}%`);
   card.style.setProperty("--my", `${y * 100}%`);
-  if (event.pointerType !== "mouse") return;
   card.style.setProperty("--rx", `${(0.5 - y) * 8}deg`);
   card.style.setProperty("--ry", `${(x - 0.5) * 8}deg`);
+}
+// A finger lifting lets the card spring back; a mouse keeps its tilt until it leaves.
+function release(event: PointerEvent<HTMLDivElement>) {
+  if (event.pointerType !== "mouse") settle(event);
 }
 function settle(event: PointerEvent<HTMLDivElement>) {
   event.currentTarget.style.setProperty("--rx", "0deg");
@@ -54,11 +57,21 @@ export default function PromiseCards({ items = promises, label = "Why shop with 
         .from(".promise-card", { y: 40, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.15, clearProps: "transform,opacity" })
         .to(strokes, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut", stagger: 0.05, clearProps: "strokeDasharray,strokeDashoffset" }, 0.35);
       // Each column drifts at its own speed while the section scrolls past (on wide screens).
-      gsap.matchMedia().add("(min-width: 901px)", () => {
+      const media = gsap.matchMedia();
+      media.add("(min-width: 901px)", () => {
         gsap.utils.toArray<HTMLElement>(".promise-drift").forEach((column, index) =>
           gsap.fromTo(column, { y: [24, 44, 32][index] }, {
             y: [-24, -44, -32][index], ease: "none",
             scrollTrigger: { trigger: row, start: "top bottom", end: "bottom top", scrub: 0.6 },
+          }));
+      });
+      // Stacked on phones: each card swings up out of the page in 3D as it scrolls into view,
+      // the outer two from opposite sides.
+      media.add("(max-width: 900px)", () => {
+        gsap.utils.toArray<HTMLElement>(".promise-drift").forEach((column, index) =>
+          gsap.fromTo(column, { rotateX: 32, rotateY: [-14, 0, 14][index], scale: 0.92, transformPerspective: 900, transformOrigin: "50% 100%" }, {
+            rotateX: 0, rotateY: 0, scale: 1, ease: "none",
+            scrollTrigger: { trigger: column, start: "top bottom", end: "top 62%", scrub: 0.6 },
           }));
       });
     }, row);
@@ -67,7 +80,7 @@ export default function PromiseCards({ items = promises, label = "Why shop with 
 
   return <section ref={rowRef} className="promise page-width" aria-label={t(label)}>
     {items.map(({ key, Icon, title, body }) => <div className="promise-drift" key={key}>
-      <div className={`promise-card promise-card-${key}`} onPointerMove={follow} onPointerLeave={settle}>
+      <div className={`promise-card promise-card-${key}`} onPointerDown={follow} onPointerMove={follow} onPointerUp={release} onPointerCancel={settle} onPointerLeave={settle}>
         <span className="promise-dots" aria-hidden="true" />
         <span className="promise-shade" aria-hidden="true" />
         <span className="promise-icon" aria-hidden="true"><Icon size={24} strokeWidth={1.7} /></span>

@@ -200,9 +200,6 @@ html[dir="rtl"] .review-list dt { letter-spacing: 0; }
   .cart-line > a { width: 76px; }
   .checkout-progress li { font-size: 12px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .bag-page *, .checkout-v2 *, .bag-drawer, .bag-drawer *, .cart-line, .checkout-progress::after, .bag-summary::before { animation: none !important; transition: none !important; }
-}
 
 /* Summary rows: thumbnail, name, price on one line. */
 .bag-summary .checkout-items { border-color: var(--bng-tone-385); }

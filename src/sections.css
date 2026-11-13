@@ -144,8 +144,3 @@ html[dir="rtl"] .help-cta-copy h2 { letter-spacing: 0; line-height: 1.3; }
   .promise { padding-bottom: 0; }
   .promise-card { min-height: 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .help-cta *, .promise-card, .promise-card * { animation: none !important; transition: none !important; }
-  .promise-card { transform: none; }
-  .help-cta-sparkles svg { opacity: .7; }
-}

@@ -63,7 +63,7 @@ export default function GrowingSteps() {
   }, [reduceMotion]);
 
   const tilt = (event: PointerEvent<HTMLDivElement>) => {
-    if (reduceMotion || event.pointerType !== "mouse") return;
+    if (reduceMotion) return;
     const box = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty("--ry", `${((event.clientX - box.left) / box.width - 0.5) * 14}deg`);
     event.currentTarget.style.setProperty("--rx", `${(0.5 - (event.clientY - box.top) / box.height) * 10}deg`);
@@ -73,7 +73,7 @@ export default function GrowingSteps() {
     event.currentTarget.style.setProperty("--rx", "0deg");
   };
 
-  return <div className="gs" onPointerMove={tilt} onPointerLeave={settle} aria-hidden="true">
+  return <div className="gs" onPointerDown={tilt} onPointerMove={tilt} onPointerUp={(event) => { if (event.pointerType !== "mouse") settle(event); }} onPointerCancel={settle} onPointerLeave={settle} aria-hidden="true">
     <div className="gs-stage" ref={stageRef}>
       <span className="gs-glow gs-glow-blue" />
       <span className="gs-glow gs-glow-pink" />

@@ -331,10 +331,6 @@ html[dir="rtl"] .section-eyebrow > span[aria-hidden]:last-child { background: li
   .section-eyebrow > span[aria-hidden] { width: 28px; }
   .section-eyebrow-text { font-size: 11px; letter-spacing: .18em; white-space: nowrap; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .brands-track { animation: none; }
-  .brands-window { overflow-x: auto; }
-}
 
 /* ---------- RTL ---------- */
 html[dir="rtl"] .bh-kicker, html[dir="rtl"] .corner-eyebrow { letter-spacing: 0; text-transform: none; }
@@ -380,10 +376,6 @@ html[dir="rtl"] .corner-tile:hover .corner-action svg { transform: translateX(-5
   .corner-body { display: none; }
   .corner-tile h3 { font-size: 21px; }
   .corner-eyebrow { font-size: 9px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bh *, .bh *::before, .bh *::after, .corner-tile, .corner-tile *, .corner-tile::before, .section-glow * , .section-glow-line::after { animation: none !important; transition: none !important; }
-  .bh-check path { stroke-dashoffset: 0; }
 }
 
 .bh-letter-grad { background: linear-gradient(270deg, var(--bng-tone-331), var(--bng-tone-332)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-block: .1em; }

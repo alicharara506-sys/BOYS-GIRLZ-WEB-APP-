@@ -105,15 +105,62 @@ export default function HeroSection() {
     return () => window.clearInterval(timer);
   }, [reduceMotion, tint]);
 
-  // Both characters lean toward the cursor for depth.
+  // On phones there is no cursor, so the two lean with the phone's tilt where the browser gives it
+  // without a prompt (Android over HTTPS), and otherwise sway gently on their own while in view.
+  // A finger on the stage takes over from either.
+  const touching = useRef(false);
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || reduceMotion || !window.matchMedia("(hover: none)").matches) return;
+    const lean = (x: number, y: number) => {
+      const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v)).toFixed(3);
+      stage.style.setProperty("--px", clamp(x));
+      stage.style.setProperty("--py", clamp(y));
+    };
+    let gyro = false;
+    let baseBeta: number | null = null;
+    const orient = (event: DeviceOrientationEvent) => {
+      if (event.gamma == null || event.beta == null) return;
+      gyro = true;
+      baseBeta ??= event.beta;
+      if (!touching.current) lean(event.gamma / 40, (event.beta - baseBeta) / 50);
+    };
+    // Browsers leave DeviceOrientationEvent out entirely on plain-http pages, so check before touching it.
+    const Orientation = (window as unknown as { DeviceOrientationEvent?: { requestPermission?: unknown } }).DeviceOrientationEvent;
+    const useGyro = !!Orientation && window.isSecureContext && typeof Orientation.requestPermission !== "function";
+    if (useGyro) window.addEventListener("deviceorientation", orient);
+    let visible = true;
+    const watch = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; });
+    watch.observe(stage);
+    const start = performance.now();
+    let frame = 0;
+    const sway = (now: number) => {
+      if (!gyro && visible && !touching.current && !document.hidden) {
+        const t = (now - start) / 1000;
+        lean(Math.sin(t * 0.75) * 0.38, Math.sin(t * 0.5) * 0.16);
+      }
+      frame = requestAnimationFrame(sway);
+    };
+    frame = requestAnimationFrame(sway);
+    return () => {
+      cancelAnimationFrame(frame);
+      watch.disconnect();
+      window.removeEventListener("deviceorientation", orient);
+    };
+  }, [reduceMotion]);
+
+  // Both characters lean toward the cursor, or the finger, for depth.
   const follow = (event: PointerEvent<HTMLDivElement>) => {
     const stage = stageRef.current;
-    if (!stage || reduceMotion || event.pointerType !== "mouse") return;
+    if (!stage || reduceMotion) return;
+    if (event.pointerType !== "mouse") touching.current = true;
     const box = stage.getBoundingClientRect();
     stage.style.setProperty("--px", ((event.clientX - box.left) / box.width - 0.5).toFixed(3));
     stage.style.setProperty("--py", ((event.clientY - box.top) / box.height - 0.5).toFixed(3));
   };
+  const release = () => { touching.current = false; };
   const settle = () => {
+    touching.current = false;
     stageRef.current?.style.setProperty("--px", "0");
     stageRef.current?.style.setProperty("--py", "0");
     setTint("");
@@ -155,7 +202,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className={`bh-stage play ${tint ? `is-${tint}` : ""}`} ref={stageRef} onPointerMove={follow} onPointerLeave={settle} aria-hidden="true">
+      <div className={`bh-stage play ${tint ? `is-${tint}` : ""}`} ref={stageRef} onPointerDown={follow} onPointerMove={follow} onPointerUp={release} onPointerCancel={release} onPointerLeave={settle} aria-hidden="true">
         <span className="play-glow play-glow-base" />
         <span className="play-glow play-glow-boy" />
         <span className="play-glow play-glow-girl" />

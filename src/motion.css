@@ -67,7 +67,3 @@
   .loading-orbit { width: 140px; height: 140px; }
   .loading-caption { font-size: 13px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .home-feature, .home-feature .home-mascot, .product-card .tilt { transform: none !important; }
-  .home-sale-glow, .home-sale-icon, .loading-orbit, .loading-logo-scene, .loading-caption { animation: none; }
-}

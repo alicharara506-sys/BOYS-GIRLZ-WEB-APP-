@@ -225,9 +225,6 @@ html[dir="rtl"] .active-chip { padding: 7px 14px 7px 10px; }
 @media (max-width: 560px) {
   .shop-grid { gap: 12px 10px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .shop-hero *, .shop-cats, .filter-note *, .filter-note::before, .active-chip, .shop-empty *, .filter-section-body, .filter-content .check-label input::after { animation: none !important; transition: none !important; }
-}
 .filter-section-head { position: relative; }
 .filter-section-head .clear-color { position: absolute; inset-inline-end: 26px; top: 50%; translate: 0 -50%; padding: 4px 6px; color: var(--bng-tone-331); font-size: 12px; font-weight: 700; }
 
@@ -270,7 +267,6 @@ html[dir="rtl"] .active-chip { padding: 7px 14px 7px 10px; }
 .wish-empty h2 { margin: 4px 0 0; color: var(--bng-tone-325); font-family: Quicksand, sans-serif; }
 .wish-empty p { margin: 0 0 8px; color: var(--bng-tone-326); }
 @media (max-width: 560px) { .wish-bar-copy { font-size: 13px; } .wish-bar .glass-button { padding: 0 14px; min-height: 40px; font-size: 12px; } }
-@media (prefers-reduced-motion: reduce) { .wish-page *, .wish-bar { animation: none !important; } }
 .wishlist-grid { --cols: 4; --gap: 18px; grid-template-columns: repeat(auto-fit, calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols))); justify-content: center; gap: 22px var(--gap); }
 @media (max-width: 1100px) { .wishlist-grid { --cols: 3; } }
 @media (max-width: 760px) { .wishlist-grid { --cols: 2; --gap: 10px; } }
@@ -330,4 +326,3 @@ html[dir="rtl"] .active-chip { padding: 7px 14px 7px 10px; }
 .swing-kid .home-mascot { display: block; width: 100%; aspect-ratio: .7; background-size: 330% auto; transform-origin: 50% 100%; filter: drop-shadow(0 10px 8px var(--bng-tone-649)); animation: swing-lean 2.8s ease-in-out infinite; }
 @keyframes swing-lean { 0%, 100% { rotate: -8deg; } 50% { rotate: 8deg; } }
 
-@media (prefers-reduced-motion: reduce) { .play-seesaw *, .play-swing *, .play-seesaw, .play-swing { animation: none !important; } }
