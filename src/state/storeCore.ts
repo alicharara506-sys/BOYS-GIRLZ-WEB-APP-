@@ -1,3 +1,5 @@
+import { deliveryFee, type DeliveryRule } from "../domain/delivery.ts";
+
 export interface CartItem {
   productId: string;
   size: string;
@@ -134,9 +136,12 @@ export function restoreStore(
     return initialState;
   }
 }
+// Bag totals before any promo code. With a delivery rule, the delivery fee the server will charge is
+// included (promo codes are only checked when the order is placed, and can only lower the total).
 export function calculateTotals(
   cart: CartItem[],
   prices: Map<string, number>,
+  delivery?: DeliveryRule,
 ) {
   const subtotal =
     Math.round(
@@ -145,10 +150,11 @@ export function calculateTotals(
         0,
       ) * 100,
     ) / 100;
+  const shipping = delivery ? deliveryFee(subtotal, delivery) : 0;
   return {
     subtotal,
     discount: 0,
-    shipping: 0,
-    total: subtotal,
+    shipping,
+    total: Math.round((subtotal + shipping) * 100) / 100,
   };
 }

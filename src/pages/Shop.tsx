@@ -32,6 +32,7 @@ import { pageHeading } from "../config/seo";
 import { AnimatedLine, SplitTitle } from "../components/HeroSection";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useCountUp } from "../hooks/useCountUp";
+import { sortSizes } from "../domain/productColors";
 
 gsap.registerPlugin(ScrollTrigger);
 function GenderIcon({ kind }: { kind: "boys" | "girls" }) {
@@ -198,7 +199,7 @@ export default function Shop() {
       </FilterSection>
       <FilterSection title={t("Size")}>
         <div className="size-chips" role="radiogroup" aria-label={t("Filter by size")}>
-          {["", ...new Set(products.flatMap((p) => p.sizes))].map((option) => (
+          {["", ...sortSizes([...new Set(products.flatMap((p) => p.sizes))])].map((option) => (
             <button key={option || "all"} type="button" role="radio" aria-checked={size === option}
               className={size === option ? "active" : ""} onClick={() => updateParam("size", option)}>
               {t(option || "All sizes")}

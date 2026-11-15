@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useLocale } from "../i18n/Locale";
+import { useDelivery } from "../state/delivery";
+import { dollars } from "../domain/delivery";
 import { pageHeading } from "../config/seo";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -59,6 +61,7 @@ export function SplitTitle({ text, byWord }: { text: string; byWord: boolean }) 
 
 export default function HeroSection() {
   const { t, language } = useLocale();
+  const delivery = useDelivery();
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const lineOne = t("Little clothes,");
@@ -234,7 +237,7 @@ export default function HeroSection() {
 
         <div className="bh-badge bh-badge-delivery">
           <span className="bh-badge-icon bh-badge-icon-truck"><span className="bh-road" /><Truck size={18} /></span>
-          <span><strong>{t("FREE delivery")}</strong><small>{t("all over Lebanon on orders over $99")}</small></span>
+          <span><strong>{t("FREE delivery")}</strong><small>{t("all over Lebanon on orders of {amount}+").replace("{amount}", dollars(delivery.freeFrom))}</small></span>
           <svg className="bh-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" /></svg>
         </div>
         <div className="bh-badge bh-badge-cod">

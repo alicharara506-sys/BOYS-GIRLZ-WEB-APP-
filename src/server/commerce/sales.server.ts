@@ -246,7 +246,8 @@ export async function sell(tx: Tx, raw: SaleInput) {
             : "paid"
           : "pending",
       customerId: customer?.id,
-      customerName: customer?.name || input.customerName,
+      // Online orders keep the name typed at checkout; the POS uses the selected customer's.
+      customerName: input.channel === "online" ? input.customerName : customer?.name || input.customerName,
       phone: input.phone || customer?.phone || "",
       address: input.address || customer?.address || "",
       subtotal,
@@ -274,13 +275,17 @@ export async function sell(tx: Tx, raw: SaleInput) {
   });
   for (const line of lines) {
     if (!line.variantId) continue;
+    // Online orders can only take what is on the shelf. The POS may still sell below zero, since
+    // the item is physically in the customer's hands (see docs/commerce-admin.md).
     const changed = await tx.variant.updateMany({
-      where: { id: line.variantId },
+      where: input.channel === "online" ? { id: line.variantId, stock: { gte: line.quantity } } : { id: line.variantId },
       data: { stock: { decrement: line.quantity } },
     });
     if (!changed.count)
       throw new CommerceError(
-        "Stock changed while checking out. Please review the cart.",
+        input.channel === "online"
+          ? `Sorry, ${line.name} (${[line.size, line.color].filter(Boolean).join(", ")}) just sold out, or there aren't ${line.quantity} left. Please update your bag.`
+          : "Stock changed while checking out. Please review the cart.",
       );
     await tx.stockMovement.create({
       data: {

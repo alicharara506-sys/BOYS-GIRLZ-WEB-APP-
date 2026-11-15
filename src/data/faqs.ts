@@ -8,7 +8,8 @@ export const faqs = [
   {
     id: "delivery", topic: "Delivery",
     question: "Where does Boys & Girlz deliver?",
-    answer: "Boys & Girlz delivers within Lebanon only, with free delivery on orders over $99 before promo discounts. For the current delivery estimate or charges on a smaller order, contact the shop before ordering; availability, delivery charges and the final total are confirmed with the shop.",
+    // Keep in step with the admin settings (shipping $5, free from $100).
+    answer: "Boys & Girlz delivers within Lebanon only. Delivery costs $5, and it is free on orders of $100 or more after any promo discount. You see the delivery fee and the total to pay before you place the order. For the current delivery estimate, contact the shop.",
     relatedPath: "/help/shipping", relatedLabel: "Delivery in Lebanon",
   },
   {

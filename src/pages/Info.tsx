@@ -114,7 +114,7 @@ export function About() {
             <span className="about-dot" aria-hidden="true"><MapPin size={16} /></span>
             <div className="about-step-body about-question">
               <h2>{t("Delivery and contact")}</h2>
-              <p>{t("Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders over $99.")}</p>
+              <p>{t("Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders of $100 or more.")}</p>
               {whatsapp && <p>{t("WhatsApp")}: <a href={whatsapp} target="_blank" rel="noopener noreferrer"><bdi>{business.phoneDisplay}</bdi></a></p>}
               {business.email && <p><a href={`mailto:${business.email}`}>{business.email}</a></p>}
               <p><Link to="/help/shipping">{t("Delivery in Lebanon")}</Link> · <Link to="/contact">{t("Contact us")}</Link></p>
@@ -262,7 +262,8 @@ const help: Record<
     sections: [
       [
         "Delivery all over Lebanon",
-        "We deliver all over Lebanon. Delivery is free on orders over $99, before promo discounts.",
+        // Keep in step with the admin settings (shipping $5, free from $100).
+        "We deliver all over Lebanon. Delivery is $5, and free on orders of $100 or more after any promo discount.",
       ],
       [
         "Delivery timing",

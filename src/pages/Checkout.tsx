@@ -149,7 +149,7 @@ export default function Checkout() {
             </div>}
             <div className="delivery-option delivery-glass"><span className="delivery-glass-icon" aria-hidden="true"><Truck size={22} /></span><div><strong>{t("Delivery in Lebanon")}</strong><p>{t("Cash on Delivery · Delivery timing confirmed with the shop")}</p></div></div>
             {commerceMode && <label className="float-field float-select"><select aria-label="Payment method" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}><option value="cash_on_delivery">Cash on Delivery</option><option value="whish">Whish — awaiting verification</option></select></label>}
-            {review && <p className="demo-disclosure">{t("Payment method:")} <strong>{paymentMethod === "whish" ? "Whish" : t("Cash on Delivery")}</strong>. {t("The server checks stock, promo eligibility and final shipping before accepting your order.")}</p>}
+            {review && <p className="demo-disclosure">{t("Payment method:")} <strong>{paymentMethod === "whish" ? "Whish" : t("Cash on Delivery")}</strong>. {t("Stock and your promo code are checked when you place the order.")}</p>}
             {fetcher.data?.error && <p className="form-error" role="alert">{t(fetcher.data.error)}</p>}
             <div className="step-buttons">
               {review && <button className="glass-button" type="button" onClick={() => setReview(false)}><ArrowLeft size={15} /> {t("Edit details")}</button>}
@@ -169,8 +169,10 @@ export default function Checkout() {
             if (!product) return null;
             return <div key={itemKey(item)}><span className="checkout-thumb"><ProductImage product={{ ...product, imageUrl: colorImages(product, item.color)[0] || product.imageUrl }} /><b>{item.quantity}</b></span><div><strong>{t(product.name)}</strong><span>{item.size && `${t(item.size)} · `}{t(item.color)} · {language === "ar" ? "الكمية" : "Qty"} {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
           })}</div>
-          <div className="summary-line summary-strong"><span>{t("Estimated subtotal")}</span><span><CountingMoney value={totals.subtotal} /></span></div>
-          <p className="small-muted">{t("Final shipping, discounts and total are calculated on the server. No payment is collected online.")}</p>
+          <div className="summary-line"><span>{t("Subtotal")}</span><span><CountingMoney value={totals.subtotal} /></span></div>
+          <div className="summary-line"><span>{t("Delivery")}</span><span>{totals.shipping ? <CountingMoney value={totals.shipping} /> : t("FREE")}</span></div>
+          <div className="summary-line summary-strong"><span>{t("Total to pay on delivery")}</span><span><CountingMoney value={totals.total} /></span></div>
+          <p className="small-muted">{t("A promo code is applied when you place the order and can only lower this total. No payment is collected online.")}</p>
           <WhatsAppOrderOption cart={cart} />
         </aside>
       </div>

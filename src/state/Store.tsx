@@ -20,6 +20,7 @@ import {
   type StoreState,
 } from "./storeCore";
 import { useLocale } from "../i18n/Locale";
+import { useDelivery } from "./delivery";
 interface Store extends StoreState {
   dispatch: React.Dispatch<Action>;
   cartOpen: boolean;
@@ -50,6 +51,7 @@ function catalogReducer(state: StoreState, action: CatalogAction): StoreState {
 export function StoreProvider({ children }: { children: ReactNode }) {
   const { products, productById } = useCatalog();
   const { language, t } = useLocale();
+  const delivery = useDelivery();
   const [state, dispatch] = useReducer(catalogReducer, initialState);
   const restored = useRef(false);
   const visibleState = useMemo(() => cleanCatalogState(state, products), [state, products]);
@@ -113,6 +115,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const totals = calculateTotals(
     visibleState.cart,
     new Map(products.map((p) => [p.id, p.price])),
+    delivery,
   );
   return (
     <StoreContext.Provider

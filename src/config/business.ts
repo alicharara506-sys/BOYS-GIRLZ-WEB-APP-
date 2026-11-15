@@ -26,8 +26,7 @@ export const business = {
   hours: env.VITE_SHOP_HOURS || "",
   returnsPolicy: env.VITE_RETURNS_POLICY || "",
   deliveryEstimate: env.VITE_DELIVERY_ESTIMATE || "",
-  shippingFee: Number(env.VITE_SHIPPING_FEE || "5.95"),
-  freeShippingOver: 99,
+  // The delivery fee and free-delivery amount are set in the admin (Settings), not here.
   instagram: "https://www.instagram.com/boysandgirlz.lb/",
   // The page the old share link (facebook.com/share/19cnjtfzcw) redirects to. Search engines need
   // the page's own address in sameAs, not a share link.

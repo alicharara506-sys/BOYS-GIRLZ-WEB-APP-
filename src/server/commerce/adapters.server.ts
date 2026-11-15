@@ -33,6 +33,12 @@ export const builtInStorefront: StorefrontAdapter = {
   async placeOrder(input) {
     const order = await atomic(async (tx) => {
       const phone = whatsappPhone(input.mobile);
+      // The order always uses the name and address typed at this checkout: a returning customer
+      // may be sending this one somewhere else. The saved customer record only links their orders.
+      const address = [input.governorate, input.cityArea, input.streetBuilding, input.landmark]
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .join(", ");
       const customer = await tx.customer.upsert({
         where: { phone },
         update: {},
@@ -40,7 +46,7 @@ export const builtInStorefront: StorefrontAdapter = {
           name: input.fullName,
           phone,
           email: input.email,
-          address: `${input.governorate}, ${input.cityArea}, ${input.streetBuilding}`,
+          address,
           demo: false,
           consentWhatsapp:false,
         },
@@ -73,7 +79,8 @@ export const builtInStorefront: StorefrontAdapter = {
         items: lines,
         promoCode: input.promoCode,
         note: `${input.paymentMethod === "whish" ? "Whish requested — awaiting manual verification. No online payment collected. " : "Cash on delivery. "}${input.deliveryNotes}`,
-        address: customer.address,
+        customerName: input.fullName,
+        address,
         phone,
       });
     });

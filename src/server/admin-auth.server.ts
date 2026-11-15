@@ -13,7 +13,29 @@ export const adminHeaders = {
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "same-origin",
 };
+// Failed sign-ins, counted per email (5 tries) and per visitor address (20 tries) for 15 minutes.
+// Only expired entries are removed, so nobody can wipe the counts by trying lots of fake emails.
 const failures = new Map<string, { count: number; until: number }>();
+const LOCK_MS = 15 * 60 * 1000;
+const MAX_TRACKED = 5000;
+function clientAddress(request: Request) {
+  // Render's proxy appends the real visitor address last; earlier entries can be set by the visitor.
+  const forwarded = (request.headers.get("x-forwarded-for") || "").split(",").map((part) => part.trim()).filter(Boolean);
+  return forwarded.at(-1) || "local";
+}
+function isLocked(key: string, limit: number, now: number) {
+  const entry = failures.get(key);
+  return Boolean(entry && entry.until > now && entry.count >= limit);
+}
+function recordFailure(key: string, now: number) {
+  for (const [k, entry] of failures) if (entry.until <= now) failures.delete(k);
+  const entry = failures.get(key);
+  const count = entry && entry.until > now ? entry.count + 1 : 1;
+  failures.delete(key);
+  failures.set(key, { count, until: now + LOCK_MS });
+  // Memory guard: drop the oldest entries only if far too many are still live.
+  while (failures.size > MAX_TRACKED) failures.delete(failures.keys().next().value as string);
+}
 function context(request: Request) {
   const headers = new Headers({
     ...adminHeaders,
@@ -134,8 +156,10 @@ export async function loginAdmin(request: Request, form: FormData) {
   const email = String(form.get("email") || "")
     .trim()
     .toLowerCase();
-  const limited = failures.get(email);
-  if (limited && limited.until > Date.now() && limited.count >= 5)
+  const now = Date.now();
+  const emailKey = `email:${email}`;
+  const addressKey = `ip:${clientAddress(request)}`;
+  if (isLocked(emailKey, 5, now) || isLocked(addressKey, 20, now))
     return new Response(
       JSON.stringify({ error: "Too many attempts. Try again in 15 minutes." }),
       { status: 429, headers: state.headers },
@@ -146,11 +170,8 @@ export async function loginAdmin(request: Request, form: FormData) {
   });
   if (error || !(await owner(state.client))) {
     await state.client.auth.signOut();
-    if (failures.size > 100) failures.clear();
-    failures.set(email, {
-      count: limited && limited.until > Date.now() ? limited.count + 1 : 1,
-      until: Date.now() + 900000,
-    });
+    recordFailure(emailKey, Date.now());
+    recordFailure(addressKey, Date.now());
     return new Response(
       JSON.stringify({
         error:
@@ -159,7 +180,7 @@ export async function loginAdmin(request: Request, form: FormData) {
       { status: 401, headers: state.headers },
     );
   }
-  failures.delete(email);
+  failures.delete(emailKey);
   return redirect("/admin", { status: 303, headers: state.headers });
 }
 export async function logoutAdmin(request: Request) {

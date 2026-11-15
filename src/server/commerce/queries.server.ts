@@ -2,8 +2,9 @@ import { publicSupabase } from "../supabase.server";
 import { finalPrice } from "../../domain/pricing";
 import { db } from "./db.server";
 import type { Category } from "../../data/products";
-import type { ColorImage, ColorMode, ProductColor } from "../../domain/productColors";
+import { sortSizes, type ColorImage, type ColorMode, type ProductColor } from "../../domain/productColors";
 import { dateRange } from "./rules";
+import { DEFAULT_DELIVERY, deliveryRuleFromSettings, type DeliveryRule } from "../../domain/delivery";
 import { fullOrder, settings } from "./sales.server";
 
 export async function commerceSnapshot(from?: string, to?: string) {
@@ -289,6 +290,19 @@ function storedImages(value: unknown): ColorImage[] {
     ? value.filter((image): image is ColorImage => Boolean(image) && typeof image.url === "string").map(({ url }) => ({ url }))
     : [];
 }
+// The delivery fee and free-delivery threshold from the admin settings, for the storefront. Read at
+// most once a minute; if the settings can't be read the defaults (same as the server's) are used.
+let deliveryCache: { rule: DeliveryRule; at: number } | null = null;
+export async function storefrontDelivery(): Promise<DeliveryRule> {
+  if (deliveryCache && Date.now() - deliveryCache.at < 60_000) return deliveryCache.rule;
+  try {
+    const rule = deliveryRuleFromSettings(await settings());
+    deliveryCache = { rule, at: Date.now() };
+    return rule;
+  } catch {
+    return deliveryCache?.rule || DEFAULT_DELIVERY;
+  }
+}
 export async function storefrontCatalog() {
   const query = (columns: string) =>
     publicSupabase()
@@ -304,19 +318,22 @@ export async function storefrontCatalog() {
   return {
     enabled: true,
     products: rows.map((p) => {
-      const variants = (p.product_variants as { size: string; color: string; active: boolean }[]).filter((v) => v.active);
+      const variants = (p.product_variants as { size: string; color: string; stock: number; active: boolean }[]).filter((v) => v.active);
       const variantColors = [...new Set(variants.map((v) => v.color))];
-      const allSizes = [...new Set(variants.map((v) => v.size))];
-      // A color's own sizes are its active variants; listed only when it lacks some sizes.
+      const allSizes = sortSizes([...new Set(variants.map((v) => v.size))]);
+      // Online orders need stock on the shelf, so a size with none left shows as unavailable.
+      const inStock = variants.filter((v) => v.stock > 0);
+      // A color's own sizes are its in-stock variants; listed only when it lacks some sizes.
       const sizesOf = (color: string) => {
-        const own = new Set(variants.filter((v) => v.color === color).map((v) => v.size));
+        const own = new Set(inStock.filter((v) => v.color === color).map((v) => v.size));
         return own.size < allSizes.length ? allSizes.filter((s) => own.has(s)) : undefined;
       };
+      const colorInStock = (color: string) => inStock.some((v) => v.color === color);
       // Color details, in the shop's order, only for colors that still have sellable variants.
       const colorVariants: ProductColor[] = ((p.product_colors || []) as StoredColor[])
         .filter((c) => variantColors.includes(c.name))
         .sort((a, b) => a.position - b.position)
-        .map((c) => ({ name: c.name, nameAr: c.name_ar, hex: c.hex, images: storedImages(c.images), available: c.available, sizes: sizesOf(c.name) }));
+        .map((c) => ({ name: c.name, nameAr: c.name_ar, hex: c.hex, images: storedImages(c.images), available: c.available && colorInStock(c.name), sizes: sizesOf(c.name) }));
       const detailed = colorVariants.length > 0;
       const colors = detailed
         ? [...colorVariants.map((c) => c.name), ...variantColors.filter((c) => !colorVariants.some((v) => v.name === c))]
@@ -340,7 +357,7 @@ export async function storefrontCatalog() {
         image: p.image_index as number,
         imageUrl: (detailed ? colorVariants[0].images[0]?.url : undefined) || p.image_url || null,
         // A product with color details is sellable while at least one color is available.
-        available: detailed ? colorVariants.some((c) => c.available) : true,
+        available: detailed ? colorVariants.some((c) => c.available) : inStock.length > 0,
         sizes: allSizes,
         colors,
         model: "set" as const,

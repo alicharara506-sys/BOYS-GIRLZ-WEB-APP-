@@ -68,7 +68,8 @@ export async function loader({ request }: Route.LoaderArgs) {
         login: true as const,
         ...state,
         headers: undefined,
-        localEmail: process.env.BNG_ADMIN_EMAIL || "",
+        // Prefills the email on a local copy only; the live sign-in page never shows it.
+        localEmail: process.env.NODE_ENV === "production" ? "" : process.env.BNG_ADMIN_EMAIL || "",
       },
       { headers: state.headers },
     );

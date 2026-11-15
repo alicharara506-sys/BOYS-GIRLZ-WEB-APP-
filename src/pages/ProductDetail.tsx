@@ -43,6 +43,8 @@ function spotlight(event: PointerEvent<HTMLElement>) {
 import { NotFound } from "./Shop";
 import WhatsAppLink from "../components/WhatsAppLink";
 import { useLocale } from "../i18n/Locale";
+import { useDelivery } from "../state/delivery";
+import { dollars } from "../domain/delivery";
 export default function ProductDetail() {
   const { productById } = useCatalog();
   const { id } = useParams();
@@ -56,6 +58,7 @@ export default function ProductDetail() {
 function ProductContent({ product: p }: { product: Product }) {
   const { products } = useCatalog();
   const { language, t } = useLocale();
+  const delivery = useDelivery();
   // Opens on the first color that is in stock. Switching color changes only the photos, the
   // availability and which sizes can be picked; the name, description and price never change.
   const [color, setColor] = useState(defaultColor(p));
@@ -224,7 +227,7 @@ function ProductContent({ product: p }: { product: Product }) {
           <div className="ship-strip">
             <div className="ship-row ship-row-truck">
               <span className="ship-icon" aria-hidden="true"><span className="bh-road" /><Truck size={18} /></span>
-              <span><strong>{t("Free delivery over $99")}</strong><small>{t("Delivery all over Lebanon")}</small></span>
+              <span><strong>{t("Free delivery from {amount}").replace("{amount}", dollars(delivery.freeFrom))}</strong><small>{t("Delivery all over Lebanon")}</small></span>
             </div>
             <div className="ship-row ship-row-cash">
               <span className="ship-icon" aria-hidden="true"><Banknote size={18} /></span>

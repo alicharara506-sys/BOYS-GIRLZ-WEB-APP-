@@ -46,8 +46,8 @@ const pages: Record<string, PageDefinition> = {
     ar: { title: "أسئلة التوصيل والدفع والتسوّق | بويز آند غيرلز", description: "إجابات عن التوصيل داخل لبنان والدفع عند الاستلام والمقاسات والإرجاع والتسوّق من الأوتليت شبه الجديد لدى بويز آند غيرلز.", h1: "الأسئلة الشائعة", label: "الأسئلة الشائعة" },
   },
   "/help/shipping": {
-    en: { title: "Delivery in Lebanon & Cash on Delivery | Boys & Girlz", description: "Boys & Girlz delivers within Lebanon with Cash on Delivery. Orders over $99 qualify for free delivery; ask the shop about timing and charges.", h1: "Delivery in Lebanon", label: "Delivery in Lebanon" },
-    ar: { title: "التوصيل في لبنان والدفع عند الاستلام | بويز آند غيرلز", description: "توصيل بويز آند غيرلز داخل لبنان مع الدفع عند الاستلام. التوصيل مجاني للطلبات فوق 99$؛ تواصل مع المتجر لمعرفة الموعد والرسوم الحالية.", h1: "التوصيل في لبنان", label: "التوصيل في لبنان" },
+    en: { title: "Delivery in Lebanon & Cash on Delivery | Boys & Girlz", description: "Boys & Girlz delivers within Lebanon with Cash on Delivery. Delivery is $5, free on orders of $100 or more; ask the shop about timing.", h1: "Delivery in Lebanon", label: "Delivery in Lebanon" },
+    ar: { title: "التوصيل في لبنان والدفع عند الاستلام | بويز آند غيرلز", description: "توصيل بويز آند غيرلز داخل لبنان مع الدفع عند الاستلام. رسوم التوصيل 5$، ومجاني للطلبات بقيمة 100$ أو أكثر؛ تواصل مع المتجر لمعرفة الموعد.", h1: "التوصيل في لبنان", label: "التوصيل في لبنان" },
   },
   "/help/returns": {
     en: { title: "Returns & Exchanges Information | Boys & Girlz", description: "Contact Boys & Girlz before ordering for current return and exchange conditions. A confirmed returns policy has not yet been published.", h1: "Returns and exchanges", label: "Returns and exchanges" },

@@ -22,8 +22,8 @@ import { useLocale } from "../i18n/Locale";
 import { SplitTitle } from "../components/HeroSection";
 import { useCountUp } from "../hooks/useCountUp";
 import { useReducedMotion } from "../hooks/useExperience";
-
-const FREE_DELIVERY = 99;
+import { useDelivery } from "../state/delivery";
+import { dollars } from "../domain/delivery";
 
 function spotlight(event: PointerEvent<HTMLElement>) {
   const box = event.currentTarget.getBoundingClientRect();
@@ -37,11 +37,12 @@ export function CountingMoney({ value }: { value: number }) {
 }
 
 // Progress toward free delivery: a pink-to-blue bar with a little truck riding along it, which
-// arrives with a burst once the subtotal passes $99.
+// arrives with a burst once the subtotal reaches the shop's free-delivery amount.
 export function FreeDeliveryBar({ subtotal, children }: { subtotal: number; children: ReactNode }) {
   const { t } = useLocale();
-  const arrived = subtotal > FREE_DELIVERY;
-  const percent = Math.min(100, (subtotal / FREE_DELIVERY) * 100);
+  const FREE_DELIVERY = useDelivery().freeFrom;
+  const arrived = subtotal >= FREE_DELIVERY;
+  const percent = FREE_DELIVERY > 0 ? Math.min(100, (subtotal / FREE_DELIVERY) * 100) : 100;
   return <div className={`delivery-bar ${arrived ? "is-arrived" : ""}`} style={{ "--progress": `${percent}%` } as CSSProperties}>
     <p>{children}</p>
     <div className="delivery-track" role="progressbar" aria-label={t("Progress toward free shipping")} aria-valuemin={0} aria-valuemax={FREE_DELIVERY} aria-valuenow={Math.min(subtotal, FREE_DELIVERY)}>
@@ -155,18 +156,18 @@ export function OrderSummary({
         <span><CountingMoney value={totals.subtotal} /></span>
       </div>
       <div className="summary-line">
-        <span>{t("Shipping")}</span>
-        <span>{t("Calculated at checkout")}</span>
+        <span>{t("Delivery")}</span>
+        <span>{totals.shipping ? <CountingMoney value={totals.shipping} /> : t("FREE")}</span>
       </div>
       <div className="summary-total">
-        <span>{t("Estimated subtotal")}</span>
+        <span>{t("Total to pay on delivery")}</span>
         <strong>
           <CountingMoney value={totals.total} /> <small>{t("USD")}</small>
         </strong>
       </div>
       {!checkout && (
         <>
-          <p className="small-muted">{t("Enter a promo code at checkout. Stock, discounts and final delivery cost are checked when the order is placed.")}</p>
+          <p className="small-muted">{t("Have a promo code? Enter it at checkout. It can only lower this total.")}</p>
           <Link to="/checkout" className="bh-cta checkout-btn" onPointerMove={spotlight}>
             <span className="bh-cta-spot" aria-hidden="true" />
             <span className="bh-cta-shine" aria-hidden="true" />
@@ -186,6 +187,7 @@ export function OrderSummary({
 export function CartDrawer() {
   const { language, t } = useLocale();
   const { cartOpen, setCartOpen, cart, count, totals } = useStore();
+  const delivery = useDelivery();
   return (
     <Modal
       open={cartOpen}
@@ -197,9 +199,9 @@ export function CartDrawer() {
       {cart.length ? (
         <>
           <FreeDeliveryBar subtotal={totals.subtotal}>
-            {totals.subtotal > 99
+            {totals.subtotal >= delivery.freeFrom
               ? t("Lovely! Your shipping is on us.")
-              : language === "ar" ? `توصيل مجاني للطلبات فوق 99$. مجموعك الفرعي ${money(totals.subtotal)}.` : `Free delivery on orders over $99. Your subtotal is ${money(totals.subtotal)}.`}
+              : language === "ar" ? `توصيل مجاني للطلبات بقيمة ${dollars(delivery.freeFrom)} أو أكثر. مجموعك الفرعي ${money(totals.subtotal)}.` : `Free delivery on orders of ${dollars(delivery.freeFrom)} or more. Your subtotal is ${money(totals.subtotal)}.`}
           </FreeDeliveryBar>
           <div className="drawer-items">
             {cart.map((i) => (
@@ -207,13 +209,14 @@ export function CartDrawer() {
             ))}
           </div>
           <div className="drawer-summary">
-            <div className="summary-total">
-              <span>{t("Subtotal")}</span>
-              <strong><CountingMoney value={totals.subtotal} /></strong>
+            <div className="summary-line">
+              <span>{t("Delivery")}</span>
+              <span>{totals.shipping ? money(totals.shipping) : t("FREE")}</span>
             </div>
-            <p className="small-muted">
-              {t("Shipping and discounts shown in your bag.")}
-            </p>
+            <div className="summary-total">
+              <span>{t("Total to pay on delivery")}</span>
+              <strong><CountingMoney value={totals.total} /></strong>
+            </div>
             <Link to="/cart" className="bh-cta drawer-cta" onClick={() => setCartOpen(false)} onPointerMove={spotlight}>
               <span className="bh-cta-spot" aria-hidden="true" />
               <span className="bh-cta-shine" aria-hidden="true" />
@@ -248,6 +251,7 @@ export function CartDrawer() {
 export default function Cart() {
   const { language, t } = useLocale();
   const { cart, count, totals } = useStore();
+  const delivery = useDelivery();
   return (
     <div className="bag-page">
       <div className="page-width">
@@ -273,9 +277,9 @@ export default function Cart() {
           <div className="cart-layout">
             <section className="bag-items">
               <FreeDeliveryBar subtotal={totals.subtotal}>
-                {totals.subtotal > 99
+                {totals.subtotal >= delivery.freeFrom
                   ? t("Your order qualifies for FREE delivery all over Lebanon.")
-                  : t("FREE delivery all over Lebanon on orders over $99.")}
+                  : t("FREE delivery all over Lebanon on orders of {amount} or more.").replace("{amount}", dollars(delivery.freeFrom))}
               </FreeDeliveryBar>
               {cart.map((i) => (
                 <CartLine key={itemKey(i)} item={i} />

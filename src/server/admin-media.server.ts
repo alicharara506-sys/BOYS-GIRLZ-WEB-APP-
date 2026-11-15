@@ -44,7 +44,9 @@ export async function saveAdminImage(file: FormDataEntryValue | null): Promise<{
   let compressed;
   try {
     compressed = await compressImage(original, { animated: extension === "gif" });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && /pixel limit/i.test(error.message))
+      throw new Error("This photo is too big to process (over 120 megapixels). Take it in a lower resolution or resize it first.");
     throw new Error("This image couldn't be read. Try another photo, or save it again as JPG.");
   }
   // Keep whichever is smaller, in case an already-optimised WebP comes out bigger.
