@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: boys-and-girlz
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: website-cleanup
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:production
+    healthCheckPath: /robots.txt
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: VITE_PUBLIC_SITE_URL
+        value: https://boysandgirlz.com
+      - key: VITE_CATALOG_VERIFIED
+        value: "false"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: BNG_ADMIN_EMAIL
+        sync: false

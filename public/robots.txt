@@ -1,4 +1,5 @@
+# Public pages, including supported AI/search crawlers, may be crawled.
+# Utility pages carry noindex in HTML; they are crawlable so crawlers can read it.
 User-agent: *
-Disallow: /cart
-Disallow: /checkout
-Disallow: /wishlist
+Allow: /
+Sitemap: https://boysandgirlz.com/sitemap.xml

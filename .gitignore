@@ -10,3 +10,4 @@ build/
 playwright-report/
 test-results/
 .DS_Store
+.data/

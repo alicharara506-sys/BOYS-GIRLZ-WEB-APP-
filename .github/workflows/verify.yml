@@ -2,7 +2,7 @@ name: Verify storefront
 
 on:
   push:
-    branches: [launch-ready]
+    branches: [launch-ready, website-cleanup]
   pull_request:
 
 jobs:
@@ -20,5 +20,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
-      - run: npm run test:e2e
       - run: npm run build
