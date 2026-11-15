@@ -49,7 +49,7 @@ test("color names, swatches and uploads are checked", () => {
   assert.equal(normalizeHex("#FFF"), "#ffffff");
   assert.equal(normalizeHex("9BBBD7"), "#9bbbd7");
   assert.match(imageFileIssue({ name: "a.pdf", type: "application/pdf", size: 10 }), /not a JPG/);
-  assert.match(imageFileIssue({ name: "big.jpg", type: "image/jpeg", size: 6 * 1024 * 1024 }), /larger than 5 MB/);
+  assert.match(imageFileIssue({ name: "big.jpg", type: "image/jpeg", size: 16 * 1024 * 1024 }), /larger than 15 MB/);
   assert.equal(imageFileIssue({ name: "ok.webp", type: "image/webp", size: 1000 }), null);
 });
 

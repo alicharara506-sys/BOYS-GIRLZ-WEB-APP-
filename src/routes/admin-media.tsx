@@ -4,7 +4,7 @@ import { mediaFilename, readAdminForm, removeFailedUpload, saveAdminImage } from
 import { db } from "../server/commerce/db.server";
 
 // Photo uploads for the Add Product modal. Each photo is sent on its own as soon as it is picked,
-// so every request stays under the 5 MB limit and the modal can show real upload progress. Answers
+// so every request stays under the upload limit and the modal can show real upload progress. Answers
 // are JSON for the modal's XMLHttpRequest. Owner-only, with the same CSRF check as the admin.
 export async function action({ request }: ActionFunctionArgs) {
   const form = await readAdminForm(request);

@@ -39,7 +39,8 @@ export const HEX = /^#[0-9a-f]{6}$/;
 export const MAX_COLORS = 20;
 export const MAX_IMAGES_PER_COLOR = 12;
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+// Upload limit per photo. The server then compresses it (see server/image.server.ts).
+export const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
 
 const imageUrl = (url: string) => /^https:\/\//.test(url) || /^\/(?:assets|media)\/[a-zA-Z0-9_./-]+$/.test(url);
 
@@ -129,7 +130,7 @@ export function productSlug(name: string, suffix: string): string {
 // Checks one picked file before uploading it.
 export function imageFileIssue(file: { type: string; size: number; name: string }): string | null {
   if (!IMAGE_TYPES.includes(file.type)) return `${file.name} is not a JPG, PNG, WebP or GIF image.`;
-  if (file.size > MAX_IMAGE_BYTES) return `${file.name} is larger than 5 MB.`;
+  if (file.size > MAX_IMAGE_BYTES) return `${file.name} is larger than 15 MB.`;
   return null;
 }
 

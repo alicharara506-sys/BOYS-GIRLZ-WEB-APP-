@@ -449,7 +449,7 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
               <Upload size={20} />
               <span>
                 Upload a product image
-                <small>JPG, PNG, WebP or GIF · up to 5 MB</small>
+                <small>JPG, PNG, WebP or GIF · up to 15 MB, shrunk automatically</small>
               </span>
               <input
                 name="imageFile"

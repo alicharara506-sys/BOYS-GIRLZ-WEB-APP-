@@ -1,7 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { storageSupabase } from "./supabase.server";
+import { compressImage } from "./image.server";
 
-const MAX_UPLOAD = 5 * 1024 * 1024;
+// Photos straight from a phone camera are often 5–12 MB; they're accepted up to 15 MB and then
+// compressed, so what is stored stays well under the storage bucket's 5 MB limit.
+const MAX_UPLOAD = 15 * 1024 * 1024;
+const MAX_STORED = 5 * 1024 * 1024;
 export const mediaFilename = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:png|jpg|webp|gif)$/;
 
 export async function readAdminForm(request: Request): Promise<FormData> {
@@ -28,14 +32,26 @@ export async function readAdminForm(request: Request): Promise<FormData> {
 
 export async function saveAdminImage(file: FormDataEntryValue | null): Promise<{ url: string; file: string } | null> {
   if (!file || typeof file === "string" || file.size === 0) return null;
-  if (file.size > MAX_UPLOAD) throw new Error("Images must be 5 MB or smaller.");
-  const bytes = Buffer.from(await file.arrayBuffer());
+  if (file.size > MAX_UPLOAD) throw new Error("Images must be 15 MB or smaller.");
+  const original = Buffer.from(await file.arrayBuffer());
   let extension = "";
-  if (bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) extension = "png";
-  else if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) extension = "jpg";
-  else if (bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP") extension = "webp";
-  else if (["GIF87a", "GIF89a"].includes(bytes.toString("ascii", 0, 6))) extension = "gif";
+  if (original.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) extension = "png";
+  else if (original[0] === 255 && original[1] === 216 && original[2] === 255) extension = "jpg";
+  else if (original.toString("ascii", 0, 4) === "RIFF" && original.toString("ascii", 8, 12) === "WEBP") extension = "webp";
+  else if (["GIF87a", "GIF89a"].includes(original.toString("ascii", 0, 6))) extension = "gif";
   if (!extension) throw new Error("Choose a valid JPG, PNG, WebP or GIF image.");
+  // Every photo is resized and saved as a light WebP before it's stored (see image.server.ts).
+  let compressed;
+  try {
+    compressed = await compressImage(original, { animated: extension === "gif" });
+  } catch {
+    throw new Error("This image couldn't be read. Try another photo, or save it again as JPG.");
+  }
+  // Keep whichever is smaller, in case an already-optimised WebP comes out bigger.
+  const keepOriginal = extension === "webp" && original.length <= compressed.bytes.length;
+  const bytes = keepOriginal ? original : compressed.bytes;
+  extension = keepOriginal ? extension : compressed.extension;
+  if (bytes.length > MAX_STORED) throw new Error("This image is still too large after compressing. Try a smaller photo.");
   const filename = `${randomUUID()}.${extension}`;
   const bucket=storageSupabase().storage.from('product-images');
   const {error}=await bucket.upload(filename,bytes,{contentType:extension==='jpg'?'image/jpeg':`image/${extension}`,upsert:false});

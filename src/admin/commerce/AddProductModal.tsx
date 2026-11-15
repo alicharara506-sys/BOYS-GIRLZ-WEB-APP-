@@ -445,7 +445,7 @@ function ColorEditor({ color, index, single, canRemove, productSizes, error, onC
       </figure>)}
       {color.photos.length < MAX_IMAGES_PER_COLOR && <label className="apm-drop">
         <ImagePlus size={22} aria-hidden="true" />
-        <span>Add photos of {color.name || "this color"}<small>JPG, PNG, WebP or GIF · up to 5 MB each</small></span>
+        <span>Add photos of {color.name || "this color"}<small>JPG, PNG, WebP or GIF · up to 15 MB each, shrunk automatically</small></span>
         <input type="file" accept={IMAGE_TYPES.join(",")} multiple onChange={(e) => { onPhotos(e.target.files); e.target.value = ""; }} />
       </label>}
     </div>
