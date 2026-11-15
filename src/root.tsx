@@ -8,7 +8,8 @@ import { CatalogProvider } from "./state/Catalog";
 import { products as previewProducts } from "./data/products";
 
 import { commerceEnabled } from "./server/commerce/db.server";
-import { storefrontCatalog, storefrontDelivery } from "./server/commerce/queries.server";
+import { storefrontCatalog } from "./server/commerce/queries.server";
+import { storefrontSite } from "./server/site.server";
 import { StoreProvider, useStore } from "./state/Store";
 import { Header } from "./components/Layout";
 import Footer from "./components/Footer";
@@ -65,8 +66,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const language: Language = url.searchParams.get("lang") === "ar" ? "ar" : "en";
 
   const admin = url.pathname.startsWith("/admin");
-  const [managed, delivery] = await Promise.all([admin ? { enabled: true, products: [] } : storefrontCatalog(), storefrontDelivery()]);
-  return { language, delivery, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled, commerceMode: commerceEnabled(), supabase: {url:process.env.SUPABASE_URL||"",key:process.env.SUPABASE_ANON_KEY||""} };
+  const [managed, site] = await Promise.all([admin ? { enabled: true, products: [] } : storefrontCatalog(), storefrontSite()]);
+  return { language, delivery: site.delivery, menu: site.menu, categories: site.categories, catalog: managed.enabled ? managed.products : previewProducts, managedCatalog: managed.enabled, commerceMode: commerceEnabled(), supabase: {url:process.env.SUPABASE_URL||"",key:process.env.SUPABASE_ANON_KEY||""} };
 }
 
 // Language variants have stable URLs; filter changes do not reload root data.

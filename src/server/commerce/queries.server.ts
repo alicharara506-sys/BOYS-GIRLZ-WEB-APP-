@@ -2,9 +2,9 @@ import { publicSupabase } from "../supabase.server";
 import { finalPrice } from "../../domain/pricing";
 import { db } from "./db.server";
 import type { Category } from "../../data/products";
+import { parseMenu } from "../../domain/menu";
 import { sortSizes, type ColorImage, type ColorMode, type ProductColor } from "../../domain/productColors";
 import { dateRange } from "./rules";
-import { DEFAULT_DELIVERY, deliveryRuleFromSettings, type DeliveryRule } from "../../domain/delivery";
 import { fullOrder, settings } from "./sales.server";
 
 export async function commerceSnapshot(from?: string, to?: string) {
@@ -196,9 +196,13 @@ export async function commerceSnapshot(from?: string, to?: string) {
           reorder: Math.max(0, p.threshold * 2 - v.stock),
         })),
     );
+  // The website menu (Menu & categories page). Until the owner saves one, the default menu is shown.
+  const menuRecord = await db.setting.findUnique({ where: { key: "menu" } });
   const data = {
     shops,
     categories,
+    menu: parseMenu(menuRecord?.value, categories.map((c) => c.id)),
+    menuSaved: Boolean(menuRecord),
     liabilities,
     products,
     customers: customers.map((c) => {
@@ -289,19 +293,6 @@ function storedImages(value: unknown): ColorImage[] {
   return Array.isArray(value)
     ? value.filter((image): image is ColorImage => Boolean(image) && typeof image.url === "string").map(({ url }) => ({ url }))
     : [];
-}
-// The delivery fee and free-delivery threshold from the admin settings, for the storefront. Read at
-// most once a minute; if the settings can't be read the defaults (same as the server's) are used.
-let deliveryCache: { rule: DeliveryRule; at: number } | null = null;
-export async function storefrontDelivery(): Promise<DeliveryRule> {
-  if (deliveryCache && Date.now() - deliveryCache.at < 60_000) return deliveryCache.rule;
-  try {
-    const rule = deliveryRuleFromSettings(await settings());
-    deliveryCache = { rule, at: Date.now() };
-    return rule;
-  } catch {
-    return deliveryCache?.rule || DEFAULT_DELIVERY;
-  }
 }
 export async function storefrontCatalog() {
   const query = (columns: string) =>

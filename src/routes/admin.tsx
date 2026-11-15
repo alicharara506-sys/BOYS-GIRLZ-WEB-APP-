@@ -20,6 +20,7 @@ import {
 } from "../server/admin-auth.server";
 import { commerceSnapshot } from "../server/commerce/queries.server";
 import { runCommand } from "../server/commerce/operations.server";
+import { clearSiteCache } from "../server/site.server";
 import {
   readAdminForm,
   saveAdminImage,
@@ -104,6 +105,8 @@ export async function action({ request }: Route.ActionArgs) {
       if (uploaded) payload.imageUrl = uploaded.url;
     }
     const result = await runCommand(intent, payload);
+    // Settings, categories and the menu show on the website: refresh them right away.
+    clearSiteCache();
     return data(
       { success: "Saved successfully.", result },
       { headers: user.headers },

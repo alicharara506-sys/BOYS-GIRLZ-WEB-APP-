@@ -8,18 +8,13 @@ import {
   Menu,
   X,
   ArrowRight,
-  Baby,
   ChevronDown,
-  Gem,
-  HandHeart,
-  Percent,
-  Recycle,
-  Shirt,
-  Sparkles,
-  ToyBrick,
 } from "lucide-react";
 import { useStore } from "../state/Store";
-import { categories, matchesCategory, money, type Category } from "../data/products";
+import { money } from "../data/products";
+import MenuIcon from "./MenuIcon";
+import { linkCount, linkLabel, useSiteMenu } from "../state/siteMenu";
+import type { MenuLink } from "../domain/menu";
 import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "./ProductCard";
 import { useLocale } from "../i18n/Locale";
@@ -93,25 +88,24 @@ function highlightMatch(text: string, query: string): ReactNode {
   return text.split(new RegExp(`(${escaped})`, "gi")).map((part, i) => i % 2 ? <mark key={i}>{part}</mark> : part);
 }
 
-// The shop's categories for the header menu: an icon and a tint for each.
-const shopMenu: { category: Category; Icon: typeof Shirt; tint: string }[] = [
-  { category: "Boys", Icon: Shirt, tint: "#00b3fc" },
-  { category: "Girls", Icon: Sparkles, tint: "#fc538e" },
-  { category: "Unisex", Icon: Baby, tint: "#0898d6" },
-  { category: "Accessories", Icon: Gem, tint: "#e7a400" },
-  { category: "Maternity", Icon: HandHeart, tint: "#f07a9a" },
-  { category: "Toys", Icon: ToyBrick, tint: "#2f9e6a" },
-  { category: "Outlet", Icon: Recycle, tint: "#0898d6" },
-  { category: "Sale", Icon: Percent, tint: "#fc538e" },
-];
+// One entry of the website menu (set by the owner in the admin): a link to a page of the site, or a
+// link to another website, which opens in a new tab.
+function MenuAnchor({ link, className, style, onClick, children }: { link: MenuLink; className?: string; style?: CSSProperties; onClick?: () => void; children: ReactNode }) {
+  if (link.external) return <a href={link.href} className={className} style={style} onClick={onClick} target="_blank" rel="noopener noreferrer">{children}</a>;
+  if (link.href.includes("?")) return <Link to={link.href} className={className} style={style} onClick={onClick}>{children}</Link>;
+  return <NavLink to={link.href} end={link.href === "/" || link.href === "/shop"} className={className} style={style} onClick={onClick}>{children}</NavLink>;
+}
 
 export function Header() {
   const { products } = useCatalog();
-  const menuCounts = Object.fromEntries(categories.map((c) => [c, products.filter((p) => matchesCategory(p, c)).length]));
+  // The menu the owner set in the admin (Menu & categories).
+  const site = useSiteMenu();
+  const counts = new Map([...site.shop, ...site.top].map((link) => [link.key, linkCount(products, link)]));
   // Categories with nothing in them right now stay out of the menus (their pages are noindex too).
   // If the catalogue hasn't loaded, every category shows.
-  const liveMenu = shopMenu.filter(({ category }) => !products.length || menuCounts[category] > 0);
-  const saleLive = !products.length || menuCounts.Sale > 0;
+  const live = (link: MenuLink) => !products.length || counts.get(link.key) !== 0;
+  const shopLinks = site.shop.filter(live);
+  const topLinks = site.top.filter(live);
   const { language, setLanguage, t } = useLocale();
   const { count, wishlist, setCartOpen } = useStore();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -213,14 +207,12 @@ export function Header() {
       <details className="mobile-shop" open>
         <summary>{t("Shop")} <ChevronDown size={18} aria-hidden="true" /></summary>
         <div>
-          {liveMenu.filter(({ category }) => category !== "Sale").map(({ category }) => <NavLink key={category} to={`/category/${category.toLowerCase()}`}>{t(category)}</NavLink>)}
+          {/* Entries that are also header links (such as Sale) are listed once, below. */}
+          {shopLinks.filter((link) => !topLinks.some((top) => top.href === link.href)).map((link) => <MenuAnchor key={link.key} link={link}>{linkLabel(link, language, t)}</MenuAnchor>)}
           <NavLink to="/shop" end>{t("Shop all")}</NavLink>
         </div>
       </details>
-      <Link to="/shop?sort=newest">{t("New In")}</Link>
-      {saleLive && <NavLink to="/category/sale">{t("Sale")}</NavLink>}
-      <NavLink to="/about">{t("About us")}</NavLink>
-      <NavLink to="/contact">{t("Contact")}</NavLink>
+      {topLinks.map((link) => <MenuAnchor key={link.key} link={link}>{linkLabel(link, language, t)}</MenuAnchor>)}
     </>
   );
   return (
@@ -240,19 +232,16 @@ export function Header() {
                 <summary>{t("Shop")} <ChevronDown size={15} aria-hidden="true" /></summary>
                 <div className="shop-menu">
                   <div className="shop-menu-grid">
-                    {liveMenu.map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties}>
-                      <span className="shop-menu-icon" aria-hidden="true"><Icon size={17} /></span>
-                      <span className="shop-menu-name">{t(category)}</span>
-                      <span className="shop-menu-count">{menuCounts[category]}</span>
-                    </Link>)}
+                    {shopLinks.map((link) => <MenuAnchor key={link.key} link={link} style={{ "--tint": link.color } as CSSProperties}>
+                      <span className="shop-menu-icon" aria-hidden="true"><MenuIcon name={link.icon} size={17} /></span>
+                      <span className="shop-menu-name">{linkLabel(link, language, t)}</span>
+                      {counts.get(link.key) != null && <span className="shop-menu-count">{counts.get(link.key)}</span>}
+                    </MenuAnchor>)}
                   </div>
                   <Link to="/shop" className="shop-menu-all">{t("Shop all")} <ArrowRight size={15} aria-hidden="true" /></Link>
                 </div>
               </details>
-              <Link to="/shop?sort=newest">{t("New In")}</Link>
-              {saleLive && <NavLink className="nav-sale" to="/category/sale">{t("Sale")}</NavLink>}
-              <NavLink to="/about">{t("About us")}</NavLink>
-              <NavLink to="/contact">{t("Contact")}</NavLink>
+              {topLinks.map((link) => <MenuAnchor key={link.key} link={link} className={link.href === "/category/sale" ? "nav-sale" : undefined}>{linkLabel(link, language, t)}</MenuAnchor>)}
             </nav>
             <div className="nav-icons">
               <button className="language-switch" type="button" onClick={() => setLanguage(language === "en" ? "ar" : "en")} lang={language === "en" ? "ar" : "en"} aria-label={language === "en" ? "Switch to Arabic" : "التبديل إلى الإنجليزية"}>
@@ -341,8 +330,8 @@ export function Header() {
           </button>
         </form>
         {!query && <div className="palette-chips">
-          {liveMenu.slice(0, 6).map(({ category, Icon, tint }) => <Link key={category} to={`/category/${category.toLowerCase()}`} style={{ "--tint": tint } as CSSProperties} onClick={() => setSearchOpen(false)}>
-            <Icon size={14} aria-hidden="true" /> {t(category)}
+          {shopLinks.filter((link) => !link.external).slice(0, 6).map((link) => <Link key={link.key} to={link.href} style={{ "--tint": link.color } as CSSProperties} onClick={() => setSearchOpen(false)}>
+            <span aria-hidden="true"><MenuIcon name={link.icon} size={14} /></span> {linkLabel(link, language, t)}
           </Link>)}
         </div>}
         <p className="small-muted palette-count" aria-live="polite">

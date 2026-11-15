@@ -1,7 +1,7 @@
 import type { MetaDescriptor } from "react-router";
 import { business } from "./business";
 import type { Product } from "../data/products";
-import { breadcrumbStructuredData, canonicalUrl, categoryLabel, getPageSeo, localProductName, pageStructuredData, productStructuredData, type SeoLanguage } from "./seo";
+import { breadcrumbStructuredData, canonicalUrl, categoryLabel, getPageSeo, localProductName, pageStructuredData, productStructuredData, type PageSeo, type SeoLanguage } from "./seo";
 
 export function languageFromMatches(matches: readonly ({ id: string; data?: unknown } | undefined)[]): SeoLanguage {
   const root = matches.find((match) => match?.id === "root")?.data;
@@ -12,15 +12,16 @@ export function localizedMeta(_title: string, _description: string, path: string
   return ({ matches }: { matches: readonly ({ id: string; data?: unknown } | undefined)[] }) => buildPageMeta(path, languageFromMatches(matches));
 }
 
-export function pageMeta(_title: string, _description: string, path: string, language: SeoLanguage = "en", overrides: { indexable?: boolean } = {}): MetaDescriptor[] {
+export function pageMeta(_title: string, _description: string, path: string, language: SeoLanguage = "en", overrides: { indexable?: boolean; page?: PageSeo } = {}): MetaDescriptor[] {
   return buildPageMeta(path, language, overrides);
 }
 
 // `overrides.indexable: false` lets a route hide a page that is empty right now (a category with
 // no products), so search engines don't index an empty page.
-export function buildPageMeta(path: string, language: SeoLanguage = "en", overrides: { indexable?: boolean } = {}): MetaDescriptor[] {
+// `overrides.page` supplies the search copy for a page the owner made in the admin (a new category).
+export function buildPageMeta(path: string, language: SeoLanguage = "en", overrides: { indexable?: boolean; page?: PageSeo } = {}): MetaDescriptor[] {
   const options = { catalogVerified: business.catalogVerified };
-  const seo = getPageSeo(path, language, options);
+  const seo = overrides.page || getPageSeo(path, language, options);
   const page = overrides.indexable === false ? { ...seo, indexable: false } : seo;
   const canonical = canonicalUrl(page.path, language, business.siteUrl);
   const image = `${business.siteUrl}/assets/boys-girlz-logo.jpg`;

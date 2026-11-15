@@ -227,7 +227,7 @@ function ProductContent({ product: p }: { product: Product }) {
           <div className="ship-strip">
             <div className="ship-row ship-row-truck">
               <span className="ship-icon" aria-hidden="true"><span className="bh-road" /><Truck size={18} /></span>
-              <span><strong>{t("Free delivery from {amount}").replace("{amount}", dollars(delivery.freeFrom))}</strong><small>{t("Delivery all over Lebanon")}</small></span>
+              <span><strong>{delivery.fee === 0 ? t("FREE delivery") : delivery.freeFrom === null ? t("Delivery {amount}").replace("{amount}", dollars(delivery.fee)) : t("Free delivery from {amount}").replace("{amount}", dollars(delivery.freeFrom))}</strong><small>{t("Delivery all over Lebanon")}</small></span>
             </div>
             <div className="ship-row ship-row-cash">
               <span className="ship-icon" aria-hidden="true"><Banknote size={18} /></span>

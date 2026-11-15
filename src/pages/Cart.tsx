@@ -41,6 +41,8 @@ export function CountingMoney({ value }: { value: number }) {
 export function FreeDeliveryBar({ subtotal, children }: { subtotal: number; children: ReactNode }) {
   const { t } = useLocale();
   const FREE_DELIVERY = useDelivery().freeFrom;
+  // No progress bar when the owner has turned free delivery off.
+  if (FREE_DELIVERY === null) return null;
   const arrived = subtotal >= FREE_DELIVERY;
   const percent = FREE_DELIVERY > 0 ? Math.min(100, (subtotal / FREE_DELIVERY) * 100) : 100;
   return <div className={`delivery-bar ${arrived ? "is-arrived" : ""}`} style={{ "--progress": `${percent}%` } as CSSProperties}>
@@ -199,7 +201,7 @@ export function CartDrawer() {
       {cart.length ? (
         <>
           <FreeDeliveryBar subtotal={totals.subtotal}>
-            {totals.subtotal >= delivery.freeFrom
+            {delivery.freeFrom === null ? null : totals.subtotal >= delivery.freeFrom
               ? t("Lovely! Your shipping is on us.")
               : language === "ar" ? `توصيل مجاني للطلبات بقيمة ${dollars(delivery.freeFrom)} أو أكثر. مجموعك الفرعي ${money(totals.subtotal)}.` : `Free delivery on orders of ${dollars(delivery.freeFrom)} or more. Your subtotal is ${money(totals.subtotal)}.`}
           </FreeDeliveryBar>
@@ -277,7 +279,7 @@ export default function Cart() {
           <div className="cart-layout">
             <section className="bag-items">
               <FreeDeliveryBar subtotal={totals.subtotal}>
-                {totals.subtotal >= delivery.freeFrom
+                {delivery.freeFrom === null ? null : totals.subtotal >= delivery.freeFrom
                   ? t("Your order qualifies for FREE delivery all over Lebanon.")
                   : t("FREE delivery all over Lebanon on orders of {amount} or more.").replace("{amount}", dollars(delivery.freeFrom))}
               </FreeDeliveryBar>

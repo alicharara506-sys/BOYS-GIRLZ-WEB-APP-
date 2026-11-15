@@ -46,8 +46,8 @@ const pages: Record<string, PageDefinition> = {
     ar: { title: "أسئلة التوصيل والدفع والتسوّق | بويز آند غيرلز", description: "إجابات عن التوصيل داخل لبنان والدفع عند الاستلام والمقاسات والإرجاع والتسوّق من الأوتليت شبه الجديد لدى بويز آند غيرلز.", h1: "الأسئلة الشائعة", label: "الأسئلة الشائعة" },
   },
   "/help/shipping": {
-    en: { title: "Delivery in Lebanon & Cash on Delivery | Boys & Girlz", description: "Boys & Girlz delivers within Lebanon with Cash on Delivery. Delivery is $5, free on orders of $100 or more; ask the shop about timing.", h1: "Delivery in Lebanon", label: "Delivery in Lebanon" },
-    ar: { title: "التوصيل في لبنان والدفع عند الاستلام | بويز آند غيرلز", description: "توصيل بويز آند غيرلز داخل لبنان مع الدفع عند الاستلام. رسوم التوصيل 5$، ومجاني للطلبات بقيمة 100$ أو أكثر؛ تواصل مع المتجر لمعرفة الموعد.", h1: "التوصيل في لبنان", label: "التوصيل في لبنان" },
+    en: { title: "Delivery in Lebanon & Cash on Delivery | Boys & Girlz", description: "Boys & Girlz delivers within Lebanon with Cash on Delivery. See the delivery fee and free-delivery amount, and ask the shop about timing.", h1: "Delivery in Lebanon", label: "Delivery in Lebanon" },
+    ar: { title: "التوصيل في لبنان والدفع عند الاستلام | بويز آند غيرلز", description: "توصيل بويز آند غيرلز داخل لبنان مع الدفع عند الاستلام. تعرّف على رسوم التوصيل وحدّ التوصيل المجاني، وتواصل مع المتجر لمعرفة الموعد.", h1: "التوصيل في لبنان", label: "التوصيل في لبنان" },
   },
   "/help/returns": {
     en: { title: "Returns & Exchanges Information | Boys & Girlz", description: "Contact Boys & Girlz before ordering for current return and exchange conditions. A confirmed returns policy has not yet been published.", h1: "Returns and exchanges", label: "Returns and exchanges" },
@@ -156,6 +156,28 @@ export function categoryLabel(category: string, language: SeoLanguage): string {
 
 // A keyword heading for a page ("Boys' Clothes in Lebanon"), taken from its title so it stays in
 // step with the title in both languages. The decorative slogan sits beside it, not in the H1.
+// Search titles for a category the owner added in the admin (Menu & categories), such as Dresses.
+export type CustomCategorySeo = { name: string; nameAr: string; slug: string; intro: string; introAr: string };
+export function customCategorySeo(category: CustomCategorySeo, language: SeoLanguage): PageSeo {
+  const path = `/category/${category.slug}`;
+  const name = language === "ar" ? category.nameAr || category.name : category.name;
+  const heading = language === "ar" ? `${name} للأطفال في لبنان` : `${name} for Babies & Kids in Lebanon`;
+  const intro = language === "ar" ? category.introAr : category.intro;
+  const description = intro || (language === "ar"
+    ? `تسوّق ${name} للأطفال لدى بويز آند غيرلز في لبنان، مع التوصيل إلى جميع أنحاء لبنان والدفع عند الاستلام.`
+    : `Shop ${name.toLowerCase()} for babies and kids at Boys & Girlz in Lebanon, with delivery all over Lebanon and Cash on Delivery.`);
+  const home = { path: "/", name: pages["/"][language].label };
+  return {
+    path,
+    title: `${heading} | ${language === "ar" ? "بويز آند غيرلز" : "Boys & Girlz"}`,
+    description: description.length > 158 ? `${description.slice(0, description.lastIndexOf(" ", 155))}…` : description,
+    h1: heading,
+    kind: "collection",
+    indexable: true,
+    breadcrumbs: [home, { path: "/shop", name: pages["/shop"][language].label }, { path, name }],
+  };
+}
+
 export function pageHeading(path: string, language: SeoLanguage): string {
   return getPageSeo(path, language).title.split(" | ")[0];
 }

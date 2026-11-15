@@ -16,10 +16,12 @@ import {
   Store,
   Truck,
   X,
+  ListTree,
 } from "lucide-react";
 import type { CommerceSnapshot } from "../../server/commerce/queries.server";
 import { TokenContext } from "./ui";
 import Overview from "./Overview";
+import MenuCategories from "./MenuCategories";
 import POS from "./POS";
 import { Inventory, ProductEditor, Products } from "./Products";
 import { OrderDetail, Orders, Returns } from "./Orders";
@@ -40,6 +42,7 @@ const groups: { label: string; items: readonly NavItem[] }[] = [
   { label: "SELL", items: [["pos", "Point of sale", Store], ["orders", "Orders", Package], ["returns", "Returns & exchanges", ReceiptText], ["promos", "Promo codes", Gift]] },
   { label: "STOCK", items: [["products", "Products", ShoppingBag], ["inventory", "Inventory", Boxes], ["purchases", "Purchases", ShoppingBag], ["suppliers", "Suppliers", Truck]] },
   { label: "MONEY", items: [["reports", "Reports", ChartNoAxesCombined], ["accounting", "Accounting", CircleDollarSign], ["liabilities", "Liabilities", CircleDollarSign]] },
+  { label: "WEBSITE", items: [["menu", "Menu & categories", ListTree]] },
   { label: "", items: [["settings", "Settings", Settings]] },
 ];
 const navigation = groups.flatMap((group) => group.items);
@@ -93,6 +96,7 @@ export default function CommerceApp({
   else if (section === "promos" || section === "rewards" || section === "discounts")
     content = <Rewards data={snapshot} />;
   else if (section === "settings") content = <ShopSettings data={snapshot} />;
+  else if (section === "menu") content = <MenuCategories data={snapshot} />;
   else content = <Overview data={snapshot} />;
   return (
     <TokenContext.Provider value={csrfToken}>

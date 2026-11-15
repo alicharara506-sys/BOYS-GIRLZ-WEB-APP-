@@ -34,6 +34,8 @@ import PromiseCards, { type PromiseCardItem } from "../components/PromiseCards";
 import { useReducedMotion } from "../hooks/useExperience";
 import GrowingSteps from "../components/GrowingSteps";
 import { returnsPolicy } from "../data/faqs";
+import { useDelivery } from "../state/delivery";
+import { deliverySentence } from "../domain/delivery";
 
 gsap.registerPlugin(ScrollTrigger);
 function spotlight(event: PointerEvent<HTMLAnchorElement>) {
@@ -47,6 +49,7 @@ function spotlight(event: PointerEvent<HTMLAnchorElement>) {
 // timeline that lights up as it scrolls, the shop's values as cards, then the way into the shop.
 export function About() {
   const { t, language } = useLocale();
+  const delivery = useDelivery();
   const reduceMotion = useReducedMotion();
   const timelineRef = useRef<HTMLOListElement>(null);
   const lineOne = t("For their firsts.");
@@ -114,7 +117,7 @@ export function About() {
             <span className="about-dot" aria-hidden="true"><MapPin size={16} /></span>
             <div className="about-step-body about-question">
               <h2>{t("Delivery and contact")}</h2>
-              <p>{t("Delivery is within Lebanon only. Cash on Delivery is available, with free delivery on orders of $100 or more.")}</p>
+              <p>{deliverySentence(delivery, language)} {t("Cash on Delivery is available.")}</p>
               {whatsapp && <p>{t("WhatsApp")}: <a href={whatsapp} target="_blank" rel="noopener noreferrer"><bdi>{business.phoneDisplay}</bdi></a></p>}
               {business.email && <p><a href={`mailto:${business.email}`}>{business.email}</a></p>}
               <p><Link to="/help/shipping">{t("Delivery in Lebanon")}</Link> · <Link to="/contact">{t("Contact us")}</Link></p>
@@ -252,6 +255,8 @@ export function Contact() {
     </div>
   );
 }
+// Placeholder for the delivery sentence, which is filled in from the admin settings.
+const DELIVERY_RULE = "{delivery-rule}";
 const help: Record<
   string,
   { title: string; intro: string; sections: [string, string][] }
@@ -262,8 +267,8 @@ const help: Record<
     sections: [
       [
         "Delivery all over Lebanon",
-        // Keep in step with the admin settings (shipping $5, free from $100).
-        "We deliver all over Lebanon. Delivery is $5, and free on orders of $100 or more after any promo discount.",
+        // Replaced on the page by the live delivery rule from the admin settings (see Help below).
+        DELIVERY_RULE,
       ],
       [
         "Delivery timing",
@@ -351,7 +356,8 @@ export function Help() {
   const key = helpTopics.includes(topic || "") ? topic! : "shipping";
   const content = help[key];
   const icons = helpIcons[helpTopics.indexOf(key)];
-  const cards: PromiseCardItem[] = content.sections.map(([title, body], index) => ({ key: `help-${index}`, Icon: icons[index] || Info, title, body }));
+  const delivery = useDelivery();
+  const cards: PromiseCardItem[] = content.sections.map(([title, body], index) => ({ key: `help-${index}`, Icon: icons[index] || Info, title, body: body === DELIVERY_RULE ? deliverySentence(delivery, language) : body }));
   return (
     <div className="help-v2">
       <section className="contact-hero page-width">

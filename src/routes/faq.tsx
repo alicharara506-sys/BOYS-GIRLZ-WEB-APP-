@@ -7,6 +7,8 @@ import { useLocale } from "../i18n/Locale";
 import { SplitTitle } from "../components/HeroSection";
 import { pageHeading } from "../config/seo";
 import { faqs } from "../data/faqs";
+import { useDelivery } from "../state/delivery";
+import { deliveryAnswer } from "../domain/delivery";
 
 const presentation: Record<(typeof faqs)[number]["id"], { Icon: LucideIcon; tint: string }> = {
   delivery: { Icon: Truck, tint: "#0898d6" },
@@ -37,6 +39,9 @@ function spotlight(event: PointerEvent<HTMLElement>) {
 // its own link (like /faq#delivery) that opens straight to it.
 export default function FAQ() {
   const { language, t } = useLocale();
+  const delivery = useDelivery();
+  // The delivery answer always states the fee and free-delivery amount set in the admin.
+  const answerOf = (faq: { id: string; answer: string }) => faq.id === "delivery" ? deliveryAnswer(delivery, language) : t(faq.answer);
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState("all");
   const [open, setOpen] = useState<string>(faqs[0].id);
@@ -74,15 +79,15 @@ export default function FAQ() {
   };
   const q = query.trim().toLowerCase();
   const visible = faqs.filter((faq) => (topic === "all" || faq.id === topic) &&
-    (!q || `${t(faq.question)} ${t(faq.answer)}`.toLowerCase().includes(q)));
+    (!q || `${t(faq.question)} ${answerOf(faq)}`.toLowerCase().includes(q)));
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: visible.map(({ question, answer }) => ({
+    mainEntity: visible.map(({ id, question, answer }) => ({
       "@type": "Question",
       name: t(question),
-      acceptedAnswer: { "@type": "Answer", text: t(answer) },
+      acceptedAnswer: { "@type": "Answer", text: answerOf({ id, answer }) },
     })),
   };
   return (
@@ -126,7 +131,7 @@ export default function FAQ() {
                 </button>
               </h2>
               <div className="faq-answer" id={`${id}-answer`} role="region" aria-label={t(question)}>
-                <div><p>{highlight(t(answer), query)}</p><p><Link className="inline-flex items-center gap-1 font-semibold" to={relatedPath}>{t(relatedLabel)} <ArrowRight size={14} aria-hidden="true" /></Link></p></div>
+                <div><p>{highlight(answerOf({ id, answer }), query)}</p><p><Link className="inline-flex items-center gap-1 font-semibold" to={relatedPath}>{t(relatedLabel)} <ArrowRight size={14} aria-hidden="true" /></Link></p></div>
               </div>
             </section>;
           })}

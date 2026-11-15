@@ -46,7 +46,9 @@ export const defaults = {
   taxRate: 0,
   taxIncluded: false,
   shipping: 500,
-  freeShipping: 10000,
+  freeShipping: 9900,
+  // The owner can turn free delivery off in Settings; every online order then pays the fee.
+  freeShippingEnabled: true,
   pointsPerDollar: 1,
   pointValue: 1,
   returnDays: 30,

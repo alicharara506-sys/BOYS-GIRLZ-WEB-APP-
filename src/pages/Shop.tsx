@@ -33,6 +33,8 @@ import { AnimatedLine, SplitTitle } from "../components/HeroSection";
 import { useReducedMotion } from "../hooks/useExperience";
 import { useCountUp } from "../hooks/useCountUp";
 import { sortSizes } from "../domain/productColors";
+import { linkCount, linkLabel, matchesLink, useSiteMenu } from "../state/siteMenu";
+import { customCategorySeo } from "../config/seo";
 
 gsap.registerPlugin(ScrollTrigger);
 function GenderIcon({ kind }: { kind: "boys" | "girls" }) {
@@ -113,6 +115,12 @@ export default function Shop() {
   const category = pathname.match(/^\/category\/([^/]+)/)?.[1];
   const [params, setParams] = useSearchParams();
   const routeCategory = categories.find((c) => c.toLowerCase() === category);
+  const site = useSiteMenu();
+  // A category the owner added in the admin (Menu & categories), such as Dresses.
+  const customCategory = !routeCategory && category ? site.categories.find((c) => c.slug === category) : undefined;
+  const customName = customCategory ? (language === "ar" ? customCategory.nameAr || customCategory.name : customCategory.name) : "";
+  // The owner's categories that are in the Shop menu, as extra filter chips.
+  const customChips = site.shop.filter((link) => link.match && "productType" in link.match);
   const [mobile, setMobile] = useState(false);
   const reduceMotion = useReducedMotion();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -138,7 +146,7 @@ export default function Shop() {
     const activeCategories = routeCategory ? [routeCategory] : selected;
     const filtered = products.filter(
       (p) =>
-        (!activeCategories.length || activeCategories.some((active) => matchesCategory(p, active))) &&
+        (customCategory ? p.productType === customCategory.name : !activeCategories.length || activeCategories.some((active) => matchesCategory(p, active))) &&
         p.price <= max &&
         (!size || p.sizes.includes(size)) &&
         (!color || p.colors.includes(color)) &&
@@ -275,18 +283,20 @@ export default function Shop() {
   }, [resultKey, reduceMotion]);
   const title = brand
     ? brand
+    : customCategory
+      ? `${customName}.`
     : routeCategory
       ? language === "ar" ? `${arabicCategoryHeading[routeCategory]}.` : `${routeCategory === "Maternity" ? "For mama" : routeCategory === "Toys" ? "A little playtime" : routeCategory === "Outlet" ? "Like New little finds" : routeCategory === "Sale" ? "Sale" : `Little ${routeCategory.toLowerCase()}`}.`
       : sale
         ? t("Lovely little offers.")
         : t("All the little things.");
-  if (category && !routeCategory) return <NotFound />;
+  if (category && !routeCategory && !customCategory) return <NotFound />;
   return (
     <div className="page-width">
       <div className="breadcrumbs">
         <Link to="/">{t("Home")}</Link>
         <ChevronRight size={12} />
-        <span>{t(routeCategory || "Shop")}</span>
+        <span>{customCategory ? customName : t(routeCategory || "Shop")}</span>
       </div>
       <div className={`shop-hero ${routeCategory?.toLowerCase() || ""}`}>
         <div className="shop-hero-fields" aria-hidden="true">
@@ -297,7 +307,7 @@ export default function Shop() {
           {/* The H1 is the keyword line ("Boys' Clothes in Lebanon"); the big slogan below is a tagline. */}
           <div className="section-eyebrow">
             <span aria-hidden="true" />
-            <h1 className="section-eyebrow-text shop-hero-keyword">{pageHeading(routeCategory ? `/category/${routeCategory.toLowerCase()}` : "/shop", language)}</h1>
+            <h1 className="section-eyebrow-text shop-hero-keyword">{customCategory ? customCategorySeo(customCategory, language).h1 : pageHeading(routeCategory ? `/category/${routeCategory.toLowerCase()}` : "/shop", language)}</h1>
             <span aria-hidden="true" />
           </div>
           <p className="shop-hero-title" key={title}>
@@ -309,6 +319,8 @@ export default function Shop() {
           <p>
             {brand
               ? t("Brands you'll find here")
+              : customCategory
+              ? (language === "ar" ? customCategory.introAr : customCategory.intro) || t("Soft essentials, sweet details, and new favorites to fall for.")
               : routeCategory
               ? t(copy[routeCategory])
               : sale
@@ -322,11 +334,17 @@ export default function Shop() {
         {routeCategory && <CategoryScene category={routeCategory} />}
       </div>
       <nav className="shop-cats" aria-label={t("Shop for")}>
-        <Link to={{ pathname: "/shop", search: chipSearch }} preventScrollReset data-tone="all" className={!routeCategory && !selected.length ? "active tone-pill" : ""} aria-current={!routeCategory && !selected.length ? "page" : undefined}>{t("All")} <span>{products.length}</span></Link>
+        <Link to={{ pathname: "/shop", search: chipSearch }} preventScrollReset data-tone="all" className={!routeCategory && !customCategory && !selected.length ? "active tone-pill" : ""} aria-current={!routeCategory && !customCategory && !selected.length ? "page" : undefined}>{t("All")} <span>{products.length}</span></Link>
         {/* Empty categories are left out, except the one being viewed. */}
         {categories.filter((c) => c === routeCategory || !products.length || products.some((p) => matchesCategory(p, c))).map((c) => <Link key={c} to={{ pathname: `/category/${c.toLowerCase()}`, search: chipSearch }} preventScrollReset data-tone={c === "Boys" ? "boys" : c === "Girls" ? "girls" : c === "Unisex" ? "unisex" : "all"} className={routeCategory === c ? "active tone-pill" : ""} aria-current={routeCategory === c ? "page" : undefined}>
           {routeCategory === c && <span className="tone-burst" aria-hidden="true" />}{t(c)} <span>{products.filter((p) => matchesCategory(p, c)).length}</span>
         </Link>)}
+        {customChips.filter((link) => link.href === `/category/${category}` || !products.length || (linkCount(products, link) || 0) > 0).map((link) => {
+          const active = link.href === `/category/${category}`;
+          return <Link key={link.key} to={{ pathname: link.href, search: chipSearch }} preventScrollReset data-tone="all" className={active ? "active tone-pill" : ""} aria-current={active ? "page" : undefined}>
+            {active && <span className="tone-burst" aria-hidden="true" />}{linkLabel(link, language, t)} <span>{products.filter((p) => matchesLink(p, link)).length}</span>
+          </Link>;
+        })}
       </nav>
       <div className="shop-layout">
         <aside className="desktop-filters" aria-label={t("Product filters")}>

@@ -237,7 +237,11 @@ export default function HeroSection() {
 
         <div className="bh-badge bh-badge-delivery">
           <span className="bh-badge-icon bh-badge-icon-truck"><span className="bh-road" /><Truck size={18} /></span>
-          <span><strong>{t("FREE delivery")}</strong><small>{t("all over Lebanon on orders of {amount}+").replace("{amount}", dollars(delivery.freeFrom))}</small></span>
+          <span>{delivery.fee === 0
+            ? <><strong>{t("FREE delivery")}</strong><small>{t("Delivery all over Lebanon")}</small></>
+            : delivery.freeFrom === null
+              ? <><strong>{t("Delivery all over Lebanon")}</strong><small>{t("Delivery {amount}").replace("{amount}", dollars(delivery.fee))}</small></>
+              : <><strong>{t("FREE delivery")}</strong><small>{t("all over Lebanon on orders of {amount}+").replace("{amount}", dollars(delivery.freeFrom))}</small></>}</span>
           <svg className="bh-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" /></svg>
         </div>
         <div className="bh-badge bh-badge-cod">

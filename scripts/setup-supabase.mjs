@@ -32,6 +32,7 @@ try {
     "202611040001_shared_shop.sql",
     "202611040002_access_and_storage.sql",
     "202611140001_product_colors.sql",
+    "202611150001_category_details.sql",
   ]) {
     if (
       (

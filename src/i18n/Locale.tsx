@@ -98,7 +98,7 @@ const arabic: Record<string, string> = {
   "2–3 Years": "2–3 سنوات", "3–4 Years": "3–4 سنوات", "4–5 Years": "4–5 سنوات", "5–6 Years": "5–6 سنوات",
   "Your bag": "سلّتك", "Quantity": "الكمية", "Remove": "إزالة", "A lovely little total": "ملخص الطلب",
   "Subtotal": "المجموع الفرعي", "Shipping": "التوصيل", "Calculated at checkout": "يُحسب عند إتمام الطلب",
-  "FREE": "مجاني", "Total to pay on delivery": "المجموع عند الاستلام",
+  "FREE": "مجاني", "Delivery {amount}": "التوصيل {amount}", "Cash on Delivery is available.": "الدفع نقداً عند الاستلام متاح.", "Total to pay on delivery": "المجموع عند الاستلام",
   "Have a promo code? Enter it at checkout. It can only lower this total.": "لديك رمز ترويجي؟ أدخله عند إتمام الطلب، ولن يؤدي إلا إلى خفض هذا المجموع.",
   "Stock and your promo code are checked when you place the order.": "يتم التحقق من توفّر المنتجات ومن رمزك الترويجي عند تأكيد الطلب.",
   "A promo code is applied when you place the order and can only lower this total. No payment is collected online.": "يُطبَّق الرمز الترويجي عند تأكيد الطلب ولا يؤدي إلا إلى خفض هذا المجموع. لا يتم تحصيل أي دفعة عبر الإنترنت.",

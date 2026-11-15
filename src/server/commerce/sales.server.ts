@@ -186,7 +186,7 @@ export async function sell(tx: Tx, raw: SaleInput) {
   const net = afterLines - whole;
   const shipping =
     input.channel === "online"
-      ? (input.shipping ?? (net >= config.freeShipping ? 0 : config.shipping))
+      ? (input.shipping ?? (config.freeShippingEnabled !== false && net >= config.freeShipping ? 0 : config.shipping))
       : 0;
   // Owner confirmed no tax. The tax account is retained for a future tax configuration.
   const total = net + shipping;

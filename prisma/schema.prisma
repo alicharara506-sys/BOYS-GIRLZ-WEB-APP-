@@ -473,6 +473,10 @@ model Shop {
 model Category {
   id        String    @id @default(uuid())
   name      String
+  nameAr    String    @default("") @map("name_ar")
+  slug      String    @unique
+  intro     String    @default("")
+  introAr   String    @default("") @map("intro_ar")
   shopId    String    @map("shop_id")
   shop      Shop      @relation(fields: [shopId], references: [id])
   products  Product[]

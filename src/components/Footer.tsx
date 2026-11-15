@@ -4,7 +4,7 @@ import { ArrowRight, HelpCircle, LayoutGrid, Sparkles, Tag, Truck } from "lucide
 import { whatsAppUrl } from "./WhatsAppLink";
 import { socials, WhatsAppIcon } from "./SocialIcons";
 import { approvedBrands } from "../data/brands";
-import { categories, matchesCategory } from "../data/products";
+import { linkCount, linkLabel, useSiteMenu } from "../state/siteMenu";
 import { useCatalog } from "../state/Catalog";
 import { useLocale } from "../i18n/Locale";
 import { brandColors } from "./BrandRibbon";
@@ -75,8 +75,12 @@ function ContactRow({ icon, label, children, href }: { icon: ReactNode; label: s
 // the copyright line.
 export default function Footer() {
   const { products } = useCatalog();
-  const categoryCounts = Object.fromEntries(categories.map((category) => [category, products.filter((product) => matchesCategory(product, category)).length]));
   const { t, language } = useLocale();
+  // The Shop menu the owner set in the admin, minus entries with nothing in them right now.
+  const shopLinks = useSiteMenu().shop
+    .filter((link) => !link.external)
+    .map((link) => ({ link, count: linkCount(products, link) }))
+    .filter(({ count }) => !products.length || count !== 0);
   const whatsapp = whatsAppUrl(language === "ar" ? "مرحباً بويز آند غيرلز! لدي سؤال عن المتجر." : "Hello Boys & Girlz! I have a question about your shop.");
   return <footer className="site-footer-v2">
     <div className="footer-beam" aria-hidden="true"><span /></div>
@@ -106,8 +110,8 @@ export default function Footer() {
         <div className="footer-panels">
           <FooterPanel title={t("Shop")} icon={<LayoutGrid size={14} />} count={products.length}>
             <FooterLinkList>
-              {categories.filter((category) => !products.length || categoryCounts[category] > 0).map((category) => <FooterLink key={category} to={`/category/${category.toLowerCase()}`}
-                detail={<span className="footer-link-count">{categoryCounts[category]}</span>}>{t(category)}</FooterLink>)}
+              {shopLinks.map(({ link, count }) => <FooterLink key={link.key} to={link.href}
+                detail={count != null ? <span className="footer-link-count">{count}</span> : undefined}>{linkLabel(link, language, t)}</FooterLink>)}
               <FooterLink to="/shop"><strong>{t("Shop all")}</strong></FooterLink>
             </FooterLinkList>
           </FooterPanel>

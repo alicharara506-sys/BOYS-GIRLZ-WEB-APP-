@@ -1114,6 +1114,7 @@ export function ShopSettings({ data }: Props) {
           receiptFooter: str(f, "receiptFooter"),
           shipping: amount(f.get("shipping")),
           freeShipping: amount(f.get("freeShipping")),
+          freeShippingEnabled: flag(f, "freeShippingEnabled"),
           pointsPerDollar: num(f, "pointsPerDollar"),
           pointValue: num(f, "pointValue"),
           returnDays: num(f, "returnDays"),
@@ -1162,9 +1163,14 @@ export function ShopSettings({ data }: Props) {
                 step="0.01"
                 value={s.shipping / 100}
               />
+              <Check
+                name="freeShippingEnabled"
+                label="Offer free delivery on bigger orders (turn off to charge the fee on every order)"
+                value={s.freeShippingEnabled !== false}
+              />
               <Field
                 name="freeShipping"
-                label="Free delivery from $"
+                label="Free delivery from $ (orders of this amount or more, after promo codes)"
                 type="number"
                 min={0}
                 step="0.01"
