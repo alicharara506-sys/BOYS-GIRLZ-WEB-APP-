@@ -12,6 +12,7 @@ import { type Product } from "../data/products";
 import { useCatalog } from "./Catalog";
 import {
   calculateTotals,
+  canAddToCart,
   initialState,
   restoreStore,
   storeReducer,
@@ -90,7 +91,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     element?: HTMLElement,
   ) => {
     const current = productById(p.id);
-    if (!current || current.available === false || (current.sizes.length > 0 && !current.sizes.includes(size)) || (current.sizes.length === 0 && size !== "") || !current.colors.includes(color)) return;
+    if (!current || !canAddToCart(current, size, color)) return;
     dispatch({ type: "ADD", item: { productId: p.id, size, color, quantity } });
     notify(language === "ar" ? `أُضيف ${t(p.name)} إلى السلّة` : `${p.name} added to your bag`);
     if (element && !current.imageUrl)

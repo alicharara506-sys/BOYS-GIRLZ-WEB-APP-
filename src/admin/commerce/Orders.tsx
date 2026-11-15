@@ -36,7 +36,7 @@ export function Orders({ data }: Props) {
         <div>
           <p className="co-eyebrow">IN-STORE + ONLINE</p>
           <h1>
-            Every little order<span>.</span>
+            Orders<span>.</span>
           </h1>
           <p>One history for every way your customers shop.</p>
         </div>
@@ -157,7 +157,7 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
             {String(order.number).padStart(6, "0")}
           </p>
           <h1>
-            A happy little delivery<span>.</span>
+            Order details<span>.</span>
           </h1>
           <p>
             {date(order.createdAt)} ·{" "}
@@ -281,14 +281,6 @@ export function OrderDetail({ data, id }: Props & { id: string }) {
             </p>
             <p>{order.phone}</p>
             <p>{order.address || "In-store pickup"}</p>
-            {order.customerId && (
-              <Link
-                className="co-text-link"
-                to={`/admin/customers/${order.customerId}`}
-              >
-                View customer history <ArrowUpRight size={15} />
-              </Link>
-            )}
             <p className="co-help">
               {order.pointsEarned} loyalty points earned · {order.pointsUsed}{" "}
               redeemed
@@ -450,7 +442,7 @@ export function Returns({ data }: Props) {
             Returns & exchanges<span>.</span>
           </h1>
           <p>
-            Demo return window: {data.settings.returnDays} days. Refunds exclude
+            Return window: {data.settings.returnDays} days. Refunds exclude
             delivery and preserve item discounts.
           </p>
         </div>

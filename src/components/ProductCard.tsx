@@ -4,6 +4,7 @@ import { Heart, Plus } from "lucide-react";
 import { colorHex, money, type Product } from "../data/products";
 import { useStore } from "../state/Store";
 import { useLocale } from "../i18n/Locale";
+import { colorAvailable, colorDetails, colorImages, colorSizes, defaultColor } from "../domain/productColors";
 export function ProductImage({
   product,
   className = "",
@@ -110,13 +111,25 @@ function settle(event: PointerEvent<HTMLElement>) {
 export default function ProductCard({ product, showRange = false }: { product: Product; showRange?: boolean }) {
   const { language, t } = useLocale();
   const [quickOpen, setQuickOpen] = useState(false);
-  const [size, setSize] = useState(product.sizes[0] || "");
-  const [color, setColor] = useState(product.colors[0]);
+  // One card per product: it shows the chosen color's cover photo and swatches for every color.
+  const [color, setColor] = useState(defaultColor(product));
+  const [size, setSize] = useState(() => colorSizes(product, defaultColor(product))[0] || "");
+  // Quick add offers only the sizes the chosen color comes in.
+  const sizesInColor = colorSizes(product, color);
+  const chooseColor = (next: string) => {
+    setColor(next);
+    const nextSizes = colorSizes(product, next);
+    if (!nextSizes.includes(size)) setSize(nextSizes[0] || "");
+  };
+  const hexOf = (option: string) => colorDetails(product, option)?.hex || colorHex[option];
+  const cover = { ...product, imageUrl: colorImages(product, color)[0] || product.imageUrl };
   const { add } = useStore();
-  const unavailable = product.available === false || (product.productType === "shoes" && product.sizes.length === 0);
-  const unavailableLabel = product.available === false
-    ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
-    : t("Sizes coming soon");
+  const unavailable = !colorAvailable(product, color) || product.available === false || (product.productType === "shoes" && product.sizes.length === 0);
+  const unavailableLabel = !colorAvailable(product, color)
+    ? language === "ar" ? "هذا اللون غير متوفر" : "Color out of stock"
+    : product.available === false
+      ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
+      : t("Sizes coming soon");
   return (
     <article className={`product-card pc ${quickOpen ? "pc-open" : ""}`} style={{ "--pc-glow": colorHex[color] || "#f3c6d6" } as CSSProperties}>
       <div className="pc-tilt" onPointerDown={follow} onPointerMove={follow} onPointerUp={release} onPointerCancel={settle} onPointerLeave={settle}>
@@ -126,7 +139,7 @@ export default function ProductCard({ product, showRange = false }: { product: P
           <span className="pc-aura" aria-hidden="true" />
           <span className="pc-shadow" aria-hidden="true" />
           <Link className="pc-image-link" to={`/product/${product.id}`} aria-label={language === "ar" ? `عرض ${t(product.name)}` : `View ${product.name}`}>
-            <ProductImage product={product} className="pc-photo" />
+            <ProductImage product={cover} className="pc-photo" />
           </Link>
           {(product.isNew || product.originalPrice || product.condition === "like-new") && (
             <span className={`pc-tag ${product.originalPrice ? "pc-tag-sale" : ""}`}>
@@ -139,7 +152,7 @@ export default function ProductCard({ product, showRange = false }: { product: P
               {product.sizes.length > 0 && <div className="pc-field">
                 <span className="pc-field-label" id={`${product.id}-size`}>{t("Size")} <b>{t(size)}</b></span>
                 <div className="pc-chips" role="radiogroup" aria-labelledby={`${product.id}-size`}>
-                  {product.sizes.map((option) => <button key={option} type="button" role="radio" aria-checked={size === option}
+                  {sizesInColor.map((option) => <button key={option} type="button" role="radio" aria-checked={size === option}
                     className={size === option ? "active" : ""} onClick={(event) => {
                       setSize(option);
                       event.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
@@ -150,7 +163,7 @@ export default function ProductCard({ product, showRange = false }: { product: P
                 <span className="pc-field-label" id={`${product.id}-color`}>{t("Color")} <b>{t(color)}</b></span>
                 <div className="pc-swatches" role="radiogroup" aria-labelledby={`${product.id}-color`}>
                   {product.colors.map((option) => <button key={option} type="button" role="radio" aria-checked={color === option} aria-label={t(option)}
-                    className={color === option ? "active" : ""} style={{ "--swatch": colorHex[option] } as CSSProperties} onClick={() => setColor(option)} />)}
+                    className={color === option ? "active" : ""} style={{ "--swatch": hexOf(option) } as CSSProperties} onClick={() => chooseColor(option)} />)}
                 </div>
               </div>}
               <button type="button" className="pc-add" disabled={unavailable} onClick={(event) => {
@@ -178,7 +191,7 @@ export default function ProductCard({ product, showRange = false }: { product: P
             >
               {product.colors.map((c) => (
                 <button key={c} type="button" aria-label={t(c)} aria-pressed={color === c} className={color === c ? "active" : ""}
-                  style={{ "--swatch": colorHex[c] } as CSSProperties} onClick={() => setColor(c)} />
+                  style={{ "--swatch": hexOf(c) } as CSSProperties} onClick={() => chooseColor(c)} />
               ))}
             </span>
           </div>

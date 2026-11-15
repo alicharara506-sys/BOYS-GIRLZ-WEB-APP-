@@ -67,11 +67,9 @@ export async function cashEvent(
   reason: string,
   required = false,
 ) {
+  // The shop doesn't use a cash drawer: cash sales and refunds go through without one.
+  void required;
   const drawer = await tx.drawer.findFirst({ where: { closedAt: null } });
-  if (!drawer && required)
-    throw new CommerceError(
-      "Open the cash drawer before taking or refunding cash.",
-    );
   if (drawer && amount)
     await tx.cashEvent.create({
       data: { drawerId: drawer.id, amount, reason },

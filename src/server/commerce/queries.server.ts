@@ -2,6 +2,7 @@ import { publicSupabase } from "../supabase.server";
 import { finalPrice } from "../../domain/pricing";
 import { db } from "./db.server";
 import type { Category } from "../../data/products";
+import type { ColorImage, ColorMode, ProductColor } from "../../domain/productColors";
 import { dateRange } from "./rules";
 import { fullOrder, settings } from "./sales.server";
 
@@ -23,6 +24,9 @@ export async function commerceSnapshot(from?: string, to?: string) {
     campaigns,
     config,
     movements,
+    shops,
+    categories,
+    liabilities,
   ] = await Promise.all([
     db.product.findMany({
       include: {
@@ -30,6 +34,8 @@ export async function commerceSnapshot(from?: string, to?: string) {
           where: { active: true },
           orderBy: [{ size: "asc" }, { color: "asc" }],
         },
+        // Per-color swatch, photos and availability, for the overview and editing in the modal.
+        colorDetails: { orderBy: { position: "asc" } },
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -71,11 +77,16 @@ export async function commerceSnapshot(from?: string, to?: string) {
       orderBy: { createdAt: "desc" },
     }),
     settings(),
+    // The Inventory page shows the latest 15 movements; only the product name is needed.
     db.stockMovement.findMany({
-      include: { variant: { include: { product: true } } },
+      include: { variant: { include: { product: { select: { name: true } } } } },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: 30,
     }),
+    // Fetched with everything else (not after it), so the page waits for one round of queries.
+    db.shop.findMany(),
+    db.category.findMany(),
+    db.liability.findMany(),
   ]);
   const sales = orders.filter(
     (o) =>
@@ -184,11 +195,6 @@ export async function commerceSnapshot(from?: string, to?: string) {
           reorder: Math.max(0, p.threshold * 2 - v.stock),
         })),
     );
-  const [shops, categories, liabilities] = await Promise.all([
-    db.shop.findMany(),
-    db.category.findMany(),
-    db.liability.findMany(),
-  ]);
   const data = {
     shops,
     categories,
@@ -272,43 +278,78 @@ type Serialized<T> = T extends Date
       : T;
 export type CommerceSnapshot = Awaited<ReturnType<typeof commerceSnapshot>>;
 
+const baseColumns =
+  "id,slug,name,description,price_cents,online_price_cents,discount_type,discount_value,category,gender,brand,image_url,image_index,featured,visibility,archived,product_variants(id,size,color,stock,active)";
+// Added by the product-colors migration. Until it is applied the catalogue loads without them.
+const colorColumns =
+  ",name_ar,description_ar,color_mode,product_colors(name,name_ar,hex,images,available,position)";
+type StoredColor = { name: string; name_ar: string; hex: string; images: unknown; available: boolean; position: number };
+function storedImages(value: unknown): ColorImage[] {
+  return Array.isArray(value)
+    ? value.filter((image): image is ColorImage => Boolean(image) && typeof image.url === "string").map(({ url }) => ({ url }))
+    : [];
+}
 export async function storefrontCatalog() {
-  const result = await publicSupabase()
-    .from("products")
-    .select(
-      "id,slug,name,description,price_cents,online_price_cents,discount_type,discount_value,category,gender,brand,image_url,image_index,featured,visibility,archived,product_variants(id,size,color,stock,active)",
-    )
-    .eq("visibility", "website_and_pos")
-    .eq("archived", false);
+  const query = (columns: string) =>
+    publicSupabase()
+      .from("products")
+      .select(columns)
+      .eq("visibility", "website_and_pos")
+      .eq("archived", false);
+  let result = await query(baseColumns + colorColumns);
+  if (result.error) result = await query(baseColumns);
   if (result.error) throw new Error("The shared catalog could not be loaded.");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Supabase client rows
+  const rows = (result.data || []) as any[];
   return {
     enabled: true,
-    products: (result.data || []).map((p) => {
-      const variants = p.product_variants.filter((v) => v.active);
+    products: rows.map((p) => {
+      const variants = (p.product_variants as { size: string; color: string; active: boolean }[]).filter((v) => v.active);
+      const variantColors = [...new Set(variants.map((v) => v.color))];
+      const allSizes = [...new Set(variants.map((v) => v.size))];
+      // A color's own sizes are its active variants; listed only when it lacks some sizes.
+      const sizesOf = (color: string) => {
+        const own = new Set(variants.filter((v) => v.color === color).map((v) => v.size));
+        return own.size < allSizes.length ? allSizes.filter((s) => own.has(s)) : undefined;
+      };
+      // Color details, in the shop's order, only for colors that still have sellable variants.
+      const colorVariants: ProductColor[] = ((p.product_colors || []) as StoredColor[])
+        .filter((c) => variantColors.includes(c.name))
+        .sort((a, b) => a.position - b.position)
+        .map((c) => ({ name: c.name, nameAr: c.name_ar, hex: c.hex, images: storedImages(c.images), available: c.available, sizes: sizesOf(c.name) }));
+      const detailed = colorVariants.length > 0;
+      const colors = detailed
+        ? [...colorVariants.map((c) => c.name), ...variantColors.filter((c) => !colorVariants.some((v) => v.name === c))]
+        : variantColors;
       return {
-        id: p.slug,
-        name: p.name,
-        description: p.description,
+        id: p.slug as string,
+        name: p.name as string,
+        description: p.description as string,
         price:
           finalPrice(p.online_price_cents, {
             discountType: p.discount_type,
             discountValue: p.discount_value,
           }) / 100,
-        originalPrice: p.discount_type ? p.online_price_cents / 100 : undefined,
+        originalPrice: p.discount_type ? (p.online_price_cents as number) / 100 : undefined,
         category: (p.category === "Toys" || p.category === "Accessories"
           ? p.category
           : p.gender) as Category,
         gender: p.gender as "Boys" | "Girls" | "Unisex",
         condition: "new" as const,
-        productType: p.category,
-        image: p.image_index,
-        imageUrl: p.image_url || null,
-        available: true,
-        sizes: [...new Set(variants.map((v) => v.size))],
-        colors: [...new Set(variants.map((v) => v.color))],
+        productType: p.category as string,
+        image: p.image_index as number,
+        imageUrl: (detailed ? colorVariants[0].images[0]?.url : undefined) || p.image_url || null,
+        // A product with color details is sellable while at least one color is available.
+        available: detailed ? colorVariants.some((c) => c.available) : true,
+        sizes: allSizes,
+        colors,
         model: "set" as const,
-        isNew: p.featured,
-        brand: p.brand,
+        isNew: p.featured as boolean,
+        brand: p.brand as string,
+        nameAr: (p.name_ar as string | undefined) || undefined,
+        descriptionAr: (p.description_ar as string | undefined) || undefined,
+        colorMode: detailed ? (p.color_mode as ColorMode) : undefined,
+        colorVariants: detailed ? colorVariants : undefined,
       };
     }),
   };

@@ -228,8 +228,18 @@ const productNames: Record<string, string> = {
   "Like New Cozy Gift Set": "طقم هدية دافئ شبه جديد",
 };
 
+// Arabic product names, descriptions and color names entered in the admin. The catalogue
+// registers them as it loads, so every t(product.name) on the site picks them up. They are the
+// same for every visitor, so one shared map is safe on the server too.
+const catalogArabic = new Map<string, string>();
+export function registerCatalogArabic(entries: [english: string, arabic: string | undefined][]) {
+  for (const [english, arabicText] of entries) if (english && arabicText?.trim()) catalogArabic.set(english, arabicText.trim());
+}
+
 export function translate(text: string, language: Language) {
   if (language === "en") return text;
+  const fromCatalog = catalogArabic.get(text);
+  if (fromCatalog) return fromCatalog;
   if (arabic[text]) return arabic[text];
   if (text.startsWith("Shop ")) return `تسوّق ${arabic[text.slice(5)] || text.slice(5)}`;
   if (text.startsWith("Help: ")) return `المساعدة: ${arabic[text.slice(6)] || text.slice(6)}`;

@@ -18,6 +18,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!product) throw new Response("Product not found", { status: 404 });
   // Same rule as the product page's "sold out" state, so the markup matches what shoppers see.
   const inStock = product.available !== false && !(product.productType === "shoes" && product.sizes.length === 0);
+  // With color details, the product is in stock while at least one color is (see the catalogue).
   return {
     id: product.id,
     name: product.name,
@@ -28,6 +29,8 @@ export async function loader({ params }: Route.LoaderArgs) {
     brand: product.brand,
     imageUrl: product.imageUrl,
     inStock,
+    nameAr: product.nameAr,
+    descriptionAr: product.descriptionAr,
   };
 }
 

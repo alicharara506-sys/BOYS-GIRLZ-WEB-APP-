@@ -8,8 +8,6 @@ register();
 const {supabaseConfig}=await import("../src/server/supabase.server.ts");
 supabaseConfig();
 process.env.BNG_COMMERCE = "1";
-const {startWhatsAppWorker}=await import("../src/server/whatsapp.server.ts");
-await startWhatsAppWorker();
 const port = Number(process.env.PORT || 5181);
 const host = process.env.HOST || "127.0.0.1";
 const production = process.argv.includes("--production");

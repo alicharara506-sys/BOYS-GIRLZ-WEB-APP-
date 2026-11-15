@@ -15,6 +15,7 @@ import { itemKey, type CartItem } from "../state/storeCore";
 import { money } from "../data/products";
 import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "../components/ProductCard";
+import { colorImages } from "../domain/productColors";
 import { Modal } from "../components/Layout";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
 import { useLocale } from "../i18n/Locale";
@@ -104,7 +105,8 @@ export function CartLine({
   return (
     <div className={`cart-line ${compact ? "compact" : ""} ${removing ? "is-removing" : ""}`}>
       <Link to={`/product/${p.id}`} onClick={() => setCartOpen(false)}>
-        <ProductImage product={p} />
+        {/* The photo of the color in the bag, not just the product's first photo. */}
+        <ProductImage product={{ ...p, imageUrl: colorImages(p, item.color)[0] || p.imageUrl }} />
       </Link>
       <div className="cart-line-info">
         <Link to={`/product/${p.id}`} onClick={() => setCartOpen(false)}>

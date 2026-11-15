@@ -37,8 +37,33 @@ model Product {
   createdAt      DateTime    @default(now()) @map("created_at")
   variants       Variant[]
   updatedAt      DateTime    @updatedAt @map("updated_at")
+  // Added by supabase/migrations/202611140001_product_colors.sql.
+  nameAr         String         @default("") @map("name_ar")
+  descriptionAr  String         @default("") @map("description_ar")
+  colorMode      String         @default("multiple") @map("color_mode")
+  colorDetails   ProductColor[]
 
   @@map("products")
+}
+
+// A color of a product: its swatch, ordered photos (first is the cover) and whether it is sold
+// online right now. Stock stays on the size × color variants.
+model ProductColor {
+  id        String   @id @default(uuid())
+  productId String   @map("product_id")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  nameAr    String   @default("") @map("name_ar")
+  hex       String
+  images    Json     @default("[]")
+  available Boolean  @default(true)
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([productId, name])
+  @@index([productId, position])
+  @@map("product_colors")
 }
 
 model Variant {

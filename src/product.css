@@ -35,6 +35,14 @@ html[dir="rtl"] .detail-title { letter-spacing: 0; line-height: 1.3; }
   transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .35s cubic-bezier(.34, 1.56, .64, 1);
 }
 .detail-colors > button:hover { transform: scale(1.1); }
+/* An out-of-stock color stays choosable (to see its photos) but is struck through. */
+.detail-colors > button.is-out { position: relative; opacity: .55; }
+.detail-colors > button.is-out::after { content: ""; position: absolute; inset: 15px -3px; height: 2px; background: var(--bng-tone-325); transform: rotate(-45deg); border-radius: 2px; }
+.detail-colors .color-chip { display: block; width: 34px; height: 34px; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 2px var(--bng-tone-7), 0 0 0 3px var(--bng-tone-403); }
+.color-status { margin: 10px 0 0; font-size: 13px; color: var(--bng-tone-326); }
+.color-status.is-out { color: var(--bng-tone-331); font-weight: 600; }
+.color-thumbs { overflow-x: auto; padding-bottom: 4px; }
+@media (prefers-reduced-motion: reduce) { .detail-colors > button { transition: none; } }
 .detail-colors > button.selected { outline: 0; box-shadow: 0 0 0 3px var(--bng-tone-7), 0 0 0 5px var(--bng-tone-325); transform: scale(1.06); }
 .detail-colors > button svg { animation: pc-tick .35s cubic-bezier(.34, 1.56, .64, 1); stroke-width: 3; }
 .size-guide { color: var(--bng-tone-331); font-weight: 700; text-decoration: none; }
@@ -46,6 +54,9 @@ html[dir="rtl"] .detail-title { letter-spacing: 0; line-height: 1.3; }
   transition: background-color .25s ease, color .25s ease, box-shadow .25s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 .size-options > button:hover { color: var(--bng-tone-325); box-shadow: 0 0 0 1px var(--bng-tone-343) inset; }
+/* A size the chosen color doesn't come in: shown, struck through, not pickable. */
+.size-options > button.is-missing, .size-options > button:disabled { opacity: .4; text-decoration: line-through; cursor: not-allowed; box-shadow: none; }
+.fit-steps button:disabled { opacity: .4; cursor: not-allowed; }
 .size-options > button.selected { background: var(--bng-tone-325); color: var(--bng-tone-7); box-shadow: 0 8px 16px -10px var(--bng-tone-404); transform: scale(1.05); }
 
 /* Add to bag: the glossy button, with a check that draws itself once added. */

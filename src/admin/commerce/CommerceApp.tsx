@@ -15,7 +15,6 @@ import {
   ShoppingBag,
   Store,
   Truck,
-  Users,
   X,
 } from "lucide-react";
 import type { CommerceSnapshot } from "../../server/commerce/queries.server";
@@ -24,47 +23,36 @@ import Overview from "./Overview";
 import POS from "./POS";
 import { Inventory, ProductEditor, Products } from "./Products";
 import { OrderDetail, Orders, Returns } from "./Orders";
-import { CustomerDetail, Customers } from "./Customers";
 import {
   Accounting,
-  CashDrawer,
   Purchases,
   Reports,
   ShopSettings,
   Suppliers,
   Rewards,
 } from "./Finance";
-import WhatsAppCampaigns from "./WhatsAppCampaigns";
 import { Liabilities } from "./Liabilities";
 import "./commerce.css";
-const navigation = [
-  ["", "Overview", LayoutDashboard],
-  ["pos", "Point of sale", Store],
-  ["products", "Products", ShoppingBag],
-  ["inventory", "Inventory", Boxes],
-  ["orders", "Orders", Package],
-  ["returns", "Returns & exchanges", ReceiptText],
-  ["customers", "Customers", Users],
-  ["marketing", "Marketing", Gift],
-  ["suppliers", "Suppliers", Truck],
-  ["purchases", "Purchases", ShoppingBag],
-  ["accounting", "Accounting", CircleDollarSign],
-  ["liabilities", "Liabilities", CircleDollarSign],
-  ["reports", "Reports", ChartNoAxesCombined],
-  ["cash", "Cash drawer", Store],
-  ["rewards", "Loyalty & gift cards", Gift],
-  ["settings", "Settings", Settings],
-] as const;
+// The menu, grouped by what the owner is doing: selling, stock, customers, money.
+type NavItem = readonly [path: string, label: string, icon: typeof Store];
+const groups: { label: string; items: readonly NavItem[] }[] = [
+  { label: "", items: [["", "Overview", LayoutDashboard]] },
+  { label: "SELL", items: [["pos", "Point of sale", Store], ["orders", "Orders", Package], ["returns", "Returns & exchanges", ReceiptText], ["promos", "Promo codes", Gift]] },
+  { label: "STOCK", items: [["products", "Products", ShoppingBag], ["inventory", "Inventory", Boxes], ["purchases", "Purchases", ShoppingBag], ["suppliers", "Suppliers", Truck]] },
+  { label: "MONEY", items: [["reports", "Reports", ChartNoAxesCombined], ["accounting", "Accounting", CircleDollarSign], ["liabilities", "Liabilities", CircleDollarSign]] },
+  { label: "", items: [["settings", "Settings", Settings]] },
+];
+const navigation = groups.flatMap((group) => group.items);
+// The four places used most, kept one tap away at the bottom of the screen on phones.
+const quickBar: readonly NavItem[] = [["pos", "Sell", Store], ["orders", "Orders", Package], ["products", "Products", ShoppingBag], ["inventory", "Stock", Boxes]];
 export default function CommerceApp({
   snapshot,
   csrfToken,
   email,
-  whatsapp,
 }: {
   snapshot: CommerceSnapshot;
   csrfToken: string;
   email: string;
-  whatsapp: { status: string; qr: string };
 }) {
   const path = useLocation()
     .pathname.replace(/\/$/, "")
@@ -79,7 +67,13 @@ export default function CommerceApp({
   if (section === "pos") content = <POS data={snapshot} />;
   else if (section === "products")
     content = itemId ? (
-      <ProductEditor key={itemId} data={snapshot} id={itemId} />
+      <ProductEditor
+        // Remount after the product changes (e.g. saved from the colors modal) so the form never
+        // holds stale values that a later save would write back.
+        key={`${itemId}:${String(snapshot.products.find((p) => p.id === itemId)?.updatedAt ?? "")}`}
+        data={snapshot}
+        id={itemId}
+      />
     ) : (
       <Products data={snapshot} />
     );
@@ -91,30 +85,12 @@ export default function CommerceApp({
       <Orders data={snapshot} />
     );
   else if (section === "returns") content = <Returns data={snapshot} />;
-  else if (section === "customers")
-    content = itemId ? (
-      <>
-        <CustomerDetail key={itemId} data={snapshot} id={itemId} />
-        {itemId !== "new" && (
-          <WhatsAppCampaigns
-            data={snapshot}
-            connection={whatsapp}
-            customerId={itemId}
-          />
-        )}
-      </>
-    ) : (
-      <Customers data={snapshot} />
-    );
-  else if (section === "marketing")
-    content = <WhatsAppCampaigns data={snapshot} connection={whatsapp} />;
   else if (section === "suppliers") content = <Suppliers data={snapshot} />;
   else if (section === "purchases") content = <Purchases data={snapshot} />;
   else if (section === "liabilities") content = <Liabilities data={snapshot} />;
   else if (section === "accounting") content = <Accounting data={snapshot} />;
   else if (section === "reports") content = <Reports data={snapshot} />;
-  else if (section === "cash") content = <CashDrawer data={snapshot} />;
-  else if (section === "rewards" || section === "discounts")
+  else if (section === "promos" || section === "rewards" || section === "discounts")
     content = <Rewards data={snapshot} />;
   else if (section === "settings") content = <ShopSettings data={snapshot} />;
   else content = <Overview data={snapshot} />;
@@ -149,9 +125,11 @@ export default function CommerceApp({
             </div>
             <span className="co-online-dot" />
           </div>
-          <span className="co-nav-label">WORKSPACE</span>
           <nav aria-label="Admin navigation">
-            {navigation.map(([to, label, Icon]) => (
+            {groups.map((group, index) => (
+              <div className="co-nav-group" key={index} role="group" aria-label={group.label || undefined}>
+                {group.label && <span className="co-nav-label">{group.label}</span>}
+            {group.items.map(([to, label, Icon]) => (
               <NavLink
                 key={to}
                 to={`/admin${to ? `/${to}` : ""}`}
@@ -165,6 +143,8 @@ export default function CommerceApp({
                   <b>{snapshot.lowStock.length}</b>
                 )}
               </NavLink>
+            ))}
+              </div>
             ))}
           </nav>
           <div className="co-sidebar-bottom">
@@ -216,6 +196,18 @@ export default function CommerceApp({
           <main className="co-main" id="admin-main">
             {content}
           </main>
+          <nav className="co-quickbar" aria-label="Quick links">
+            {quickBar.map(([to, label, Icon]) => (
+              <NavLink key={to} to={`/admin/${to}`} className={({ isActive }) => (isActive ? "active" : "")}>
+                <Icon size={20} aria-hidden="true" />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+            <button type="button" onClick={() => setMenu(true)} aria-label="All sections">
+              <Menu size={20} aria-hidden="true" />
+              <span>More</span>
+            </button>
+          </nav>
           <footer className="co-workspace-footer">
             Made for little adventures.{" "}
             <span>Boys & Girlz · Owner workspace</span>

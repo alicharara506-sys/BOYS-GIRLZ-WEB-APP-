@@ -167,11 +167,9 @@ export async function sell(tx: Tx, raw: SaleInput) {
     : null;
   if (input.customerId && !customer)
     throw new CommerceError("Customer not found.");
-  if (input.pointsUsed && (!customer || customer.points < input.pointsUsed))
-    throw new CommerceError(
-      "This customer does not have enough loyalty points.",
-    );
-  const loyaltyValue = input.pointsUsed * config.pointValue;
+  // Loyalty points are switched off: nothing is redeemed (or earned, below).
+  input.pointsUsed = 0;
+  const loyaltyValue = 0;
   whole += loyaltyValue;
   if (whole > afterLines)
     throw new CommerceError(
@@ -234,9 +232,7 @@ export async function sell(tx: Tx, raw: SaleInput) {
         "Gift card is invalid or has insufficient balance.",
       );
   }
-  const pointsEarned = customer
-    ? Math.floor((net / 100) * config.pointsPerDollar)
-    : 0;
+  const pointsEarned = 0;
   const order = await tx.order.create({
     data: {
       requestKey: input.requestKey,

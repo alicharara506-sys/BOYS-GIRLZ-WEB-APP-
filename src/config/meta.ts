@@ -64,19 +64,22 @@ export type ManagedProductSeo =Pick<Product, "id" | "name" | "description" | "ca
   brand?: string | null;
   imageUrl?: string | null;
   inStock: boolean;
+  // Arabic copy entered in the admin, used on Arabic pages when present.
+  nameAr?: string;
+  descriptionAr?: string;
 };
 
 // A product from the live catalogue. It is indexable, with Product + Offer markup, once the shop
 // has verified the catalogue (VITE_CATALOG_VERIFIED=true); until then it stays noindex.
 export function managedProductMeta(product: ManagedProductSeo, language: SeoLanguage = "en"): MetaDescriptor[] {
   const path = `/product/${product.id}`;
-  const name = localProductName(product.name, language);
+  const name = language === "ar" && product.nameAr ? product.nameAr : localProductName(product.name, language);
   const category = categoryLabel(product.category, language);
   const indexable = business.catalogVerified;
   const title = `${name.slice(0, 44)} | ${language === "ar" ? "بويز آند غيرلز" : "Boys & Girlz"}`;
   // The catalogue only has English descriptions, so Arabic pages get an Arabic summary built from
   // facts the site already states (name, category, delivery in Lebanon, cash on delivery).
-  const arabicSummary = `${name} من قسم ${category} لدى بويز آند غيرلز في لبنان. توصيل داخل لبنان والدفع عند الاستلام.`;
+  const arabicSummary = product.descriptionAr || `${name} من قسم ${category} لدى بويز آند غيرلز في لبنان. توصيل داخل لبنان والدفع عند الاستلام.`;
   const description = clip(language === "ar" ? arabicSummary : product.description || `${name} from Boys & Girlz in Lebanon.`, 155);
   const canonical = canonicalUrl(path, language, business.siteUrl);
   const image = product.imageUrl || `${business.siteUrl}/assets/boys-girlz-logo.jpg`;

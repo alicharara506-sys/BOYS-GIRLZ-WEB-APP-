@@ -68,9 +68,34 @@ export function storeReducer(state: StoreState, action: Action): StoreState {
       return state;
   }
 }
+// What the cart needs to know about a product to accept a line for it.
+export type CatalogEntry = {
+  id: string;
+  sizes: string[];
+  colors: string[];
+  available?: boolean;
+  colorVariants?: { name: string; available: boolean; sizes?: string[] }[];
+};
+// A line can be added only for a sellable product, one of its sizes and one of its colors that
+// is not out of stock. Each color is checked on its own: one color being out of stock never
+// blocks the others.
+export function canAddToCart(
+  product: CatalogEntry | undefined,
+  size: string,
+  color: string,
+): boolean {
+  if (!product || product.available === false) return false;
+  if (product.sizes.length > 0 ? !product.sizes.includes(size) : size !== "") return false;
+  if (!product.colors.includes(color)) return false;
+  const details = product.colorVariants?.find((variant) => variant.name === color);
+  if (!details) return true;
+  // A color may come in fewer sizes than the product (purple only in 12–18 Months, say).
+  if (details.sizes?.length && !details.sizes.includes(size)) return false;
+  return details.available;
+}
 export function restoreStore(
   raw: string | null,
-  catalog: { id: string; sizes: string[]; colors: string[] }[],
+  catalog: CatalogEntry[],
 ): StoreState {
   try {
     const data = JSON.parse(raw || "{}");
@@ -80,9 +105,7 @@ export function restoreStore(
       .filter((i: CartItem) => {
         const p = known.get(i?.productId);
         if (
-          !p ||
-          (p.sizes.length > 0 ? !p.sizes.includes(i.size) : i.size !== "") ||
-          !p.colors.includes(i.color) ||
+          !canAddToCart(p, i?.size, i?.color) ||
           !Number.isFinite(i.quantity) ||
           i.quantity < 1 ||
           seen.has(itemKey(i))

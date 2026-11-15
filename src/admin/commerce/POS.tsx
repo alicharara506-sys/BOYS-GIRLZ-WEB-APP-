@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import {
-  Barcode,
+  Camera,
   Check,
   ChevronRight,
   Clock3,
@@ -16,6 +16,7 @@ import type { CommerceSnapshot } from "../../server/commerce/queries.server";
 import { Badge, Empty, Feedback, Modal, usd, useCommand } from "./ui";
 import { finalPrice } from "../../domain/pricing";
 import { InlineSelect } from "./InlineSelect";
+import { CameraScanner, type ScanResult } from "./CameraScanner";
 type CartLine = {
   isQuickSale?: boolean;
   name?: string;
@@ -121,7 +122,6 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
   const cashPayment = payments
     .filter((p) => p.method === "cash")
     .reduce((s, p) => s + p.amount, 0);
-  const drawer = data.drawers.find((d) => !d.closedAt);
   useEffect(() => {
     if (cmd.data?.result?.number && cmd.data !== seen.current) {
       seen.current = cmd.data;
@@ -157,6 +157,15 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
           )
         : [...old, { variantId, quantity: 1, discount: 0 }];
     });
+  };
+  const [scanning, setScanning] = useState(false);
+  // A label scanned by the camera: the same match as typing the code and pressing Enter.
+  const scanned = (code: string): ScanResult => {
+    const wanted = code.trim().toLowerCase();
+    const variant = variants.find((v) => !v.product.archived && (v.barcode.toLowerCase() === wanted || v.sku.toLowerCase() === wanted));
+    if (!variant) return { ok: false, label: `No item with code ${code}` };
+    add(variant.id);
+    return { ok: true, label: `${variant.product.name} · ${variant.size} · ${variant.color}` };
   };
   const visible = data.products.filter(
     (p) =>
@@ -211,7 +220,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             {online ? "DEMO STOREFRONT" : "READY FOR LITTLE ADVENTURES"}
           </p>
           <h1>
-            {online ? "Online order simulation" : "Let’s make a sale"}
+            {online ? "New online order" : "Point of sale"}
             <span>.</span>
           </h1>
           <p>
@@ -266,10 +275,15 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                 }
               }}
             />
-            <Barcode size={21} />
+            <button type="button" className="co-scan-button" onClick={() => setScanning(true)} aria-label="Scan a label with the camera" title="Scan with camera">
+              <Camera size={20} />
+              <span>Scan</span>
+            </button>
           </div>
+          {scanning && <CameraScanner onCode={scanned} onClose={() => setScanning(false)} />}
           <div className="co-tabs">
-            {["All", ...new Set(data.products.map((p) => p.category))].map(
+            {/* Only categories with products on sale; archived test products don't add tabs. */}
+            {["All", ...new Set(data.products.filter((p) => !p.archived).map((p) => p.category))].map(
               (c) => (
                 <button
                   key={c}
@@ -325,23 +339,6 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             </h2>
             <span>{cart.reduce((s, l) => s + l.quantity, 0)} items</span>
           </div>
-          <label className="co-field">
-            <span>Customer</span>
-            <select
-              value={customerId}
-              onChange={(e) => {
-                setCustomer(e.target.value);
-                setPoints(0);
-              }}
-            >
-              <option value="">Walk-in customer</option>
-              {data.customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} · {c.points} pts · {usd(c.credit)} credit
-                </option>
-              ))}
-            </select>
-          </label>
           <div className="co-cart-lines">
             {lines.map((l) => (
               <div key={l.variantId} className="co-cart-line">
@@ -467,17 +464,6 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                   placeholder="Optional"
                 />
               </label>
-              <label className="co-field">
-                <span>Redeem points</span>
-                <input
-                  type="number"
-                  min="0"
-                  max={Math.max(0, customer?.points || 0)}
-                  disabled={!customer}
-                  value={points}
-                  onChange={(e) => setPoints(Number(e.target.value))}
-                />
-              </label>
             </div>
             <dl className="co-totals">
               <div>
@@ -517,7 +503,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                 disabled={!cart.length || cmd.busy}
                 onClick={begin}
               >
-                Record prepaid order / gift / credit
+                Record prepaid order
               </button>
             )}
             <Feedback data={cmd.data} />
@@ -674,12 +660,6 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             <small>USD · no tax</small>
           </div>
           <Feedback data={cmd.data} />
-          {!drawer && (
-            <div className="co-alert">
-              Cash requires an open drawer.{" "}
-              <Link to="/admin/cash">Open cash drawer</Link>
-            </div>
-          )}
           {payments.map((p, i) => (
             <div className="co-payment-row" key={i}>
               <label className="co-field">
@@ -694,15 +674,9 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
                     )
                   }
                 >
-                  {["cash", "whish", "credit", "gift"].map((m) => (
+                  {["cash", "whish"].map((m) => (
                     <option key={m} value={m}>
-                      {m === "whish"
-                        ? "Whish"
-                        : m === "credit"
-                          ? "Store credit"
-                          : m === "gift"
-                            ? "Gift card"
-                            : m}
+                      {m === "whish" ? "Whish" : "Cash"}
                     </option>
                   ))}
                 </select>
@@ -735,13 +709,9 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
               >
                 <Trash2 size={17} />
               </button>
-              {["gift", "whish"].includes(p.method) && (
+              {p.method === "whish" && (
                 <label className="co-field co-wide">
-                  <span>
-                    {p.method === "gift"
-                      ? "Gift card code"
-                      : "Payment reference (demo)"}
-                  </span>
+                  <span>Payment reference</span>
                   <input
                     value={p.reference}
                     onChange={(e) =>
@@ -805,7 +775,7 @@ export default function POS({ data }: { data: CommerceSnapshot }) {
             disabled={
               cmd.busy ||
               paid !== total ||
-              (cashPayment > 0 && (!drawer || cashTendered < cashPayment))
+              (cashPayment > 0 && cashTendered < cashPayment)
             }
             onClick={() => cmd.run("sale", sale())}
           >

@@ -1,3 +1,5 @@
+import type { ColorMode, ProductColor } from "../domain/productColors";
+
 export type Category =
   | "Boys"
   | "Girls"
@@ -28,6 +30,14 @@ export interface Product {
   description: string;
   // The product's brand, from the approved list in brands.ts; not yet assigned for any product.
   brand?: string;
+  // Arabic name and description entered in the admin; empty for older products, which use the
+  // built-in translations instead.
+  nameAr?: string;
+  descriptionAr?: string;
+  // Per-color swatch, photos and availability (see domain/productColors.ts). Products saved
+  // before color details existed have none and keep their single photo.
+  colorMode?: ColorMode;
+  colorVariants?: ProductColor[];
 }
 export const categories: Category[] = [
   "Boys",

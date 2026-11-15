@@ -6,6 +6,7 @@ import { useStore } from "../state/Store";
 import { money } from "../data/products";
 import { useCatalog } from "../state/Catalog";
 import { ProductImage } from "../components/ProductCard";
+import { colorImages } from "../domain/productColors";
 import { itemKey } from "../state/storeCore";
 import { WhatsAppOrderOption } from "../components/WhatsAppLink";
 import { useLocale } from "../i18n/Locale";
@@ -166,7 +167,7 @@ export default function Checkout() {
           <div className="checkout-items">{cart.map((item) => {
             const product = productById(item.productId);
             if (!product) return null;
-            return <div key={itemKey(item)}><span className="checkout-thumb"><ProductImage product={product} /><b>{item.quantity}</b></span><div><strong>{t(product.name)}</strong><span>{item.size && `${t(item.size)} · `}{t(item.color)} · {language === "ar" ? "الكمية" : "Qty"} {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
+            return <div key={itemKey(item)}><span className="checkout-thumb"><ProductImage product={{ ...product, imageUrl: colorImages(product, item.color)[0] || product.imageUrl }} /><b>{item.quantity}</b></span><div><strong>{t(product.name)}</strong><span>{item.size && `${t(item.size)} · `}{t(item.color)} · {language === "ar" ? "الكمية" : "Qty"} {item.quantity}</span></div><span>{money(product.price * item.quantity)}</span></div>;
           })}</div>
           <div className="summary-line summary-strong"><span>{t("Estimated subtotal")}</span><span><CountingMoney value={totals.subtotal} /></span></div>
           <p className="small-muted">{t("Final shipping, discounts and total are calculated on the server. No payment is collected online.")}</p>

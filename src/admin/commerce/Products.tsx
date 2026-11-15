@@ -26,10 +26,14 @@ import { InlineSelect } from "./InlineSelect";
 import { finalPrice } from "../../domain/pricing";
 import { useSearchParams } from "react-router";
 import JsBarcode from "jsbarcode";
+import { AddProductModal } from "./AddProductModal";
+import { StockGrid } from "./StockGrid";
 type Props = { data: CommerceSnapshot };
 export function Products({ data }: Props) {
   const [query, setQuery] = useState("");
   const [archived, setArchived] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [created, setCreated] = useState("");
   const cmd = useCommand();
   const products = data.products.filter(
     (p) =>
@@ -44,15 +48,39 @@ export function Products({ data }: Props) {
         <div>
           <p className="co-eyebrow">THE LITTLE COLLECTION</p>
           <h1>
-            Products, with personality<span>.</span>
+            Products<span>.</span>
           </h1>
           <p>Every size, color, and channel in one place.</p>
         </div>
-        <Link to="/admin/products/new" className="co-button primary">
-          <Plus size={17} />
-          Add product
-        </Link>
+        <div className="co-head-actions">
+          <Link to="/admin/products/new" className="co-button">
+            Full editor
+          </Link>
+          <button type="button" className="co-button primary" onClick={() => setAdding(true)}>
+            <Plus size={17} />
+            Add product
+          </button>
+        </div>
       </div>
+      {adding && (
+        <AddProductModal
+          data={data}
+          onClose={() => setAdding(false)}
+          onCreated={(id) => {
+            setAdding(false);
+            setCreated(id);
+          }}
+        />
+      )}
+      {/* Straight after creating a product: enter how many of each size and color you have. */}
+      {created && data.products.some((p) => p.id === created) && (
+        <Modal title={`Stock for ${data.products.find((p) => p.id === created)!.name}`} onClose={() => setCreated("")} className="co-modal-wizard">
+          <div className="apm-step">
+            <p className="apm-note">Product created. Now enter how many you have of each size and color, or close this and do it later from the product page.</p>
+            <StockGrid product={data.products.find((p) => p.id === created)!} onSaved={() => setCreated("")} />
+          </div>
+        </Modal>
+      )}
       <Feedback data={cmd.data} />
       <Panel>
         <div className="co-toolbar">
@@ -153,6 +181,8 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
   const product = data.products.find((p) => p.id === id);
   const cmd = useCommand();
   const [preview, setPreview] = useState(product?.imageUrl || "");
+  const [editingColors, setEditingColors] = useState(false);
+  const [colorsSaved, setColorsSaved] = useState(false);
   const token = useContext(TokenContext);
   const [params] = useSearchParams();
   const [shopId, setShopId] = useState(
@@ -220,18 +250,31 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
             <Link to="/admin/products">COLLECTION</Link> / PRODUCT DETAILS
           </p>
           <h1>
-            {product ? "A little fine-tuning" : "A new little favorite"}
+            {product ? "Edit product" : "New product"}
             <span>.</span>
           </h1>
           <p>
-            Save first, then add stock in Inventory. Product URLs stay
+            Save first, then enter stock in the grid below. Product URLs stay
             permanent.
           </p>
         </div>
-        <Link className="co-button" to="/admin/products">
-          Back to products
-        </Link>
+        <div className="co-head-actions">
+          {product && (
+            <button type="button" className="co-button primary" onClick={() => { setColorsSaved(false); setEditingColors(true); }}>
+              Edit colors & photos
+            </button>
+          )}
+          <Link className="co-button" to="/admin/products">
+            Back to products
+          </Link>
+        </div>
       </div>
+      {/* The guided modal edits details, colors, photos, per-color sizes and availability; this
+          page keeps the advanced fields (cost, in-store price, barcodes, visibility). */}
+      {editingColors && product && (
+        <AddProductModal data={data} product={product} onClose={() => setEditingColors(false)} onCreated={() => { setEditingColors(false); setColorsSaved(true); }} />
+      )}
+      {colorsSaved && <div className="co-alert success" role="status">Colors and photos saved.</div>}
       <Feedback data={cmd.data} />
       {cmd.data?.result?.id && !product && (
         <Link
@@ -311,6 +354,11 @@ export function ProductEditor({ data, id }: Props & { id: string }) {
               </label>
             </div>
           </Panel>
+          {product && (
+            <Panel title="Stock on hand" subtitle="Type the count for each size and color, then save once.">
+              <StockGrid key={product.id} product={product} />
+            </Panel>
+          )}
           <Panel title="Pricing & stock">
             <div className="co-form co-two">
               <Field
@@ -548,6 +596,10 @@ export function Inventory({ data }: Props) {
   const [low, setLow] = useState(false);
   const [adjust, setAdjust] = useState<string | null>(null);
   const [labels, setLabels] = useState(false);
+  // "products": one card per product with its stock grid (easiest on a phone).
+  // "table": every size × color as a row, with SKU, barcode and cost.
+  const [view, setView] = useState<"products" | "table">("products");
+  const [open, setOpen] = useState<string | null>(null);
   const variants = data.products
     .filter((p) => !p.archived)
     .flatMap((p) => p.variants.map((v) => ({ ...v, product: p })))
@@ -565,7 +617,7 @@ export function Inventory({ data }: Props) {
         <div>
           <p className="co-eyebrow">ONE STOCK POOL, EVERY CHANNEL</p>
           <h1>
-            Stock, sorted<span>.</span>
+            Inventory<span>.</span>
           </h1>
           <p>
             Every change leaves a trail. Sales from both channels update these
@@ -597,8 +649,40 @@ export function Inventory({ data }: Props) {
           >
             Low stock ({data.lowStock.length})
           </button>
+          <div className="inv-view" role="group" aria-label="View">
+            <button type="button" className={`co-button ${view === "products" ? "active" : ""}`} aria-pressed={view === "products"} onClick={() => setView("products")}>By product</button>
+            <button type="button" className={`co-button ${view === "table" ? "active" : ""}`} aria-pressed={view === "table"} onClick={() => setView("table")}>Detailed table</button>
+          </div>
         </div>
-        <div className="co-table-wrap">
+        {view === "products" && (
+          <div className="inv-cards">
+            {data.products
+              .filter((p) => !p.archived && variants.some((v) => v.productId === p.id))
+              .map((p) => {
+                const units = p.variants.reduce((sum, v) => sum + v.stock, 0);
+                const lowCount = p.variants.filter((v) => v.stock <= p.threshold).length;
+                const isOpen = open === p.id;
+                return (
+                  <article key={p.id} className={`inv-card ${isOpen ? "is-open" : ""}`}>
+                    <button type="button" className="inv-card-head" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : p.id)}>
+                      <img src={p.imageUrl || `/assets/catalog-previews/${p.imageIndex}.webp`} alt="" />
+                      <span>
+                        <strong>{p.name}</strong>
+                        <small>{new Set(p.variants.map((v) => v.color)).size} colors · {new Set(p.variants.map((v) => v.size)).size} sizes</small>
+                      </span>
+                      <span className="inv-units">
+                        <b>{units}</b> units
+                        {lowCount > 0 && <Badge tone="amber">{lowCount} low</Badge>}
+                      </span>
+                    </button>
+                    {isOpen && <div className="inv-card-body"><StockGrid product={p} /></div>}
+                  </article>
+                );
+              })}
+            {!variants.length && <Empty>No inventory matches this view.</Empty>}
+          </div>
+        )}
+        {view === "table" && <div className="co-table-wrap">
           <table>
             <thead>
               <tr>
@@ -651,7 +735,7 @@ export function Inventory({ data }: Props) {
             </tbody>
           </table>
           {!variants.length && <Empty>No inventory matches this view.</Empty>}
-        </div>
+        </div>}
       </Panel>
       <Panel title="Recent stock movements">
         <div className="co-table-wrap">

@@ -390,7 +390,7 @@ export function CashDrawer({ data }: Props) {
         <div>
           <p className="co-eyebrow">EVERY DOLLAR ACCOUNTED FOR</p>
           <h1>
-            The cash drawer<span>.</span>
+            Cash drawer<span>.</span>
           </h1>
           <p>
             Opening float allocates existing cash. Close once per shift to save
@@ -736,7 +736,7 @@ export function Reports({ data }: Props) {
         <div>
           <p className="co-eyebrow">SEE THE BIGGER PICTURE</p>
           <h1>
-            Reports & insights<span>.</span>
+            Reports<span>.</span>
           </h1>
           <p>
             USD · no VAT or sales tax · accrual bookkeeping with weighted
@@ -982,6 +982,8 @@ export function Reports({ data }: Props) {
     </>
   );
 }
+// Promo codes: create a code (percentage or fixed USD, optional minimum spend, usage limit and
+// expiry) and see how often each has been used. Customers enter the code at checkout or the POS.
 export function Rewards({ data }: Props) {
   return (
     <>
@@ -989,72 +991,12 @@ export function Rewards({ data }: Props) {
         <div>
           <p className="co-eyebrow">A LITTLE EXTRA LOVE</p>
           <h1>
-            Loyalty & gift cards<span>.</span>
+            Promo codes<span>.</span>
           </h1>
-          <p>
-            Default: {data.settings.pointsPerDollar} point per $1; each point is
-            worth {usd(data.settings.pointValue)}. Change this in Settings.
-          </p>
+          <p>Discount codes for the website checkout and the point of sale.</p>
         </div>
       </div>
-      <div className="co-three-panels">
-        <Panel title="Issue a gift card">
-          <CommandForm
-            intent="gift"
-            label="Record payment & issue card"
-            build={(f) => ({
-              amount: amount(f.get("amount")),
-              method: str(f, "method"),
-            })}
-          >
-            <Field
-              name="amount"
-              label="Gift card value $"
-              type="number"
-              min={0.01}
-              step="0.01"
-              required
-            />
-            <Select
-              name="method"
-              label="Paid through"
-              options={paymentOptions}
-            />
-          </CommandForm>
-        </Panel>
-        <Panel title="Grant store credit">
-          <CommandForm
-            intent="credit"
-            label="Grant credit"
-            build={(f) => ({
-              customerId: str(f, "customerId"),
-              amount: amount(f.get("amount")),
-              reason: str(f, "reason"),
-            })}
-          >
-            <Select
-              label="Customer"
-              name="customerId"
-              options={data.customers.map((c) => ({
-                value: c.id,
-                label: c.name,
-              }))}
-            />
-            <Field
-              name="amount"
-              label="Credit value $"
-              type="number"
-              min={0.01}
-              step="0.01"
-              required
-            />
-            <Field
-              name="reason"
-              label="Reason (booked as marketing expense)"
-              required
-            />
-          </CommandForm>
-        </Panel>
+      <div className="co-detail-layout">
         <Panel title="Promotion code">
           <CommandForm
             intent="promo"
@@ -1111,30 +1053,6 @@ export function Rewards({ data }: Props) {
             </label>
           </CommandForm>
         </Panel>
-      </div>
-      <div className="co-detail-layout">
-        <Panel title="Gift cards">
-          <div className="co-table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Issued</th>
-                  <th>Balance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.gifts.map((g) => (
-                  <tr key={g.id}>
-                    <td className="co-strong">{g.code}</td>
-                    <td>{usd(g.issued)}</td>
-                    <td>{usd(g.balance)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
         <Panel title="Promotion codes">
           <div className="co-table-wrap">
             <table>
@@ -1180,7 +1098,7 @@ export function ShopSettings({ data }: Props) {
         <div>
           <p className="co-eyebrow">MAKE IT YOUR OWN</p>
           <h1>
-            The little details<span>.</span>
+            Settings<span>.</span>
           </h1>
           <p>
             One owner · one shop · USD · no tax. No roles or user management.
@@ -1252,22 +1170,8 @@ export function ShopSettings({ data }: Props) {
                 step="0.01"
                 value={s.freeShipping / 100}
               />
-              <Field
-                name="pointsPerDollar"
-                label="Points earned per $1"
-                type="number"
-                min={0}
-                step="1"
-                value={s.pointsPerDollar}
-              />
-              <Field
-                name="pointValue"
-                label="Redemption value per point (cents)"
-                type="number"
-                min={0}
-                step="1"
-                value={s.pointValue}
-              />
+              <input type="hidden" name="pointsPerDollar" value={s.pointsPerDollar} />
+              <input type="hidden" name="pointValue" value={s.pointValue} />
               <Field
                 name="returnDays"
                 label="Return window in days"

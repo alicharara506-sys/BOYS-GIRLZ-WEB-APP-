@@ -77,6 +77,30 @@ export function SalesChart({ data }: { data: CommerceSnapshot }) {
     </div>
   );
 }
+// What needs the owner today, each linking to where it is handled. Shows only items that exist.
+function NeedsAttention({ data }: { data: CommerceSnapshot }) {
+  const live = data.products.filter((p) => !p.archived);
+  const newOnline = data.orders.filter((o) => o.channel !== "pos" && o.status === "pending");
+  const toShip = data.orders.filter((o) => o.channel !== "pos" && (o.status === "paid" || o.status === "packed"));
+  const noStock = live.filter((p) => p.variants.length > 0 && p.variants.every((v) => v.stock <= 0));
+  const outColors = live.flatMap((p) => p.colorDetails.filter((c) => !c.available).map((c) => `${p.name} · ${c.name}`));
+  const items: [boolean, string, string][] = [
+    [newOnline.length > 0, `${newOnline.length} new online order${newOnline.length === 1 ? "" : "s"} to confirm`, "/admin/orders"],
+    [toShip.length > 0, `${toShip.length} order${toShip.length === 1 ? "" : "s"} to pack or deliver`, "/admin/orders"],
+    [noStock.length > 0, `${noStock.length} product${noStock.length === 1 ? "" : "s"} with no stock entered: ${noStock.slice(0, 3).map((p) => p.name).join(", ")}${noStock.length > 3 ? "…" : ""}`, "/admin/inventory"],
+    [outColors.length > 0, `${outColors.length} color${outColors.length === 1 ? "" : "s"} marked out of stock: ${outColors.slice(0, 3).join(", ")}${outColors.length > 3 ? "…" : ""}`, "/admin/products"],
+    [Boolean(data.settings.demo), "Testing workspace is on: new sales are marked as samples", "/admin/settings"],
+  ];
+  const shown = items.filter(([show]) => show);
+  return (
+    <section className="co-attention" aria-labelledby="attention-title">
+      <h2 id="attention-title">{shown.length ? "Needs your attention" : "All caught up"}</h2>
+      {shown.length ? <ul>{shown.map(([, text, to]) => <li key={text}><Link to={to}>{text} <ArrowUpRight size={14} aria-hidden="true" /></Link></li>)}</ul>
+        : <p>No orders waiting, and every product has stock.</p>}
+    </section>
+  );
+}
+
 export default function Overview({ data }: { data: CommerceSnapshot }) {
   const { kpis } = data;
 
@@ -86,7 +110,7 @@ export default function Overview({ data }: { data: CommerceSnapshot }) {
         <div>
           <p className="co-eyebrow">YOUR SHOP, AT A GLANCE</p>
           <h1>
-            A little overview<span>.</span>
+            Overview<span>.</span>
           </h1>
           <p>Good things are growing. Here’s how your shop is doing.</p>
         </div>
@@ -95,6 +119,7 @@ export default function Overview({ data }: { data: CommerceSnapshot }) {
           New sale <ArrowUpRight size={16} />
         </Link>
       </div>
+      <NeedsAttention data={data} />
       <FinancialCards data={data} />
       <div className="co-dashboard-middle">
         <Panel

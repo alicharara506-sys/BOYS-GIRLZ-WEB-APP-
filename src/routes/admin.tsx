@@ -26,7 +26,6 @@ import {
   removeFailedUpload,
 } from "../server/admin-media.server";
 import { CommerceError } from "../server/commerce/rules";
-import { whatsappCommand, whatsappStatus } from "../server/whatsapp.server";
 import type { Route } from "./+types/admin";
 import type { ShouldRevalidateFunctionArgs } from "react-router";
 export const meta: Route.MetaFunction = () => [
@@ -84,7 +83,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       ),
       csrfToken: user.csrfToken,
       email: user.email,
-      whatsapp: whatsappStatus(),
     },
     { headers: user.headers },
   );
@@ -100,13 +98,11 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     const intent = String(form.get("intent") || "");
     const payload = JSON.parse(String(form.get("payload") || "{}"));
-    if (intent === "product" || intent === "whatsapp-campaign") {
+    if (intent === "product") {
       uploaded = await saveAdminImage(form.get("imageFile"));
       if (uploaded) payload.imageUrl = uploaded.url;
     }
-    const result = intent.startsWith("whatsapp-")
-      ? await whatsappCommand(intent, payload)
-      : await runCommand(intent, payload);
+    const result = await runCommand(intent, payload);
     return data(
       { success: "Saved successfully.", result },
       { headers: user.headers },
@@ -143,7 +139,6 @@ export default function AdminRoute() {
       snapshot={state.snapshot}
       csrfToken={state.csrfToken}
       email={state.email}
-      whatsapp={state.whatsapp}
     />
   );
 }

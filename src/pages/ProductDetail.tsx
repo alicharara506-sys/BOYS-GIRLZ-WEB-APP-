@@ -23,6 +23,7 @@ import {
   type Product,
 } from "../data/products";
 import { useCatalog } from "../state/Catalog";
+import { colorAvailable, colorDetails, colorImages, colorSizes, defaultColor } from "../domain/productColors";
 import { useStore } from "../state/Store";
 import ProductCard, { WishButton } from "../components/ProductCard";
 import ProductGallery from "../components/ProductGallery";
@@ -55,8 +56,20 @@ export default function ProductDetail() {
 function ProductContent({ product: p }: { product: Product }) {
   const { products } = useCatalog();
   const { language, t } = useLocale();
-  const [size, setSize] = useState(p.sizes[0] || "");
-  const [color, setColor] = useState(p.colors[0]);
+  // Opens on the first color that is in stock. Switching color changes only the photos, the
+  // availability and which sizes can be picked; the name, description and price never change.
+  const [color, setColor] = useState(defaultColor(p));
+  const [size, setSize] = useState(() => colorSizes(p, defaultColor(p))[0] || "");
+  // The sizes the chosen color comes in. Other sizes stay visible but can't be picked.
+  const sizesInColor = colorSizes(p, color);
+  const chooseColor = (next: string) => {
+    setColor(next);
+    const nextSizes = colorSizes(p, next);
+    if (!nextSizes.includes(size)) setSize(nextSizes[0] || "");
+  };
+  const colorOut = !colorAvailable(p, color);
+  const singleColor = p.colorMode === "single" && Boolean(p.colorVariants?.length);
+  const colorCover = { ...p, imageUrl: colorImages(p, color)[0] || p.imageUrl };
   const [quantity, setQuantity] = useState(1);
   const [sizeGuide, setSizeGuide] = useState(false);
   const { add } = useStore();
@@ -66,10 +79,12 @@ function ProductContent({ product: p }: { product: Product }) {
   const [showBar, setShowBar] = useState(false);
   const purchaseRef = useRef<HTMLDivElement>(null);
   const relatedRef = useRef<HTMLElement>(null);
-  const soldOut = p.available === false || (p.productType === "shoes" && p.sizes.length === 0);
-  const unavailableLabel = p.available === false
-    ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
-    : t("Sizes coming soon");
+  const soldOut = colorOut || p.available === false || (p.productType === "shoes" && p.sizes.length === 0);
+  const unavailableLabel = colorOut
+    ? language === "ar" ? "هذا اللون غير متوفر حالياً" : "This color is out of stock"
+    : p.available === false
+      ? language === "ar" ? "غير متوفر حالياً" : "Currently unavailable"
+      : t("Sizes coming soon");
   // Adds to the bag and briefly shows a drawn check on the button.
   const addToBag = (target: HTMLElement) => {
     add(p, size, color, quantity, target);
@@ -108,7 +123,7 @@ function ProductContent({ product: p }: { product: Product }) {
         <span>{t(p.name)}</span>
       </div>
       <div className="product-detail-layout">
-        <ProductGallery product={p} color={color} />
+        <ProductGallery key={color} product={p} color={color} />
         <div className="product-details">
           <span className={`eyebrow ${p.gender ? `is-${p.gender.toLowerCase()}` : ""}`}>
             {p.isNew
@@ -130,18 +145,32 @@ function ProductContent({ product: p }: { product: Product }) {
             <legend>
               {t("Color")} <span>— {t(color)}</span>
             </legend>
-            <div className="detail-colors">
-              {p.colors.map((c) => (
+            {singleColor
+              // One color: show it, with no choice to make.
+              ? <div className="detail-colors is-single"><span className="color-chip" style={{ "--swatch": colorDetails(p, color)?.hex } as CSSProperties} aria-hidden="true" /></div>
+              : <div className="detail-colors">
+              {p.colors.map((c) => {
+                const out = !colorAvailable(p, c);
+                return (
                 <button
                   key={c}
-                  style={{ "--swatch": colorHex[c] } as CSSProperties}
-                  className={color === c ? "selected" : ""}
-                  onClick={() => setColor(c)}
-                  aria-label={`${t("Select")} ${t(c)}`}
+                  type="button"
+                  style={{ "--swatch": colorDetails(p, c)?.hex || colorHex[c] } as CSSProperties}
+                  className={`${color === c ? "selected" : ""} ${out ? "is-out" : ""}`}
+                  onClick={() => chooseColor(c)}
+                  aria-label={`${t("Select")} ${t(c)}${out ? ` (${language === "ar" ? "غير متوفر" : "out of stock"})` : ""}`}
                   aria-pressed={color === c}
                 >{color === c && <Check size={14} aria-hidden="true" />}</button>
-              ))}
-            </div>
+                );
+              })}
+            </div>}
+            {p.colorVariants?.length ? <p className={`color-status ${colorOut ? "is-out" : ""}`} role="status">
+              {colorOut
+                ? language === "ar" ? `${t(color)} غير متوفر حالياً. يمكنك تصفّح صوره أو اختيار لون آخر.` : `${color} is out of stock right now. You can still look at its photos, or pick another color.`
+                : sizesInColor.length < p.sizes.length
+                  ? language === "ar" ? `${t(color)} متوفر بمقاس ${sizesInColor.map(t).join("، ")} فقط` : `${color} comes in ${sizesInColor.join(", ")} only`
+                  : language === "ar" ? `${t(color)} متوفر` : `${color} is available`}
+            </p> : null}
           </fieldset>
           {p.sizes.length > 0 && <fieldset className="variant-section">
             <legend>
@@ -151,17 +180,23 @@ function ProductContent({ product: p }: { product: Product }) {
               </button>
             </legend>
             <div className="size-options">
-              {p.sizes.map((s) => (
+              {p.sizes.map((s) => {
+                const missing = !sizesInColor.includes(s);
+                return (
                 <button
                   key={s}
-                  className={size === s ? "selected" : ""}
+                  type="button"
+                  className={`${size === s ? "selected" : ""} ${missing ? "is-missing" : ""}`}
                   onClick={() => setSize(s)}
                   aria-pressed={size === s}
+                  disabled={missing}
+                  aria-label={missing ? `${t(s)} (${language === "ar" ? `غير متوفر باللون ${t(color)}` : `not available in ${color}`})` : undefined}
                 >
                   <span>{t(s)}</span>
                   {sizeHeights[s] && <small className="size-cm"><bdi>{t(sizeHeights[s])}</bdi> {t("cm")}</small>}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </fieldset>}
           <div className="purchase-row" ref={purchaseRef}>
@@ -241,7 +276,7 @@ function ProductContent({ product: p }: { product: Product }) {
       </section>
       <div className={`buy-bar ${showBar ? "is-visible" : ""}`} aria-hidden={!showBar}>
         <div className="buy-bar-inner">
-          <span className="buy-bar-thumb"><ProductImage product={p} /></span>
+          <span className="buy-bar-thumb"><ProductImage product={colorCover} /></span>
           <span className="buy-bar-copy"><strong>{t(p.name)}</strong><small>{[size, color].filter(Boolean).map(t).join(" · ")}</small></span>
           <span className="buy-bar-price">{money(p.price * quantity)}</span>
           <button className={`bh-cta buy-bar-add ${added ? "is-added" : ""}`} disabled={soldOut} tabIndex={showBar ? 0 : -1} onClick={(e) => addToBag(e.currentTarget)}>
@@ -261,7 +296,7 @@ function ProductContent({ product: p }: { product: Product }) {
         <ol className="fit-steps" role="radiogroup" aria-label={t("Size")}>
           <span className="fit-line" aria-hidden="true" />
           {p.sizes.map((s, index) => <li key={s} style={{ "--i": index } as CSSProperties}>
-            <button type="button" role="radio" aria-checked={size === s} className={size === s ? "is-chosen" : ""}
+            <button type="button" role="radio" aria-checked={size === s} className={size === s ? "is-chosen" : ""} disabled={!sizesInColor.includes(s)}
               onClick={() => { setSize(s); setSizeGuide(false); }}>
               <span className="fit-dot" aria-hidden="true">{size === s && <Check size={13} />}</span>
               <span className="fit-name">{t(s)}</span>
