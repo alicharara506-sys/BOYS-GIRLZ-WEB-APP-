@@ -7,8 +7,20 @@
 .photo-stage { position: relative; isolation: isolate; perspective: 1200px; }
 .photo-glow { position: absolute; inset: -8%; z-index: -1; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--glow) 85%, white), transparent 70%); filter: blur(40px); opacity: .85; }
 .photo-viewer {
-  border: 8px solid var(--bng-tone-7); border-radius: 32px; background: color-mix(in oklab, var(--glow) 18%, var(--bng-tone-536));
-  box-shadow: 0 40px 70px -34px var(--bng-tone-327), 0 0 0 1px var(--bng-tone-328); transition: background-color .7s ease;
+  border-radius: 28px; background: color-mix(in oklab, var(--glow) 18%, var(--bng-tone-536));
+  box-shadow: 0 40px 70px -34px var(--bng-tone-327); transition: background-color .7s ease;
+}
+/* The same pink-and-blue ribbon as the shop cards (.pc-edge in cards.css), lights running round the
+   edge. Always lit here, since a phone has no hover. */
+.photo-viewer::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; padding: 2.5px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--beam),
+    var(--bng-tone-337) 0deg, var(--bng-tone-331) 50deg, var(--bng-tone-398) 75deg, var(--bng-tone-337) 115deg,
+    var(--bng-tone-384) 180deg, var(--bng-tone-332) 230deg, var(--bng-tone-399) 255deg, var(--bng-tone-384) 295deg) border-box;
+  -webkit-mask: linear-gradient(var(--bng-tone-322) 0 0) content-box, linear-gradient(var(--bng-tone-322) 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(var(--bng-tone-322) 0 0) content-box exclude, linear-gradient(var(--bng-tone-322) 0 0);
+  opacity: .85;
+  animation: bh-beam 5s linear infinite;
 }
 .photo-viewer .product-photo { mix-blend-mode: multiply; }
 .product-gallery > .small-muted { margin-top: 14px; color: var(--bng-tone-370); }
